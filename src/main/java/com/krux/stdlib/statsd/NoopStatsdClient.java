@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.krux.stdlib;
+package com.krux.stdlib.statsd;
 
 import java.net.InetAddress;
 import java.net.SocketException;

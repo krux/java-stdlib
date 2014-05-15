@@ -17,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ubercraft.statsd.StatsdClient;
 
+import com.krux.stdlib.logging.LoggerConfigurator;
+import com.krux.stdlib.statsd.NoopStatsdClient;
+
 /**
  * @author casspc
  *
@@ -30,19 +33,11 @@ public class KruxStdLib {
 	 */
 	public static StatsdClient statsd = null;
 	public static String env;
+	public static String appName;
 	
 	private static OptionParser _parser = null;
 	private static OptionSet _options = null;
 	private static boolean _initialized = false;
-	private static Map<String,Level> logLevels = new HashMap<String,Level>();
-	
-	static {
-		logLevels.put( "WARNING", Level.WARN );
-		logLevels.put( "DEBUG", Level.DEBUG );
-		logLevels.put( "ERROR", Level.ERROR );
-		logLevels.put( "CRITICAL", Level.FATAL );
-		logLevels.put( "INFO", Level.INFO );
-	}
 	
 	/**
 	 * If you'd like to utilize the std lib parser for your app-specific cli argument parsing needs,
@@ -73,6 +68,8 @@ public class KruxStdLib {
 			final String defaultEnv = "dev";
 			final String defaultLogLevel = "DEBUG";
 			final Boolean defaultUseStatsd = false;
+			final String defaultAppName = getMainClassName();
+			final String baseApplicationLoggingDir = "/data/var/log/";
 			
 			OptionParser parser;
 			if ( _parser == null ) {
@@ -81,7 +78,7 @@ public class KruxStdLib {
 				parser = _parser;
 			}
 			
-			parser.accepts( "help" );
+			parser.accepts( "help", "Prints this helpful message" );
 			OptionSpec<Boolean> enableStatsd = 
 					parser.accepts( "stats", "Enable/disable statsd collection" )
 						.withOptionalArg().ofType(Boolean.class).defaultsTo( defaultUseStatsd );
@@ -97,6 +94,12 @@ public class KruxStdLib {
 			OptionSpec<String> logLevel = 
 					parser.accepts( "log-level", "Default log4j log level" )
 						.withOptionalArg().ofType(String.class).defaultsTo( defaultLogLevel );
+	         OptionSpec<String> appNameOption = 
+	                    parser.accepts( "app-name", "Application identifier, used for statsd namespaces, log file names, etc" )
+	                        .withOptionalArg().ofType(String.class).defaultsTo( defaultAppName );
+	         OptionSpec<String> baseLoggingDir = 
+                       parser.accepts( "base-logging-dir", "Base directory for application logging" )
+                           .withOptionalArg().ofType(String.class).defaultsTo( baseApplicationLoggingDir );
 			
 			_options = parser.parse( args );
 			
@@ -111,13 +114,16 @@ public class KruxStdLib {
 					System.exit( 0 );
 				}
 			}
+			
 			//set environment
 			env = _options.valueOf(environment);
 			
+	         //set global app name
+            appName = _options.valueOf( appNameOption );
+			
 			//setup logging level
-			((org.apache.log4j.Logger)logger).setLevel( logLevels.get( _options.valueOf( logLevel ) ) );
-//			ILoggerFactory loggerContext = LoggerFactory.getILoggerFactory();
-//			Logger l = loggerContext.getLogger( KruxStdLib.class.getName() );
+            LoggerConfigurator.configureLogging(_options.valueOf(baseLoggingDir), 
+                    _options.valueOf(logLevel), appName );
 			
 			//setup statsd
 			try {
@@ -134,6 +140,18 @@ public class KruxStdLib {
 			_initialized = true;
 		}
 		return _options;
+	}
+	
+	private static String getMainClassName() {
+	    
+	    StackTraceElement[] stack = Thread.currentThread ().getStackTrace ();
+	    StackTraceElement main = stack[stack.length - 1];
+	    String mainClass = main.getClassName();
+	    if ( mainClass.contains(".") ) {
+	        String[] parts = mainClass.split( "\\." );
+	        mainClass = parts[ parts.length - 1 ];
+	    }
+	    return mainClass;
 	}
 
 }
