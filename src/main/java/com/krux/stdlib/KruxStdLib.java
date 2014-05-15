@@ -80,22 +80,23 @@ public class KruxStdLib {
 			
 			parser.accepts( "help", "Prints this helpful message" );
 			OptionSpec<Boolean> enableStatsd = 
-					parser.accepts( "stats", "Enable/disable statsd collection" )
+					parser.accepts( "stats", "Enable/disable statsd broadcast" )
 						.withOptionalArg().ofType(Boolean.class).defaultsTo( defaultUseStatsd );
 			OptionSpec<String> statsdHost = 
-					parser.accepts( "stats-host", "statsd host" )
+					parser.accepts( "stats-host", "Listening statsd host" )
 						.withOptionalArg().ofType(String.class).defaultsTo( defaultStatsdHost );
 			OptionSpec<Integer> statsdPort = 
-					parser.accepts( "stats-port", "statsd port" )
+					parser.accepts( "stats-port", "Listening statsd port" )
 						.withOptionalArg().ofType(Integer.class).defaultsTo( defaultStatsdPort );
 			OptionSpec<String> environment = 
-					parser.accepts( "env", "Operating evnvironment" )
+					parser.accepts( "env", "Operating environment" )
 						.withOptionalArg().ofType(String.class).defaultsTo( defaultEnv );
 			OptionSpec<String> logLevel = 
 					parser.accepts( "log-level", "Default log4j log level" )
 						.withOptionalArg().ofType(String.class).defaultsTo( defaultLogLevel );
 	         OptionSpec<String> appNameOption = 
-	                    parser.accepts( "app-name", "Application identifier, used for statsd namespaces, log file names, etc" )
+	                    parser.accepts( "app-name", "Application identifier, used for statsd namespaces, log file names, etc. "
+	                            + "If not supplied, will use this app's entry point classname." )
 	                        .withOptionalArg().ofType(String.class).defaultsTo( defaultAppName );
 	         OptionSpec<String> baseLoggingDir = 
                        parser.accepts( "base-logging-dir", "Base directory for application logging" )
