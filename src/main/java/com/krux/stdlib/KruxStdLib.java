@@ -5,6 +5,8 @@ package com.krux.stdlib;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -32,6 +34,15 @@ public class KruxStdLib {
 	private static OptionParser _parser = null;
 	private static OptionSet _options = null;
 	private static boolean _initialized = false;
+	private static Map<String,Level> logLevels = new HashMap<String,Level>();
+	
+	static {
+		logLevels.put( "WARNING", Level.WARN );
+		logLevels.put( "DEBUG", Level.DEBUG );
+		logLevels.put( "ERROR", Level.ERROR );
+		logLevels.put( "CRITICAL", Level.FATAL );
+		logLevels.put( "INFO", Level.INFO );
+	}
 	
 	/**
 	 * If you'd like to utilize the std lib parser for your app-specific cli argument parsing needs,
@@ -60,7 +71,7 @@ public class KruxStdLib {
 			final String defaultStatsdHost = "localhost";
 			final int defaultStatsdPort = 8125;
 			final String defaultEnv = "dev";
-			final Level defaultLogLevel = Level.DEBUG;
+			final String defaultLogLevel = "DEBUG";
 			final Boolean defaultUseStatsd = false;
 			
 			OptionParser parser;
@@ -83,9 +94,9 @@ public class KruxStdLib {
 			OptionSpec<String> environment = 
 					parser.accepts( "env", "Operating evnvironment" )
 						.withOptionalArg().ofType(String.class).defaultsTo( defaultEnv );
-			OptionSpec<Level> logLevel = 
+			OptionSpec<String> logLevel = 
 					parser.accepts( "log-level", "Default log4j log level" )
-						.withOptionalArg().ofType(Level.class).defaultsTo( defaultLogLevel );
+						.withOptionalArg().ofType(String.class).defaultsTo( defaultLogLevel );
 			
 			_options = parser.parse( args );
 			
@@ -104,7 +115,9 @@ public class KruxStdLib {
 			env = _options.valueOf(environment);
 			
 			//setup logging level
-			((org.apache.log4j.Logger)logger).setLevel( _options.valueOf( logLevel ) );
+			((org.apache.log4j.Logger)logger).setLevel( logLevels.get( _options.valueOf( logLevel ) ) );
+//			ILoggerFactory loggerContext = LoggerFactory.getILoggerFactory();
+//			Logger l = loggerContext.getLogger( KruxStdLib.class.getName() );
 			
 			//setup statsd
 			try {
