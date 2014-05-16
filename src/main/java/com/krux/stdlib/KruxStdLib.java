@@ -5,14 +5,11 @@ package com.krux.stdlib;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
-import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.ubercraft.statsd.StatsdClient;
@@ -145,7 +142,7 @@ public class KruxStdLib {
 	
 	private static String getMainClassName() {
 	    
-	    StackTraceElement[] stack = Thread.currentThread ().getStackTrace ();
+	    StackTraceElement[] stack = Thread.currentThread().getStackTrace ();
 	    StackTraceElement main = stack[stack.length - 1];
 	    String mainClass = main.getClassName();
 	    if ( mainClass.contains(".") ) {

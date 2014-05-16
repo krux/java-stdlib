@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.AsyncAppender;
+import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
 
 public class LoggerConfigurator {
 
@@ -42,17 +43,29 @@ public class LoggerConfigurator {
         rootLogger.setLevel(defaultLevel);
 
         // Define log pattern layout
-        PatternLayout layout = new PatternLayout("%d{ISO8601} %-6p : [%t] %c{2} %x - %m%n");
+        PatternLayout layout = new PatternLayout("%d{ISO8601} %-6p: [%t] %c{2} %x - %m%n");
 
         try {
             // Define file appender with layout and output log file name
             String rootLoggerFile = baseAppLoggingDir + appName + ".log";
-            RollingFileAppender fileAppender = new RollingFileAppender(layout, rootLoggerFile);
+            DailyRollingFileAppender fileAppender = new DailyRollingFileAppender(layout, rootLoggerFile, 
+            		"'.'yyyy-MM-dd" );
+            fileAppender.setEncoding( "utf-8");
+            fileAppender.setName( "stdlib-file" );
+            
+            // Wrap the file appender in an async appender
+            AsyncAppender async = new AsyncAppender();
+            async.setBlocking( true );
+            async.setBufferSize( 1024 );
+            async.addAppender( fileAppender );
+            async.setName( "stdlib-async" );
 
             // Add the appender to root logger
-            rootLogger.addAppender(fileAppender);
+            rootLogger.addAppender(async);
+            
         } catch (IOException e) {
-            System.out.println("Failed to add appender !!");
+            System.out.println("Failed to add appender!!");
+            e.printStackTrace();
         }
 
         // wrap stdout & stderr in log4j appenders (will still also write to
