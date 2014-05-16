@@ -42,14 +42,32 @@ public class ExampleMain {
         //give parser to KruxStdLib so it can add our params to the reserved list
         KruxStdLib.setOptionParser(parser);
         
-        //Initializing the KruxStdLib will does a few things:
+        //Initializing the KruxStdLib will do a few things:
         //	1. The command line args passed to initialize() are parsed and validated.  Values for cl options 
-        //		that have parameter values are available in the returned OptionSet object
+        //		are available in the returned OptionSet object. Unrecognized options will cause the 
+        //      process to terminate with an error sent to stderr.
         //	2. An asynchronous log4j appender that wraps a DailyRollingFileAppender is programatically created
         //		and added to the rootlogger. See LoggerConfigurator for details.
-        //	3. A static statsd client library is instantiated and made avaialble as a static member of KruxStdLib
+        //	3. A static statsd client library is instantiated and made available as a static member of KruxStdLib
         //	4. An HTTP server is started that will respond to "/__status" requests with a 200 OK. 
+        
+        // At any time, an app can register a shutdown hook to be run on nominal process exit.
+        KruxStdLib.addShutdownHook( new Thread() {
+            @Override
+            public void run() {
+                System.out.println( "This shutdown hook was registered BEFORE initializing KruxStdLib" );
+            }
+        });
+        
+        //initialize the lib, watch the magic unfold
 		OptionSet options = KruxStdLib.initialize(args);
+		
+        KruxStdLib.addShutdownHook( new Thread() {
+            @Override
+            public void run() {
+                System.out.println( "This shutdown hook was registered AFTER initializing KruxStdLib" );
+            }
+        });
 		
 		logger.info( optionalOption.toString() + ": " + options.valueOf( optionalOption ) );
 		logger.info( requiredOption.toString() + ": " + options.valueOf( requiredOption ) );	

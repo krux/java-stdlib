@@ -5,6 +5,10 @@ package com.krux.stdlib;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -35,6 +39,10 @@ public class KruxStdLib {
 	private static OptionParser _parser = null;
 	private static OptionSet _options = null;
 	private static boolean _initialized = false;
+	
+	// holds all registered Runnable shutdown hooks (which are executed synchronously in the 
+	// order added to this list.
+	private static List<Runnable> shutdownHooks = Collections.synchronizedList( new ArrayList<Runnable>() );
 	
 	/**
 	 * If you'd like to utilize the std lib parser for your app-specific cli argument parsing needs,
@@ -135,6 +143,16 @@ public class KruxStdLib {
 				logger.warn( "Cannot establish a statsd connection", e );
 			}
 			
+			//finally, setup a shutdown thread to run all registered application hooks
+	        Runtime.getRuntime().addShutdownHook(new Thread() {
+	            @Override
+	            public void run() {
+	                for ( Runnable r : shutdownHooks ) {
+	                    r.run();
+	                }
+	            }
+	        });
+			
 			_initialized = true;
 		}
 		return _options;
@@ -150,6 +168,10 @@ public class KruxStdLib {
 	        mainClass = parts[ parts.length - 1 ];
 	    }
 	    return mainClass;
+	}
+	
+	public static void addShutdownHook( Runnable r ) {
+	    shutdownHooks.add( r );
 	}
 
 }
