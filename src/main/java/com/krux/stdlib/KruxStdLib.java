@@ -170,7 +170,7 @@ public class KruxStdLib {
 	    return mainClass;
 	}
 	
-	public static void addShutdownHook( Runnable r ) {
+	public static void registerShutdownHook( Runnable r ) {
 	    shutdownHooks.add( r );
 	}
 

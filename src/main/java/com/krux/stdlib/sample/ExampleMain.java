@@ -51,8 +51,10 @@ public class ExampleMain {
         //	3. A static statsd client library is instantiated and made available as a static member of KruxStdLib
         //	4. An HTTP server is started that will respond to "/__status" requests with a 200 OK. 
         
-        // At any time, an app can register a shutdown hook to be run on nominal process exit.
-        KruxStdLib.addShutdownHook( new Thread() {
+        // At any time, an app may register a shutdown hook to be run on nominal process exit.
+        // All registered hooks will be run in a single thread (for now) in the order they were
+        // added to the list.
+        KruxStdLib.registerShutdownHook( new Thread() {
             @Override
             public void run() {
                 System.out.println( "This shutdown hook was registered BEFORE initializing KruxStdLib" );
@@ -62,7 +64,8 @@ public class ExampleMain {
         //initialize the lib, watch the magic unfold
 		OptionSet options = KruxStdLib.initialize(args);
 		
-        KruxStdLib.addShutdownHook( new Thread() {
+		// add another shutdown hook
+        KruxStdLib.registerShutdownHook( new Thread() {
             @Override
             public void run() {
                 System.out.println( "This shutdown hook was registered AFTER initializing KruxStdLib" );
