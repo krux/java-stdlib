@@ -3,12 +3,15 @@
  */
 package com.krux.stdlib;
 
+import io.netty.channel.ChannelInboundHandlerAdapter;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -44,6 +47,10 @@ public class KruxStdLib {
 	// order added to this list.
 	private static List<Runnable> shutdownHooks = Collections.synchronizedList( new ArrayList<Runnable>() );
 	
+	// holds list of registered ChannelInboundHandlerAdapters for serving http responses
+	private static Map<String,ChannelInboundHandlerAdapter> httpHandlers =
+	        new HashMap<String,ChannelInboundHandlerAdapter>();
+	
 	/**
 	 * If you'd like to utilize the std lib parser for your app-specific cli argument parsing needs,
 	 * feel free to pass a configured OptionParser to this class before initializing it.  
@@ -75,6 +82,7 @@ public class KruxStdLib {
 			final Boolean defaultUseStatsd = false;
 			final String defaultAppName = getMainClassName();
 			final String baseApplicationLoggingDir = "/data/var/log/";
+			final Integer httpListenerPort = 8080;
 			
 			OptionParser parser;
 			if ( _parser == null ) {
@@ -106,6 +114,9 @@ public class KruxStdLib {
 	         OptionSpec<String> baseLoggingDir = 
                        parser.accepts( "base-logging-dir", "Base directory for application logging" )
                            .withOptionalArg().ofType(String.class).defaultsTo( baseApplicationLoggingDir );
+	         OptionSpec<Integer> httpListenPort = 
+	                    parser.accepts( "http-port", "Accept http connections on this port" )
+	                        .withOptionalArg().ofType(Integer.class).defaultsTo( httpListenerPort );
 			
 			_options = parser.parse( args );
 			
@@ -143,6 +154,14 @@ public class KruxStdLib {
 				logger.warn( "Cannot establish a statsd connection", e );
 			}
 			
+			
+			//next, setup an http listener
+			//first, setup pipeline handler with all added handlers?
+			// and have the pipeline factory select on each request?
+			// -or- have a global handler delegate to a handler-like thing?
+			
+			// -OR- should we only setup the http listener 
+			
 			//finally, setup a shutdown thread to run all registered application hooks
 	        Runtime.getRuntime().addShutdownHook(new Thread() {
 	            @Override
@@ -172,6 +191,14 @@ public class KruxStdLib {
 	
 	public static void registerShutdownHook( Runnable r ) {
 	    shutdownHooks.add( r );
+	}
+	
+	public static void registerHttpHandler( String url, ChannelInboundHandlerAdapter handler ) {
+	    if ( !_initialized ) {
+    	    if ( !url.contains( "__status" ) ) {
+    	        httpHandlers.put( url, handler );
+    	    }
+	    }
 	}
 
 }
