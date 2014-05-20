@@ -88,7 +88,7 @@ public class KruxStdLib {
             final Boolean defaultUseStatsd = false;
             final String defaultAppName = getMainClassName();
             final String baseApplicationLoggingDir = "/data/var/log/";
-            final Integer httpListenerPort = 8080;
+            final Integer httpListenerPort = 0;
 
             OptionParser parser;
             if (_parser == null) {
@@ -116,7 +116,7 @@ public class KruxStdLib {
                     .ofType(String.class).defaultsTo(defaultAppName);
             OptionSpec<String> baseLoggingDir = parser.accepts("base-logging-dir", "Base directory for application logging")
                     .withOptionalArg().ofType(String.class).defaultsTo(baseApplicationLoggingDir);
-            OptionSpec<Integer> httpListenPort = parser.accepts("http-port", "Accept http connections on this port")
+            OptionSpec<Integer> httpListenPort = parser.accepts("http-port", "Accept http connections on this port (0 = web server will not start)")
                     .withOptionalArg().ofType(Integer.class).defaultsTo(httpListenerPort);
 
             _options = parser.parse(args);

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.AsyncAppender;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -46,23 +47,28 @@ public class LoggerConfigurator {
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-6p: [%t] %c{2} %x - %m%n");
 
         try {
+            //DOH! nvm...ops would like us to log to console unless an app
+            // has a specific requirement not to
+            ConsoleAppender consoleAppender = new ConsoleAppender();
+            consoleAppender.setLayout( layout );
+            
             // Define file appender with layout and output log file name
-            String rootLoggerFile = baseAppLoggingDir + appName + ".log";
-            DailyRollingFileAppender fileAppender = new DailyRollingFileAppender(layout, rootLoggerFile, "'.'yyyy-MM-dd");
-            fileAppender.setEncoding("utf-8");
-            fileAppender.setName("stdlib-file");
+//            String rootLoggerFile = baseAppLoggingDir + appName + ".log";
+//            DailyRollingFileAppender fileAppender = new DailyRollingFileAppender(layout, rootLoggerFile, "'.'yyyy-MM-dd");
+//            fileAppender.setEncoding("utf-8");
+//            fileAppender.setName("stdlib-file");
 
             // Wrap the file appender in an async appender
             AsyncAppender async = new AsyncAppender();
             async.setBlocking(true);
             async.setBufferSize(1024);
-            async.addAppender(fileAppender);
+            async.addAppender(consoleAppender);
             async.setName("stdlib-async");
 
             // Add the appender to root logger
             rootLogger.addAppender(async);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Failed to add appender!!");
             e.printStackTrace();
         }
