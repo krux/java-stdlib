@@ -59,4 +59,12 @@
 			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>kruxmvn</id>
+			<name>kruxmvn-releases</name>
+			<url>http://kruxmvn.artifactoryonline.com/kruxmvn/libs-releases-local</url>
+		</repository>
+	</distributionManagement>
 </project>

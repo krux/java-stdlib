@@ -30,7 +30,7 @@ public class HttpDefaultStatusHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = LoggerFactory.getLogger(HttpDefaultStatusHandler.class.getName());
 
     private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!', '\n' };
-    
+
     final private static MetricRegistry metrics = new MetricRegistry();
 
     @Override
@@ -43,7 +43,7 @@ public class HttpDefaultStatusHandler extends ChannelInboundHandlerAdapter {
 
         if (msg instanceof HttpRequest) {
             long start = System.currentTimeMillis();
-            
+
             HttpRequest req = (HttpRequest) msg;
 
             // basic parts
@@ -52,7 +52,7 @@ public class HttpDefaultStatusHandler extends ChannelInboundHandlerAdapter {
 
             String response = null;
 
-            //ignore browser silliness
+            // ignore browser silliness
             if (!uri.equals("/favicon.ico")) {
 
                 String[] parts = uri.split("\\?");
@@ -84,15 +84,17 @@ public class HttpDefaultStatusHandler extends ChannelInboundHandlerAdapter {
                 String publisherId = pathParts[2];
                 log.info("publisherId: " + publisherId);
 
-//                if (reqType.equals("campaigns")) {
-//                    // logic for Wanderely here
-//                    log.info("Will get campaign info");
-//                    response = CampaignResponseBuider.getResponse(publisherId, params);
-//                } else if (reqType.equals("funnels")) {
-//                    // logic for funnels here
-//                    log.info("Will get funnel info");
-//                    response = EventsFunnelsResponseBuider.getResponse(publisherId, params);
-//                }
+                // if (reqType.equals("campaigns")) {
+                // // logic for Wanderely here
+                // log.info("Will get campaign info");
+                // response = CampaignResponseBuider.getResponse(publisherId,
+                // params);
+                // } else if (reqType.equals("funnels")) {
+                // // logic for funnels here
+                // log.info("Will get funnel info");
+                // response =
+                // EventsFunnelsResponseBuider.getResponse(publisherId, params);
+                // }
 
                 // ignore
             }
@@ -123,9 +125,9 @@ public class HttpDefaultStatusHandler extends ChannelInboundHandlerAdapter {
                     ctx.write(res);
                 }
             }
-            
+
             long time = System.currentTimeMillis() - start;
-            log.info( "Request took " + time + "ms for whole request" );
+            log.info("Request took " + time + "ms for whole request");
 
         }
     }

@@ -34,8 +34,8 @@ public class LoggerConfigurator {
 
         // This is the root logger provided by log4j
         Logger rootLogger = Logger.getRootLogger();
-        
-        //set default root level
+
+        // set default root level
         Level defaultLevel = logLevels.get(loglevel);
         if (defaultLevel == null) {
             defaultLevel = Level.DEBUG;
@@ -48,21 +48,20 @@ public class LoggerConfigurator {
         try {
             // Define file appender with layout and output log file name
             String rootLoggerFile = baseAppLoggingDir + appName + ".log";
-            DailyRollingFileAppender fileAppender = new DailyRollingFileAppender(layout, rootLoggerFile, 
-            		"'.'yyyy-MM-dd" );
-            fileAppender.setEncoding( "utf-8");
-            fileAppender.setName( "stdlib-file" );
-            
+            DailyRollingFileAppender fileAppender = new DailyRollingFileAppender(layout, rootLoggerFile, "'.'yyyy-MM-dd");
+            fileAppender.setEncoding("utf-8");
+            fileAppender.setName("stdlib-file");
+
             // Wrap the file appender in an async appender
             AsyncAppender async = new AsyncAppender();
-            async.setBlocking( true );
-            async.setBufferSize( 1024 );
-            async.addAppender( fileAppender );
-            async.setName( "stdlib-async" );
+            async.setBlocking(true);
+            async.setBufferSize(1024);
+            async.addAppender(fileAppender);
+            async.setName("stdlib-async");
 
             // Add the appender to root logger
             rootLogger.addAppender(async);
-            
+
         } catch (IOException e) {
             System.out.println("Failed to add appender!!");
             e.printStackTrace();
