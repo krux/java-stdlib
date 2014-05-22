@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.ubercraft.statsd.StatsdClient;
 
 import com.krux.stdlib.logging.LoggerConfigurator;
+import com.krux.stdlib.statsd.KruxStatsdClient;
 import com.krux.stdlib.statsd.NoopStatsdClient;
 
 /**
@@ -145,7 +146,7 @@ public class KruxStdLib {
             // setup statsd
             try {
                 if (_options.valueOf(enableStatsd)) {
-                    statsd = new StatsdClient(_options.valueOf(statsdHost), _options.valueOf(statsdPort), logger);
+                    statsd = new KruxStatsdClient(_options.valueOf(statsdHost), _options.valueOf(statsdPort), logger);
                 } else {
                     statsd = new NoopStatsdClient(InetAddress.getLocalHost(), 0);
                 }

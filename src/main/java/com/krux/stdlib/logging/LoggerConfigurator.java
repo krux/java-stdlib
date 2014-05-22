@@ -1,12 +1,11 @@
 package com.krux.stdlib.logging;
 
-import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -51,6 +50,8 @@ public class LoggerConfigurator {
             // has a specific requirement not to
             ConsoleAppender consoleAppender = new ConsoleAppender();
             consoleAppender.setLayout( layout );
+            consoleAppender.setName("stdlib-console");
+            consoleAppender.setWriter(new OutputStreamWriter(System.out));
             
             // Define file appender with layout and output log file name
 //            String rootLoggerFile = baseAppLoggingDir + appName + ".log";
