@@ -39,6 +39,8 @@ public class KruxStdLib {
     public static StatsdClient statsd = null;
     public static String env;
     public static String appName;
+    public static String baseAppDir;
+    public static String statsdEnv;
 
     private static OptionParser _parser = null;
     private static OptionSet _options = null;
@@ -88,8 +90,9 @@ public class KruxStdLib {
             final String defaultLogLevel = "DEBUG";
             final Boolean defaultUseStatsd = false;
             final String defaultAppName = getMainClassName();
-            final String baseApplicationLoggingDir = "/data/var/log/";
             final Integer httpListenerPort = 0;
+            final String baseAppDirDefault = "/tmp";
+            final String statsEnvironmentDefault = "dev";
 
             OptionParser parser;
             if (_parser == null) {
@@ -115,12 +118,19 @@ public class KruxStdLib {
                             "Application identifier, used for statsd namespaces, log file names, etc. "
                                     + "If not supplied, will use this app's entry point classname.").withOptionalArg()
                     .ofType(String.class).defaultsTo(defaultAppName);
-            OptionSpec<String> baseLoggingDir = parser.accepts("base-logging-dir", "Base directory for application logging")
-                    .withOptionalArg().ofType(String.class).defaultsTo(baseApplicationLoggingDir);
             OptionSpec<Integer> httpListenPort = parser.accepts("http-port", "Accept http connections on this port (0 = web server will not start)")
                     .withOptionalArg().ofType(Integer.class).defaultsTo(httpListenerPort);
+            OptionSpec<String> baseAppDirectory = parser.accepts("base-dir", "Base directory for app needs.").withOptionalArg()
+                    .ofType(String.class).defaultsTo(baseAppDirDefault);
+            OptionSpec<String> statsEnvironment = parser.accepts("stats-env", "Stats environment (dictates statsd prefix)").withOptionalArg()
+                    .ofType(String.class).defaultsTo(statsEnvironmentDefault);
+
 
             _options = parser.parse(args);
+            
+            //set base app dir
+            baseAppDir = _options.valueOf(baseAppDirectory);
+            statsdEnv = _options.valueOf(statsEnvironment);
 
             // if "--help" was passed in, show some helpful guidelines and exit
             if (_options.has("help")) {
@@ -141,11 +151,12 @@ public class KruxStdLib {
             appName = _options.valueOf(appNameOption);
 
             // setup logging level
-            LoggerConfigurator.configureLogging(_options.valueOf(baseLoggingDir), _options.valueOf(logLevel), appName);
+            LoggerConfigurator.configureLogging(baseAppDir + "/logs", _options.valueOf(logLevel), appName);
 
-            // setup statsd
+            // setup statsd            
             try {
-                if (_options.valueOf(enableStatsd)) {
+                //this one is not like the others.  passing "--stats", with or without a value, eanbles stats
+                if (_options.has(enableStatsd)) {
                     statsd = new KruxStatsdClient(_options.valueOf(statsdHost), _options.valueOf(statsdPort), logger);
                 } else {
                     statsd = new NoopStatsdClient(InetAddress.getLocalHost(), 0);
@@ -154,12 +165,6 @@ public class KruxStdLib {
                 logger.warn("Cannot establish a statsd connection", e);
             }
 
-            // next, setup an http listener
-            // first, setup pipeline handler with all added handlers?
-            // and have the pipeline factory select on each request?
-            // -or- have a global handler delegate to a handler-like thing?
-
-            // -OR- should we only setup the http listener
 
             // finally, setup a shutdown thread to run all registered
             // application hooks
@@ -173,6 +178,16 @@ public class KruxStdLib {
             });
 
             _initialized = true;
+            logger.info( "** Started " + appName + " **" );
+            for ( OptionSpec<?> spec : _options.specs() ) {
+                if ( spec.toString().equals( "[stats]" ) ) {
+                    logger.info( spec.toString() + " : [" + _options.has( spec ) + "]" );
+                    logger.warn( " **Note that passing '--stats' with any value (even '--stats=false') enables statsd metrics." );
+                    logger.warn( " **To disable statsd metrics, do NOT pass the '--stats' cl param." );
+                } else {
+                    logger.info( spec.toString() + " : " + _options.valuesOf( spec ) );
+                }
+            }
         }
         return _options;
     }
