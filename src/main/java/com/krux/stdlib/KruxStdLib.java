@@ -54,6 +54,8 @@ public class KruxStdLib {
     // holds list of registered ChannelInboundHandlerAdapters for serving http
     // responses
     private static Map<String, ChannelInboundHandlerAdapter> httpHandlers = new HashMap<String, ChannelInboundHandlerAdapter>();
+    
+    private static String _appDescription = null;
 
     /**
      * If you'd like to utilize the std lib parser for your app-specific cli
@@ -67,6 +69,20 @@ public class KruxStdLib {
      */
     public static void setOptionParser(OptionParser parser) {
         _parser = parser;
+    }
+    
+    /**
+     * Initializes the std libary static functions, including logging, statsd
+     * client and a "status" http listener
+     * 
+     * @param args
+     *            The command line args that were passed to your main( String[]
+     *            args )
+     * @return the OptionSet of parsed command line arguments
+     */
+    public static OptionSet initialize(String appDescription, String[] args) {
+        _appDescription = appDescription;
+        return initialize( args );
     }
 
     /**
@@ -122,7 +138,7 @@ public class KruxStdLib {
                     .withOptionalArg().ofType(Integer.class).defaultsTo(httpListenerPort);
             OptionSpec<String> baseAppDirectory = parser.accepts("base-dir", "Base directory for app needs.").withOptionalArg()
                     .ofType(String.class).defaultsTo(baseAppDirDefault);
-            OptionSpec<String> statsEnvironment = parser.accepts("stats-env", "Stats environment (dictates statsd prefix)").withOptionalArg()
+            OptionSpec<String> statsEnvironment = parser.accepts("stats-environment", "Stats environment (dictates statsd prefix)").withOptionalArg()
                     .ofType(String.class).defaultsTo(statsEnvironmentDefault);
 
 
@@ -135,6 +151,9 @@ public class KruxStdLib {
             // if "--help" was passed in, show some helpful guidelines and exit
             if (_options.has("help")) {
                 try {
+                    if ( _appDescription != null )
+                        System.out.println( _appDescription );
+                    parser.formatHelpWith( new KruxHelpFormatter() );
                     parser.printHelpOn(System.out);
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
