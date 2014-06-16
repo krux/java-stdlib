@@ -3,6 +3,8 @@
  */
 package com.krux.stdlib;
 
+import static java.util.Arrays.*;
+
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.IOException;
@@ -107,7 +109,6 @@ public class KruxStdLib {
             final int defaultStatsdPort = 8125;
             final String defaultEnv = "dev";
             final String defaultLogLevel = "DEBUG";
-            final Boolean defaultUseStatsd = false;
             final String defaultAppName = getMainClassName();
             final Integer httpListenerPort = 0;
             final String baseAppDirDefault = "/tmp";
@@ -121,7 +122,8 @@ public class KruxStdLib {
                 parser = _parser;
             }
 
-            parser.accepts("help", "Prints this helpful message");
+            List<String> synonyms = asList( "help", "h" );
+            parser.acceptsAll(synonyms, "Prints this helpful message");
             OptionSpec enableStatsd = parser.accepts("stats", "Enable/disable statsd broadcast");
             OptionSpec<String> statsdHost = parser.accepts("stats-host", "Listening statsd host").withOptionalArg()
                     .ofType(String.class).defaultsTo(defaultStatsdHost);
