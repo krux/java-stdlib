@@ -3,8 +3,7 @@
  */
 package com.krux.stdlib;
 
-import static java.util.Arrays.*;
-
+import static java.util.Arrays.asList;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.IOException;
@@ -24,6 +23,7 @@ import joptsimple.OptionSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.krux.server.http.StdHttpServer;
 import com.krux.stdlib.logging.LoggerConfigurator;
 import com.krux.stdlib.statsd.HeapStatsdReporter;
 import com.krux.stdlib.statsd.KruxStatsdClient;
@@ -50,6 +50,10 @@ public class KruxStdLib {
     private static OptionParser _parser = null;
     private static OptionSet _options = null;
     private static boolean _initialized = false;
+    
+    public static boolean httpListenerRunning = false;
+    
+    private static int httpPort = 0;
 
     // holds all registered Runnable shutdown hooks (which are executed
     // synchronously in the
@@ -154,6 +158,7 @@ public class KruxStdLib {
             //set base app dir
             baseAppDir = _options.valueOf(baseAppDirectory);
             statsdEnv = _options.valueOf(statsEnvironment);
+            httpPort = _options.valueOf(httpListenPort);
 
             // if "--help" was passed in, show some helpful guidelines and exit
             if (_options.has("help")) {
@@ -222,6 +227,17 @@ public class KruxStdLib {
                     }
                 }
             });
+            
+            //set up an http listener if the submitted port != 0
+            // start http service on a separate thread
+            if (httpPort != 0) {
+                Thread t = new Thread(new StdHttpServer(httpPort, httpHandlers));
+                t.setName("MainHttpServerThread");
+                t.start();
+                httpListenerRunning = true;
+            } else {
+                logger.warn("Not starting HTTP listener, cli option 'http-port' is not set");
+            }
 
             _initialized = true;
             logger.info( "** Started " + appName + " **" );
