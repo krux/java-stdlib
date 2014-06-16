@@ -1,5 +1,7 @@
 package com.krux.stdlib.statsd;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.TimerTask;
 
 import com.krux.stdlib.KruxStdLib;
@@ -16,6 +18,9 @@ public class HeapStatsdReporter extends TimerTask {
         Runtime runtime = Runtime.getRuntime();
         long usedMemory = runtime.totalMemory() - runtime.freeMemory();
         KruxStdLib.statsd.gauge( "heap.used", usedMemory );
+        
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        KruxStdLib.statsd.gauge( "threads.live", bean.getThreadCount() );
     }
 
 }
