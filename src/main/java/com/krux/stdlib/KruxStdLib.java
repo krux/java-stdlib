@@ -122,8 +122,7 @@ public class KruxStdLib {
             }
 
             parser.accepts("help", "Prints this helpful message");
-            OptionSpec<Boolean> enableStatsd = parser.accepts("stats", "Enable/disable statsd broadcast").withOptionalArg()
-                    .ofType(Boolean.class).defaultsTo(defaultUseStatsd);
+            OptionSpec enableStatsd = parser.accepts("stats", "Enable/disable statsd broadcast");
             OptionSpec<String> statsdHost = parser.accepts("stats-host", "Listening statsd host").withOptionalArg()
                     .ofType(String.class).defaultsTo(defaultStatsdHost);
             OptionSpec<Integer> statsdPort = parser.accepts("stats-port", "Listening statsd port").withOptionalArg()
@@ -182,6 +181,7 @@ public class KruxStdLib {
             try {
                 //this one is not like the others.  passing "--stats", with or without a value, enables statsd
                 if (_options.has(enableStatsd)) {
+                    logger.info( "statsd metrics enabled" );
                     statsd = new KruxStatsdClient(_options.valueOf(statsdHost), _options.valueOf(statsdPort), logger);
                 } else {
                     statsd = new NoopStatsdClient(InetAddress.getLocalHost(), 0);
@@ -224,13 +224,7 @@ public class KruxStdLib {
             _initialized = true;
             logger.info( "** Started " + appName + " **" );
             for ( OptionSpec<?> spec : _options.specs() ) {
-                if ( spec.toString().equals( "[stats]" ) ) {
-                    logger.info( spec.toString() + " : [" + _options.has( spec ) + "]" );
-                    logger.warn( " **Note that passing '--stats' with any value (even '--stats=false') enables statsd metrics." );
-                    logger.warn( " **To disable statsd metrics, do NOT pass the '--stats' cl param." );
-                } else {
-                    logger.info( spec.toString() + " : " + _options.valuesOf( spec ) );
-                }
+                logger.info( spec.toString() + " : " + _options.valuesOf( spec ) );
             }
         }
         return _options;
