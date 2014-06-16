@@ -9,9 +9,12 @@ For the simplest use case, simply call `KruxStdLIb.initialize(args)` before runn
 
 ```java
 public class ExampleMain {
-	KruxStdLib.initialize(args);
 
-	//...do your stuff here...
+		public static void main(String[] args) {
+			KruxStdLib.initialize(args);
+
+			//...do your stuff here...
+	}
 }
 ```
 
