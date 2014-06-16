@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.krux</groupId>
 	<artifactId>krux-stdlib</artifactId>
-	<version>0.9.3</version>
+	<version>0.9.4</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
@@ -53,11 +53,11 @@
 			<artifactId>netty-all</artifactId>
 			<version>4.0.19.Final</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.ubercraft.statsd</groupId>
 			<artifactId>statsd-over-slf4j</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 
 	<distributionManagement>

@@ -7,8 +7,6 @@ import java.net.InetAddress;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.ubercraft.statsd.StatsdClient;
-import org.ubercraft.statsd.StatsdStatType;
 
 import com.krux.stdlib.KruxStdLib;
 
@@ -77,9 +75,9 @@ public class KruxStatsdClient extends StatsdClient {
     public boolean time(String key, long millis, double sampleRate) {
         return super.time( key, millis, sampleRate );
     }
-
-    public boolean gauge(String key, int value) {
-        return super.gauge( key, value );
+    
+    public boolean gauge(String key, long value) {
+        return stat(StatsdStatType.GAUGE, key, value, 1.0);
     }
 
     public boolean stat(StatsdStatType type, String key, long value, double sampleRate) {

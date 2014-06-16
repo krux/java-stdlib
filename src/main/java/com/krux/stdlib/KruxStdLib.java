@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -19,11 +21,12 @@ import joptsimple.OptionSpec;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.ubercraft.statsd.StatsdClient;
 
 import com.krux.stdlib.logging.LoggerConfigurator;
+import com.krux.stdlib.statsd.HeapStatsdReporter;
 import com.krux.stdlib.statsd.KruxStatsdClient;
 import com.krux.stdlib.statsd.NoopStatsdClient;
+import com.krux.stdlib.statsd.StatsdClient;
 
 /**
  * @author casspc
@@ -109,6 +112,7 @@ public class KruxStdLib {
             final Integer httpListenerPort = 0;
             final String baseAppDirDefault = "/tmp";
             final String statsEnvironmentDefault = "dev";
+            final int defaultHeapReporterIntervalMs = 1000;
 
             OptionParser parser;
             if (_parser == null) {
@@ -140,6 +144,8 @@ public class KruxStdLib {
                     .ofType(String.class).defaultsTo(baseAppDirDefault);
             OptionSpec<String> statsEnvironment = parser.accepts("stats-environment", "Stats environment (dictates statsd prefix)").withOptionalArg()
                     .ofType(String.class).defaultsTo(statsEnvironmentDefault);
+            OptionSpec<Integer> heapReporterIntervalMs = parser.accepts("heap-stats-interval-ms", "Interval (ms) for used heap statsd gauge")
+                    .withOptionalArg().ofType(Integer.class).defaultsTo(defaultHeapReporterIntervalMs);
 
 
             _options = parser.parse(args);
@@ -174,7 +180,7 @@ public class KruxStdLib {
 
             // setup statsd            
             try {
-                //this one is not like the others.  passing "--stats", with or without a value, eanbles stats
+                //this one is not like the others.  passing "--stats", with or without a value, enables statsd
                 if (_options.has(enableStatsd)) {
                     statsd = new KruxStatsdClient(_options.valueOf(statsdHost), _options.valueOf(statsdPort), logger);
                 } else {
@@ -192,6 +198,25 @@ public class KruxStdLib {
                 public void run() {
                     for (Runnable r : shutdownHooks) {
                         r.run();
+                    }
+                }
+            });
+            
+            //setup a simple maintenance timer for reporting used heap size
+            // and other stuff in the future
+            final int heapStatsInterval = _options.valueOf(heapReporterIntervalMs);
+            final TimerTask timerTask = new HeapStatsdReporter();
+            final Timer timer = new Timer(true);
+            timer.scheduleAtFixedRate(timerTask, 2 * 1000, heapStatsInterval);    
+            
+            //make sure we cancel that time, jic
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        timer.cancel();
+                    } catch ( Exception e ) {
+                        logger.warn( "Error while attemptin to shut down heap reporter", e );
                     }
                 }
             });

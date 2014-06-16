@@ -6,9 +6,6 @@ package com.krux.stdlib.statsd;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import org.ubercraft.statsd.StatsdClient;
-import org.ubercraft.statsd.StatsdStatType;
-
 /**
  * @author cass
  * 
@@ -61,7 +58,7 @@ public class NoopStatsdClient extends StatsdClient {
         return false;
     }
 
-    public boolean gauge(String key, int value) {
+    public boolean gauge(String key, long value) {
         return false;
     }
 
