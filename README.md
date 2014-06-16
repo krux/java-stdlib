@@ -5,7 +5,7 @@ The Krux standard java library handles logging, command-line parsing, statsd rep
 
 # Using KruxStdLib
 
-For the simplest use case, simply call `KruxStdLIb.initialize(args)` before running your app's main logic...
+For the simplest use case, simply call `KruxStdLib.initialize(args)` before running your app's main logic...
 
 ```java
 public class ExampleMain {
