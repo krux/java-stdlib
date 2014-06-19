@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.Map;
 
@@ -92,6 +93,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 	                    handler.channelReadComplete(ctx);
                     } catch ( Exception e ) {
                     	handler.exceptionCaught(ctx, e);
+                    	ReferenceCountUtil.release(msg);
                     	throw e;
                     }
                     
@@ -111,7 +113,8 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                     KruxStdLib.statsd.count( "http.query.404" );
                 }
             }
-
+            
+            ReferenceCountUtil.release(msg);
             long time = System.currentTimeMillis() - start;
             log.info("Request took " + time + "ms for whole request");
             KruxStdLib.statsd.time("http.query.200", time);
