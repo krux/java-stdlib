@@ -33,6 +33,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     private final static String STATUS_URL = "/__status";
 
     private static final String CONTENT = "{'status':'ok','state':'" + KruxStdLib.appName + " is running.'}";
+    private static final String BODY_404 = "<html> <head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - " + KruxStdLib.appName + "</center> </body> </html>";
     
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
 
@@ -42,7 +43,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
+        //ctx.flush();
     }
 
     @Override
@@ -58,21 +59,21 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             String path = parts[0];
             log.info("path: " + path);
             
+            if (is100ContinueExpected(req)) {
+                ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
+            }
+            boolean keepAlive = isKeepAlive(req);
+            
             if ( path.equals( STATUS_URL ) ) {
-                
-                if (is100ContinueExpected(req)) {
-                    ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
-                }
-                boolean keepAlive = isKeepAlive(req);
 
                 FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer( CONTENT.getBytes() ));
                 res.headers().set(CONTENT_TYPE, "application/json");
                 res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
                 if (!keepAlive) {
-                    ctx.write(res).addListener(ChannelFutureListener.CLOSE);
+                    ctx.writeAndFlush(res).addListener(ChannelFutureListener.CLOSE);
                 } else {
                     res.headers().set(CONNECTION, Values.KEEP_ALIVE);
-                    ctx.write(res);
+                    ctx.writeAndFlush(res);
                 }
                 
             } else {
@@ -80,23 +81,31 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                 ChannelInboundHandlerAdapter handler = _httpHandlers.get( path );
                 if ( handler != null ) {
                     //pass control to submitted handler
-                    ChannelPipeline p = ctx.pipeline();
-                    p.addLast( handler );
-                    p.remove( this );
+                	log.info( "Found handler" );
+                    //ChannelPipeline p = ctx.pipeline();
+                    //p.addLast( "final_handler", handler.getClass().newInstance() );
+                	
+                	//this a hack and a half, must figure out why the above approach never seems to call channelRead() of the last handler
+                    
+                    try {
+	                    handler.channelRead(ctx, msg);
+	                    handler.channelReadComplete(ctx);
+                    } catch ( Exception e ) {
+                    	handler.exceptionCaught(ctx, e);
+                    	throw e;
+                    }
                     
                 } else {
-                    // return 404
-                    if (is100ContinueExpected(req)) {
-                        ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
-                    }
-                    boolean keepAlive = isKeepAlive(req);
 
-                    FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
+                	log.info( "No configured URL, returning 404" );
+                    FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND, Unpooled.wrappedBuffer( BODY_404.getBytes( ) ) );
+                    res.headers().set(CONTENT_TYPE, "text/html");
+                    res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
                     if (!keepAlive) {
-                        ctx.write(res).addListener(ChannelFutureListener.CLOSE);
+                        ctx.writeAndFlush(res).addListener(ChannelFutureListener.CLOSE);
                     } else {
                         res.headers().set(CONNECTION, Values.KEEP_ALIVE);
-                        ctx.write(res);
+                        ctx.writeAndFlush(res);
                     }
                     
                     KruxStdLib.statsd.count( "http.query.404" );
@@ -105,7 +114,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
             long time = System.currentTimeMillis() - start;
             log.info("Request took " + time + "ms for whole request");
-            KruxStdLib.statsd.time("http.query", time);
+            KruxStdLib.statsd.time("http.query.200", time);
 
         }
     }

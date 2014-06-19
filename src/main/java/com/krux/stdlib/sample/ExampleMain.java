@@ -71,6 +71,9 @@ public class ExampleMain {
                 System.out.println("This shutdown hook was registered BEFORE initializing KruxStdLib");
             }
         });
+        
+        //add web handler
+        KruxStdLib.registerHttpHandler( "/myHandler", new ExampleServerHandler() );
 
         // initialize the lib, watch the magic unfold
         OptionSet options = KruxStdLib.initialize(args);
@@ -88,6 +91,9 @@ public class ExampleMain {
         logger.debug("This was logged using the stdlib logging configuration");
         logger.warn("This was logged using the stdlib logging configuration");
         logger.error("This was logged using the stdlib logging configuration");
+        
+        int webServerPort = (Integer) options.valueOf( "http-port" );
+        logger.info( "Started web server" );
 
         try {
             throw new Exception("An exception was thrown");

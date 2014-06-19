@@ -32,7 +32,7 @@ public class StdHttpServer implements Runnable {
     public void run() {
 
         try {
-            log.info("Starting bitset HTTP QUERY service, listening on port " + _port);
+            log.info("Starting HTTP Server, listening on port " + _port);
 
             // Configure the server.
             EventLoopGroup bossGroup = new NioEventLoopGroup(1);
