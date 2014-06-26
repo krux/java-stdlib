@@ -72,8 +72,9 @@ public class ExampleMain {
             }
         });
         
-        //add web handler
+        //add web handlers
         KruxStdLib.registerHttpHandler( "/myHandler", new ExampleServerHandler() );
+        KruxStdLib.registerHttpHandler( "/exception", new ExceptionServerHandler() );
 
         // initialize the lib, watch the magic unfold
         OptionSet options = KruxStdLib.initialize(args);

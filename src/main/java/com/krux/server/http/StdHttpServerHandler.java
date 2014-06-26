@@ -83,19 +83,21 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                 if ( handler != null ) {
                     //pass control to submitted handler
                 	log.info( "Found handler" );
-                    //ChannelPipeline p = ctx.pipeline();
-                    //p.addLast( "final_handler", handler.getClass().newInstance() );
+                    ChannelPipeline p = ctx.pipeline();
+                    p.addLast( "final_handler", handler.getClass().newInstance() );
+                    ctx.fireChannelRead(msg);
+                    ctx.fireChannelReadComplete();
                 	
                 	//this a hack and a half, must figure out why the above approach never seems to call channelRead() of the last handler
                     
-                    try {
-	                    handler.channelRead(ctx, msg);
-	                    handler.channelReadComplete(ctx);
-                    } catch ( Exception e ) {
-                    	handler.exceptionCaught(ctx, e);
-                    	ReferenceCountUtil.release(msg);
-                    	throw e;
-                    }
+//                    try {
+//	                    handler.channelRead(ctx, msg);
+//	                    handler.channelReadComplete(ctx);
+//                    } catch ( Exception e ) {
+//                    	handler.exceptionCaught(ctx, e);
+//                    	ReferenceCountUtil.release(msg);
+//                    	throw e;
+//                    }
                     
                 } else {
 
