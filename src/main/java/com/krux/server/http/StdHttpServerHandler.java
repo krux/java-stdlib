@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.ReferenceCountUtil;
 
 import java.util.Map;
@@ -32,8 +33,10 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = LoggerFactory.getLogger(StdHttpServerHandler.class.getName());
     
     private final static String STATUS_URL = "/__status";
+    
+    private static HttpResponseStatus statusCode = HttpResponseStatus.OK;
+    private static String statusResponseMessage = KruxStdLib.appName + " is running nominally";
 
-    private static final String CONTENT = "{'status':'ok','state':'" + KruxStdLib.appName + " is running.'}";
     private static final String BODY_404 = "<html> <head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - " + KruxStdLib.appName + "</center> </body> </html>";
     
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
@@ -66,8 +69,8 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             boolean keepAlive = isKeepAlive(req);
             
             if ( path.equals( STATUS_URL ) ) {
-
-                FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer( CONTENT.getBytes() ));
+                FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer( 
+                        ("{'status':" + statusCode.code() + ",'message':'" + statusResponseMessage + "'}").getBytes() ));
                 res.headers().set(CONTENT_TYPE, "application/json");
                 res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
                 if (!keepAlive) {
@@ -85,19 +88,10 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                 	log.info( "Found handler" );
                     ChannelPipeline p = ctx.pipeline();
                     p.addLast( "final_handler", handler.getClass().newInstance() );
+                    
+                    //is this really the best way?
                     ctx.fireChannelRead(msg);
                     ctx.fireChannelReadComplete();
-                	
-                	//this a hack and a half, must figure out why the above approach never seems to call channelRead() of the last handler
-                    
-//                    try {
-//	                    handler.channelRead(ctx, msg);
-//	                    handler.channelReadComplete(ctx);
-//                    } catch ( Exception e ) {
-//                    	handler.exceptionCaught(ctx, e);
-//                    	ReferenceCountUtil.release(msg);
-//                    	throw e;
-//                    }
                     
                 } else {
 
@@ -120,7 +114,6 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             long time = System.currentTimeMillis() - start;
             log.info("Request took " + time + "ms for whole request");
             KruxStdLib.statsd.time("http.query.200", time);
-
         }
     }
 
@@ -129,5 +122,10 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
         log.error("Error while processing request", cause);
         KruxStdLib.statsd.count( "http.query.503" );
         ctx.close();
+    }
+    
+    public void setStatusCodeAndMessage( HttpResponseStatus code, String message ) {
+        statusCode = code;
+        statusResponseMessage = message;
     }
 }
