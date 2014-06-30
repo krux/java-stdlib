@@ -24,7 +24,12 @@ public class KruxStatsdClient extends StatsdClient {
     static {
         keyNamespace = KruxStdLib.statsdEnv.toLowerCase() + "." + KruxStdLib.appName.toLowerCase() + ".";
         try {
-            statsdSuffix = "." + InetAddress.getLocalHost().getHostName().toLowerCase();
+            String hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
+            if ( hostName.contains( "." ) ) {
+                String[] parts = hostName.split( "\\." );
+                hostName = parts[0];
+            }
+            statsdSuffix = "." + hostName;
         } catch ( Exception e ) {
             log.warn( "Cannot get a real hostname, defaulting to something stupid" );
             statsdSuffix = "." + "unknown";
