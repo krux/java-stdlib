@@ -17,10 +17,10 @@ public class HeapStatsdReporter extends TimerTask {
         //Getting the runtime reference from system
         Runtime runtime = Runtime.getRuntime();
         long usedMemory = runtime.totalMemory() - runtime.freeMemory();
-        KruxStdLib.statsd.gauge( "heap.used", usedMemory );
+        KruxStdLib.statsd.gauge( "heap-used", usedMemory );
         
         ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-        KruxStdLib.statsd.gauge( "threads.live", bean.getThreadCount() );
+        KruxStdLib.statsd.gauge( "threads-live", bean.getThreadCount() );
     }
 
 }
