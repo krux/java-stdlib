@@ -21,7 +21,9 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.ReferenceCountUtil;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +34,12 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(StdHttpServerHandler.class.getName());
     
-    private final static String STATUS_URL = "/__status";
+    private final static String STATUS_URL = "__status";
     
     private static HttpResponseStatus statusCode = HttpResponseStatus.OK;
-    private static String statusResponseMessage = KruxStdLib.appName + " is running nominally";
+    private static String statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
 
-    private static final String BODY_404 = "<html> <head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - " + KruxStdLib.appName + "</center> </body> </html>";
+    private static final String BODY_404 = "<html><head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - " + KruxStdLib.APP_NAME + "</center> </body> </html>";
     
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
 
@@ -68,9 +70,9 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             }
             boolean keepAlive = isKeepAlive(req);
             
-            if ( path.equals( STATUS_URL ) ) {
+            if ( path.trim().endsWith( STATUS_URL ) ) {
                 FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer( 
-                        ("{'status':'" + statusCode.reasonPhrase() + "','state':'" + statusResponseMessage + "'}").getBytes() ));
+                        ("{'status':'" + statusCode.reasonPhrase() + "','version':" + KruxStdLib.APP_VERSION + ",'state':'" + statusResponseMessage + "'}").getBytes() ));
                 res.headers().set(CONTENT_TYPE, "application/json");
                 res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
                 if (!keepAlive) {
@@ -106,21 +108,21 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                         ctx.writeAndFlush(res);
                     }
                     
-                    KruxStdLib.statsd.count( "http.query.404" );
+                    KruxStdLib.STATSD.count( "http.query.404" );
                 }
             }
             
             ReferenceCountUtil.release(msg);
             long time = System.currentTimeMillis() - start;
             log.info("Request took " + time + "ms for whole request");
-            KruxStdLib.statsd.time("http.query.200", time);
+            KruxStdLib.STATSD.time("http.query.200", time);
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while processing request", cause);
-        KruxStdLib.statsd.count( "http.query.503" );
+        KruxStdLib.STATSD.count( "http.query.503" );
         ctx.close();
     }
     

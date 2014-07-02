@@ -30,7 +30,7 @@ public class ExceptionServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while processing request", cause);
-        KruxStdLib.statsd.count( "http.query.503" );
+        KruxStdLib.STATSD.count( "http.query.503" );
         ctx.close();
     }
 }

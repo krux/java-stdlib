@@ -24,7 +24,7 @@ public class ExampleServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(ExampleServerHandler.class.getName());
 
-    private static final String CONTENT = "{'status':'ok','state':'" + KruxStdLib.appName + " is running.','class':'ExampleServerHandler'}";
+    private static final String CONTENT = "{'status':'ok','state':'" + KruxStdLib.APP_NAME + " is running.','class':'ExampleServerHandler'}";
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -55,7 +55,7 @@ public class ExampleServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while processing request", cause);
-        KruxStdLib.statsd.count( "http.query.503" );
+        KruxStdLib.STATSD.count( "http.query.503" );
         ctx.close();
     }
 }

@@ -22,7 +22,7 @@ public class KruxStatsdClient extends StatsdClient {
     static String statsdSuffix;
     
     static {
-        keyNamespace = KruxStdLib.statsdEnv.toLowerCase() + "." + KruxStdLib.appName.toLowerCase() + ".";
+        keyNamespace = KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".";
         try {
             String hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
             if ( hostName.contains( "." ) ) {

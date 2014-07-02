@@ -15,10 +15,10 @@ public class LoggerConfigurator {
     private static Map<String, Level> logLevels = new HashMap<String, Level>();
 
     static {
-        logLevels.put("WARNING", Level.WARN);
+        logLevels.put("WARN", Level.WARN);
         logLevels.put("DEBUG", Level.DEBUG);
         logLevels.put("ERROR", Level.ERROR);
-        logLevels.put("CRITICAL", Level.FATAL);
+        logLevels.put("FATAL", Level.FATAL);
         logLevels.put("INFO", Level.INFO);
     }
 

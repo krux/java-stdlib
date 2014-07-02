@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.krux.server.http.StdHttpServer;
+import com.krux.server.http.StdHttpServerHandler;
 import com.krux.stdlib.logging.LoggerConfigurator;
 import com.krux.stdlib.statsd.HeapStatsdReporter;
 import com.krux.stdlib.statsd.KruxStatsdClient;
@@ -36,16 +38,17 @@ import com.krux.stdlib.statsd.StatsdClient;
  */
 public class KruxStdLib {
 
-    final static Logger logger = (Logger) LoggerFactory.getLogger(KruxStdLib.class);
+    final static Logger LOGGER = (Logger) LoggerFactory.getLogger(KruxStdLib.class);
 
     /**
      * See
      */
-    public static StatsdClient statsd = null;
-    public static String env;
-    public static String appName;
-    public static String baseAppDir;
-    public static String statsdEnv;
+    public static StatsdClient STATSD = null;
+    public static String ENV;
+    public static String APP_NAME;
+    public static String APP_VERSION;
+    public static String BASE_APP_DIR;
+    public static String STASD_ENV;
 
     private static OptionParser _parser = null;
     private static OptionSet _options = null;
@@ -53,7 +56,7 @@ public class KruxStdLib {
     
     public static boolean httpListenerRunning = false;
     
-    private static int httpPort = 0;
+    private static int _httpPort = 0;
 
     // holds all registered Runnable shutdown hooks (which are executed
     // synchronously in the
@@ -104,6 +107,14 @@ public class KruxStdLib {
      * @return the OptionSet of parsed command line arguments
      */
     public static OptionSet initialize(String[] args) {
+        
+        Properties appProps = new Properties();
+        try {
+            appProps.load(StdHttpServerHandler.class.getClassLoader().getResourceAsStream("application.properties"));
+            APP_VERSION = appProps.getProperty( "app.pom.version", "n/a" );
+        } catch (Exception e) {
+            LOGGER.warn( "Cannot load application properties", e );
+        }
 
         if (!_initialized) {
             // parse command line, handle common needs
@@ -112,7 +123,7 @@ public class KruxStdLib {
             final String defaultStatsdHost = "localhost";
             final int defaultStatsdPort = 8125;
             final String defaultEnv = "dev";
-            final String defaultLogLevel = "DEBUG";
+            final String defaultLogLevel = "WARN";
             final String defaultAppName = getMainClassName();
             final Integer httpListenerPort = 0;
             final String baseAppDirDefault = "/tmp";
@@ -135,7 +146,8 @@ public class KruxStdLib {
                     .ofType(Integer.class).defaultsTo(defaultStatsdPort);
             OptionSpec<String> environment = parser.accepts("env", "Operating environment").withOptionalArg()
                     .ofType(String.class).defaultsTo(defaultEnv);
-            OptionSpec<String> logLevel = parser.accepts("log-level", "Default log4j log level").withOptionalArg()
+            OptionSpec<String> logLevel = parser.accepts("log-level", "Default log4j log level. Valid values: DEBUG, INFO, WARN, "
+                    + "ERROR, FATAL").withOptionalArg()
                     .ofType(String.class).defaultsTo(defaultLogLevel);
             OptionSpec<String> appNameOption = parser
                     .accepts(
@@ -156,9 +168,9 @@ public class KruxStdLib {
             _options = parser.parse(args);
             
             //set base app dir
-            baseAppDir = _options.valueOf(baseAppDirectory);
-            statsdEnv = _options.valueOf(statsEnvironment);
-            httpPort = _options.valueOf(httpListenPort);
+            BASE_APP_DIR = _options.valueOf(baseAppDirectory);
+            STASD_ENV = _options.valueOf(statsEnvironment);
+            _httpPort = _options.valueOf(httpListenPort);
 
             // if "--help" was passed in, show some helpful guidelines and exit
             if (_options.has("help")) {
@@ -176,25 +188,25 @@ public class KruxStdLib {
             }
 
             // set environment
-            env = _options.valueOf(environment);
+            ENV = _options.valueOf(environment);
 
             // set global app name
-            appName = _options.valueOf(appNameOption);
+            APP_NAME = _options.valueOf(appNameOption);
 
             // setup logging level
-            LoggerConfigurator.configureLogging(baseAppDir + "/logs", _options.valueOf(logLevel), appName);
+            LoggerConfigurator.configureLogging(BASE_APP_DIR + "/logs", _options.valueOf(logLevel), APP_NAME);
 
             // setup statsd            
             try {
                 //this one is not like the others.  passing "--stats", with or without a value, enables statsd
                 if (_options.has(enableStatsd)) {
-                    logger.info( "statsd metrics enabled" );
-                    statsd = new KruxStatsdClient(_options.valueOf(statsdHost), _options.valueOf(statsdPort), logger);
+                    LOGGER.info( "statsd metrics enabled" );
+                    STATSD = new KruxStatsdClient(_options.valueOf(statsdHost), _options.valueOf(statsdPort), LOGGER);
                 } else {
-                    statsd = new NoopStatsdClient(InetAddress.getLocalHost(), 0);
+                    STATSD = new NoopStatsdClient(InetAddress.getLocalHost(), 0);
                 }
             } catch (Exception e) {
-                logger.warn("Cannot establish a statsd connection", e);
+                LOGGER.warn("Cannot establish a statsd connection", e);
             }
 
 
@@ -223,26 +235,26 @@ public class KruxStdLib {
                     try {
                         timer.cancel();
                     } catch ( Exception e ) {
-                        logger.warn( "Error while attemptin to shut down heap reporter", e );
+                        LOGGER.warn( "Error while attemptin to shut down heap reporter", e );
                     }
                 }
             });
             
             //set up an http listener if the submitted port != 0
             // start http service on a separate thread
-            if (httpPort != 0) {
-                Thread t = new Thread(new StdHttpServer(httpPort, httpHandlers));
+            if (_httpPort != 0) {
+                Thread t = new Thread(new StdHttpServer(_httpPort, httpHandlers));
                 t.setName("MainHttpServerThread");
                 t.start();
                 httpListenerRunning = true;
             } else {
-                logger.warn("Not starting HTTP listener, cli option 'http-port' is not set");
+                LOGGER.warn("Not starting HTTP listener, cli option 'http-port' is not set");
             }
 
             _initialized = true;
-            logger.info( "** Started " + appName + " **" );
+            LOGGER.info( "** Started " + APP_NAME + " **" );
             for ( OptionSpec<?> spec : _options.specs() ) {
-                logger.info( spec.toString() + " : " + _options.valuesOf( spec ) );
+                LOGGER.info( spec.toString() + " : " + _options.valuesOf( spec ) );
             }
         }
         return _options;
