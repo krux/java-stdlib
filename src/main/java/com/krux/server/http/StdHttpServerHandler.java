@@ -131,7 +131,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
         statusResponseMessage = message;
     }
     
-    public static void resetStatusCodeAndMessage( HttpResponseStatus code, String message ) {
+    public static void resetStatusCodeAndMessageOK() {
         statusCode = HttpResponseStatus.OK;
         statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
     }
