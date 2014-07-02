@@ -108,26 +108,31 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                         ctx.writeAndFlush(res);
                     }
                     
-                    KruxStdLib.STATSD.count( "http.query.404" );
+                    KruxStdLib.STATSD.count( KruxStdLib.APP_NAME + "_HTTP_404" );
                 }
             }
             
             ReferenceCountUtil.release(msg);
             long time = System.currentTimeMillis() - start;
             log.info("Request took " + time + "ms for whole request");
-            KruxStdLib.STATSD.time("http.query.200", time);
+            KruxStdLib.STATSD.time( KruxStdLib.APP_NAME + "_HTTP_200", time);
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while processing request", cause);
-        KruxStdLib.STATSD.count( "http.query.503" );
+        KruxStdLib.STATSD.count( KruxStdLib.APP_NAME + "_HTTP_503" );
         ctx.close();
     }
     
-    public void setStatusCodeAndMessage( HttpResponseStatus code, String message ) {
+    public static void setStatusCodeAndMessage( HttpResponseStatus code, String message ) {
         statusCode = code;
         statusResponseMessage = message;
+    }
+    
+    public static void resetStatusCodeAndMessage( HttpResponseStatus code, String message ) {
+        statusCode = HttpResponseStatus.OK;
+        statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
     }
 }

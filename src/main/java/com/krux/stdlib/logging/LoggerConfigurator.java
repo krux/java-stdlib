@@ -38,7 +38,7 @@ public class LoggerConfigurator {
         // set default root level
         Level defaultLevel = logLevels.get(loglevel);
         if (defaultLevel == null) {
-            defaultLevel = Level.DEBUG;
+            defaultLevel = Level.WARN;
         }
         rootLogger.setLevel(defaultLevel);
 
