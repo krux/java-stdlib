@@ -36,7 +36,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     
     private final static String STATUS_URL = "__status";
     
-    private static HttpResponseStatus statusCode = HttpResponseStatus.OK;
+    private static AppState stateCode = AppState.OK;
     private static String statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
 
     private static final String BODY_404 = "<html><head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - " + KruxStdLib.APP_NAME + "</center> </body> </html>";
@@ -72,7 +72,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             
             if ( path.trim().endsWith( STATUS_URL ) ) {
                 FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer( 
-                        ("{'status':'" + statusCode.reasonPhrase() + "','version':" + KruxStdLib.APP_VERSION + ",'state':'" + statusResponseMessage + "'}").getBytes() ));
+                        ("{ 'state':'" + stateCode.toString() + "', 'status':'" + statusResponseMessage + "', 'version':" + KruxStdLib.APP_VERSION + " }").getBytes() ));
                 res.headers().set(CONTENT_TYPE, "application/json");
                 res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
                 if (!keepAlive) {
@@ -126,13 +126,13 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
     
-    public static void setStatusCodeAndMessage( HttpResponseStatus code, String message ) {
-        statusCode = code;
+    public static void setStatusCodeAndMessage( AppState state, String message ) {
+        stateCode = state;
         statusResponseMessage = message;
     }
     
     public static void resetStatusCodeAndMessageOK() {
-        statusCode = HttpResponseStatus.OK;
+        stateCode = AppState.OK;
         statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
     }
 }
