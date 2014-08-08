@@ -18,12 +18,11 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.ReferenceCountUtil;
 
-import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +37,9 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     
     private static AppState stateCode = AppState.OK;
     private static String statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
+    
+    private static Map<String,Object> additionalStats = Collections.synchronizedMap(
+            new HashMap<String,Object>());
 
     private static final String BODY_404 = "<html><head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - " + KruxStdLib.APP_NAME + "</center> </body> </html>";
     
@@ -129,10 +131,18 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     public static void setStatusCodeAndMessage( AppState state, String message ) {
         stateCode = state;
         statusResponseMessage = message;
+        additionalStats.put( "state",  state.toString() );
+        additionalStats.put( "status", "message" );
     }
     
     public static void resetStatusCodeAndMessageOK() {
         stateCode = AppState.OK;
         statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
+        additionalStats.put( "state",  stateCode.toString() );
+        additionalStats.put( "status", statusResponseMessage );
+    }
+    
+    public static void addAdditionalStatus( String key, Object value ) {
+        additionalStats.put( key,  value );
     }
 }
