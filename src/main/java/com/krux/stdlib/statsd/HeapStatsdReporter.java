@@ -9,18 +9,18 @@ import com.krux.stdlib.KruxStdLib;
 public class HeapStatsdReporter extends TimerTask {
 
     public HeapStatsdReporter() {
-        
+
     }
 
     @Override
     public void run() {
-        //Getting the runtime reference from system
+        // Getting the runtime reference from system
         Runtime runtime = Runtime.getRuntime();
         long usedMemory = runtime.totalMemory() - runtime.freeMemory();
-        KruxStdLib.STATSD.gauge( "heap_used", usedMemory );
-        
+        KruxStdLib.STATSD.gauge("heap_used", usedMemory);
+
         ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-        KruxStdLib.STATSD.gauge( "threads_live", bean.getThreadCount() );
+        KruxStdLib.STATSD.gauge("threads_live", bean.getThreadCount());
     }
 
 }

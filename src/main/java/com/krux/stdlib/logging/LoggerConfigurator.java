@@ -9,7 +9,6 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
 
 public class LoggerConfigurator {
 
@@ -47,18 +46,18 @@ public class LoggerConfigurator {
         PatternLayout layout = new PatternLayout("%d{ISO8601} %-6p: [%t] %c{2} %x - %m%n");
 
         try {
-            //DOH! nvm...ops would like us to log to console unless an app
+            // DOH! nvm...ops would like us to log to console unless an app
             // has a specific requirement not to
             ConsoleAppender consoleAppender = new ConsoleAppender();
-            consoleAppender.setLayout( layout );
+            consoleAppender.setLayout(layout);
             consoleAppender.setName("stdlib-console-out");
             consoleAppender.setWriter(new OutputStreamWriter(System.out));
-            
+
             ConsoleAppender errorAppender = new ConsoleAppender();
-            errorAppender.setLayout( layout );
+            errorAppender.setLayout(layout);
             errorAppender.setName("stdlib-console-err");
             errorAppender.setWriter(new OutputStreamWriter(System.err));
-            errorAppender.setThreshold( Level.ERROR );
+            errorAppender.setThreshold(Level.ERROR);
 
             // Wrap the console appenders in an async appenders
             AsyncAppender asyncOut = new AsyncAppender();
@@ -66,18 +65,20 @@ public class LoggerConfigurator {
             asyncOut.setBufferSize(2048);
             asyncOut.addAppender(consoleAppender);
             asyncOut.setName("stdlib-async-out");
-            
+
             AsyncAppender asyncErr = new AsyncAppender();
             asyncErr.setBlocking(true);
             asyncErr.setBufferSize(2048);
             asyncErr.addAppender(errorAppender);
             asyncErr.setName("stdlib-async-err");
-            
+
             // Define file appender with layout and output log file name
-//          String rootLoggerFile = baseAppLoggingDir + appName + ".log";
-//          DailyRollingFileAppender fileAppender = new DailyRollingFileAppender(layout, rootLoggerFile, "'.'yyyy-MM-dd");
-//          fileAppender.setEncoding("utf-8");
-//          fileAppender.setName("stdlib-file");
+            // String rootLoggerFile = baseAppLoggingDir + appName + ".log";
+            // DailyRollingFileAppender fileAppender = new
+            // DailyRollingFileAppender(layout, rootLoggerFile,
+            // "'.'yyyy-MM-dd");
+            // fileAppender.setEncoding("utf-8");
+            // fileAppender.setName("stdlib-file");
 
             // Add the appender to root logger
             rootLogger.addAppender(asyncOut);

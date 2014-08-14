@@ -33,23 +33,23 @@ import com.krux.stdlib.KruxStdLib;
 public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(StdHttpServerHandler.class.getName());
-    
+
     private final static String STATUS_URL = "__status";
-    
+
     private static AppState stateCode = AppState.OK;
     private static String nominalStatusMessage = KruxStdLib.APP_NAME + " is running nominally";
-    
-    private static Map<String,Object> applicationState = Collections.synchronizedMap(
-            new HashMap<String,Object>());
 
-    private static final String BODY_404 = "<html><head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - " + KruxStdLib.APP_NAME + "</center> </body> </html>";
-    
+    private static Map<String, Object> applicationState = Collections.synchronizedMap(new HashMap<String, Object>());
+
+    private static final String BODY_404 = "<html><head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - "
+            + KruxStdLib.APP_NAME + "</center> </body> </html>";
+
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
-    
+
     static {
-        applicationState.put( StatusKeys.state.toString(), AppState.OK.toString() );
-        applicationState.put( StatusKeys.status.toString(), nominalStatusMessage );
-        applicationState.put( StatusKeys.version.toString(), KruxStdLib.APP_VERSION );
+        applicationState.put(StatusKeys.state.toString(), AppState.OK.toString());
+        applicationState.put(StatusKeys.status.toString(), nominalStatusMessage);
+        applicationState.put(StatusKeys.version.toString(), KruxStdLib.APP_VERSION);
     }
 
     public StdHttpServerHandler(Map<String, ChannelInboundHandlerAdapter> httpHandlers) {
@@ -58,7 +58,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        //ctx.flush();
+        // ctx.flush();
     }
 
     @Override
@@ -69,20 +69,22 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
             HttpRequest req = (HttpRequest) msg;
             String uri = req.getUri();
-            
+
             String[] parts = uri.split("\\?");
             String path = parts[0];
             log.info("path: " + path);
-            
+
             if (is100ContinueExpected(req)) {
                 ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
             }
             boolean keepAlive = isKeepAlive(req);
-            
-            if ( path.trim().endsWith( STATUS_URL ) ) {
-                FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer( 
-                        JSON.std.asString( applicationState ).getBytes() ) );
-                        //("{ 'state':'" + stateCode.toString() + "', 'status':'" + statusResponseMessage + "', 'version':" + KruxStdLib.APP_VERSION + " }").getBytes() ));
+
+            if (path.trim().endsWith(STATUS_URL)) {
+                FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(JSON.std.asString(
+                        applicationState).getBytes()));
+                // ("{ 'state':'" + stateCode.toString() + "', 'status':'" +
+                // statusResponseMessage + "', 'version':" +
+                // KruxStdLib.APP_VERSION + " }").getBytes() ));
                 res.headers().set(CONTENT_TYPE, "application/json");
                 res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
                 if (!keepAlive) {
@@ -91,24 +93,25 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                     res.headers().set(CONNECTION, Values.KEEP_ALIVE);
                     ctx.writeAndFlush(res);
                 }
-                
+
             } else {
-                
-                ChannelInboundHandlerAdapter handler = _httpHandlers.get( path );
-                if ( handler != null ) {
-                    //pass control to submitted handler
-                	log.info( "Found handler" );
+
+                ChannelInboundHandlerAdapter handler = _httpHandlers.get(path);
+                if (handler != null) {
+                    // pass control to submitted handler
+                    log.info("Found handler");
                     ChannelPipeline p = ctx.pipeline();
-                    p.addLast( "final_handler", handler.getClass().newInstance() );
-                    
-                    //is this really the best way?
+                    p.addLast("final_handler", handler.getClass().newInstance());
+
+                    // is this really the best way?
                     ctx.fireChannelRead(msg);
                     ctx.fireChannelReadComplete();
-                    
+
                 } else {
 
-                	log.info( "No configured URL, returning 404" );
-                    FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND, Unpooled.wrappedBuffer( BODY_404.getBytes( ) ) );
+                    log.info("No configured URL, returning 404");
+                    FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND, Unpooled.wrappedBuffer(BODY_404
+                            .getBytes()));
                     res.headers().set(CONTENT_TYPE, "text/html");
                     res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
                     if (!keepAlive) {
@@ -117,36 +120,36 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                         res.headers().set(CONNECTION, Values.KEEP_ALIVE);
                         ctx.writeAndFlush(res);
                     }
-                    
-                    KruxStdLib.STATSD.count( KruxStdLib.APP_NAME + "_HTTP_404" );
+
+                    KruxStdLib.STATSD.count(KruxStdLib.APP_NAME + "_HTTP_404");
                 }
             }
-            
+
             ReferenceCountUtil.release(msg);
             long time = System.currentTimeMillis() - start;
             log.info("Request took " + time + "ms for whole request");
-            KruxStdLib.STATSD.time( KruxStdLib.APP_NAME + "_HTTP_200", time);
+            KruxStdLib.STATSD.time(KruxStdLib.APP_NAME + "_HTTP_200", time);
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while processing request", cause);
-        KruxStdLib.STATSD.count( KruxStdLib.APP_NAME + "_HTTP_503" );
+        KruxStdLib.STATSD.count(KruxStdLib.APP_NAME + "_HTTP_503");
         ctx.close();
     }
-    
-    public static void setStatusCodeAndMessage( AppState state, String message ) {
-        applicationState.put( StatusKeys.state.toString(),  state.toString() );
-        applicationState.put( StatusKeys.status.toString(), message );
+
+    public static void setStatusCodeAndMessage(AppState state, String message) {
+        applicationState.put(StatusKeys.state.toString(), state.toString());
+        applicationState.put(StatusKeys.status.toString(), message);
     }
-    
+
     public static void resetStatusCodeAndMessageOK() {
-        applicationState.put( StatusKeys.state.toString(),  AppState.OK.toString() );
-        applicationState.put( StatusKeys.status.toString(), nominalStatusMessage );
+        applicationState.put(StatusKeys.state.toString(), AppState.OK.toString());
+        applicationState.put(StatusKeys.status.toString(), nominalStatusMessage);
     }
-    
-    public static void addAdditionalStatus( String key, Object value ) {
-        applicationState.put( key,  value );
+
+    public static void addAdditionalStatus(String key, Object value) {
+        applicationState.put(key, value);
     }
 }

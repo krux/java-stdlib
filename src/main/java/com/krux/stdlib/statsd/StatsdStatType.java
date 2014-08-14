@@ -5,7 +5,5 @@ package com.krux.stdlib.statsd;
  */
 public enum StatsdStatType {
 
-    COUNTER,
-    TIMER,
-    GAUGE
+    COUNTER, TIMER, GAUGE
 }

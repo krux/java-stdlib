@@ -22,15 +22,15 @@ public class ExceptionServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
         if (msg instanceof HttpRequest) {
-        	log.info( "Here in the ExceptionServerHandler");
-            throw new Exception( "test exception" );
+            log.info("Here in the ExceptionServerHandler");
+            throw new Exception("test exception");
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while processing request", cause);
-        KruxStdLib.STATSD.count( "http.query.503" );
+        KruxStdLib.STATSD.count("http.query.503");
         ctx.close();
     }
 }

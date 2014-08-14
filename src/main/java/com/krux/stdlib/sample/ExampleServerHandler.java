@@ -24,7 +24,8 @@ public class ExampleServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(ExampleServerHandler.class.getName());
 
-    private static final String CONTENT = "{'status':'ok','state':'" + KruxStdLib.APP_NAME + " is running.','class':'ExampleServerHandler'}";
+    private static final String CONTENT = "{'status':'ok','state':'" + KruxStdLib.APP_NAME
+            + " is running.','class':'ExampleServerHandler'}";
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -35,12 +36,12 @@ public class ExampleServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
         if (msg instanceof HttpRequest) {
-        	log.info( "Here in the ExampleServerHandler");
+            log.info("Here in the ExampleServerHandler");
             HttpRequest req = (HttpRequest) msg;
-            
+
             boolean keepAlive = isKeepAlive(req);
-            
-            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer( CONTENT.getBytes() ));
+
+            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(CONTENT.getBytes()));
             res.headers().set(CONTENT_TYPE, "application/json");
             res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
             if (!keepAlive) {
@@ -55,7 +56,7 @@ public class ExampleServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while processing request", cause);
-        KruxStdLib.STATSD.count( "http.query.503" );
+        KruxStdLib.STATSD.count("http.query.503");
         ctx.close();
     }
 }

@@ -16,33 +16,45 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 /**
- * A Java statsd client. See <a href="https://github.com/etsy/statsd">https://github.com/etsy/statsd</a> for why you
- * might want this.
+ * A Java statsd client. See <a
+ * href="https://github.com/etsy/statsd">https://github.com/etsy/statsd</a> for
+ * why you might want this.
  * <p/>
- * This class has several constructors. When constructing instances of this class, the <code>host</code> and
- * <code>port</code> parameters determine where to connect to the statsd server. Only the <code>host</code> parameter is
- * required. If the <code>port</code> parameter is less than zero, the default port (8125) will be used.
+ * This class has several constructors. When constructing instances of this
+ * class, the <code>host</code> and <code>port</code> parameters determine where
+ * to connect to the statsd server. Only the <code>host</code> parameter is
+ * required. If the <code>port</code> parameter is less than zero, the default
+ * port (8125) will be used.
  * <p/>
- * The <code>queueSize</code> parameter is greater than 0, this instance will operate an asychronous blocking queue of
- * the given size. Instead of sending stats to the server in the calling thread, new stats are enqueued. A background
- * daemon thread watching the queue takes care of sending newly queued stats to the server. In this mode of operation,
- * the {@link #shutdown()} method may be called to cause the background thread to terminate. If the
- * <code>queueSize</code> parameter is 0 or less, no queueing is performed (and the shutdown() method does nothing).
+ * The <code>queueSize</code> parameter is greater than 0, this instance will
+ * operate an asychronous blocking queue of the given size. Instead of sending
+ * stats to the server in the calling thread, new stats are enqueued. A
+ * background daemon thread watching the queue takes care of sending newly
+ * queued stats to the server. In this mode of operation, the
+ * {@link #shutdown()} method may be called to cause the background thread to
+ * terminate. If the <code>queueSize</code> parameter is 0 or less, no queueing
+ * is performed (and the shutdown() method does nothing).
  * <p/>
- * The <code>logger</code> parameter can be used for reporting errors during logging. This class has a set of protected
- * <code>errorXxx(...)</code> methods that are invoked in response to certain error conditions. The default
- * implementations of these method delegate to a single (also protected) {@link #handleError(String, String, Exception)}
- * method. By default this method will log an error level message to the supplier <code>logger</code>. This parameter
- * may be null, in which case no error reporting will be done by default. Users may subclass this class in order to
- * customise error handling for their own requirements.
+ * The <code>logger</code> parameter can be used for reporting errors during
+ * logging. This class has a set of protected <code>errorXxx(...)</code> methods
+ * that are invoked in response to certain error conditions. The default
+ * implementations of these method delegate to a single (also protected)
+ * {@link #handleError(String, String, Exception)} method. By default this
+ * method will log an error level message to the supplier <code>logger</code>.
+ * This parameter may be null, in which case no error reporting will be done by
+ * default. Users may subclass this class in order to customise error handling
+ * for their own requirements.
  * <p/>
- * Once an instance of this class has been created, it may be used to send stats to a listening statsd server. The
- * method to use depends on the type of stat you wish to send. See the <code>count(...)</code>, <code>time(...)</code>
- * and <code>stat(...)</code> methods in their various forms.
+ * Once an instance of this class has been created, it may be used to send stats
+ * to a listening statsd server. The method to use depends on the type of stat
+ * you wish to send. See the <code>count(...)</code>, <code>time(...)</code> and
+ * <code>stat(...)</code> methods in their various forms.
  * <p/>
- * When sending a stat to the statsd server, the message is constructed as a Java string and then converted to bytes,
- * normally using the platform default charset. This choice of charset can be overridden by specifying the charset name
- * using the system property: <code>org.ubercraft.statsd.StatsdClient.CHARSET</code>.
+ * When sending a stat to the statsd server, the message is constructed as a
+ * Java string and then converted to bytes, normally using the platform default
+ * charset. This choice of charset can be overridden by specifying the charset
+ * name using the system property:
+ * <code>org.ubercraft.statsd.StatsdClient.CHARSET</code>.
  */
 public class StatsdClient {
 
@@ -64,8 +76,7 @@ public class StatsdClient {
         if (charsetName != null) {
             try {
                 charset = Charset.forName(charsetName);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // ignored
             }
         }
@@ -140,8 +151,7 @@ public class StatsdClient {
             queue = new ArrayBlockingQueue<String>(queueSize);
             thread = new SendThread();
             thread.start();
-        }
-        else {
+        } else {
             queue = null;
             thread = null;
         }
@@ -179,8 +189,7 @@ public class StatsdClient {
                 while (thread != null) {
                     doSend(queue.take());
                 }
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 // done;
             }
         }
@@ -217,17 +226,17 @@ public class StatsdClient {
     public boolean stat(StatsdStatType type, String key, long value, double sampleRate) {
         String format;
         switch (type) {
-            case COUNTER:
-                format = COUNTER_FORMAT;
-                break;
-            case TIMER:
-                format = TIMER_FORMAT;
-                break;
-            case GAUGE:
-                format = GAUGE_FORMAT;
-                break;
-            default:
-                throw new IllegalStateException();
+        case COUNTER:
+            format = COUNTER_FORMAT;
+            break;
+        case TIMER:
+            format = TIMER_FORMAT;
+            break;
+        case GAUGE:
+            format = GAUGE_FORMAT;
+            break;
+        default:
+            throw new IllegalStateException();
         }
         String stat = String.format(format, key, value);
         return send(stat, sampleRate);
@@ -237,17 +246,16 @@ public class StatsdClient {
         if (sampleRate < 1.0D) {
             if (RANDOM.nextDouble() <= sampleRate) {
                 stat = String.format( //
-                        Locale.US, // To use "." in "%f" disregarding the system locale
+                        Locale.US, // To use "." in "%f" disregarding the system
+                                   // locale
                         SAMPLE_RATE_FORMAT, //
                         stat, //
                         sampleRate);
                 return send(stat);
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        else {
+        } else {
             return send(stat);
         }
     }
@@ -258,15 +266,13 @@ public class StatsdClient {
                 if (queue.offer(stat, queueOfferTimeout, TimeUnit.MILLISECONDS)) {
                     return true;
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 errorEnqueueFailed(stat, e);
                 return false;
             }
             errorQueueFull(stat);
             return false;
-        }
-        else {
+        } else {
             return doSend(stat);
         }
     }
@@ -275,8 +281,7 @@ public class StatsdClient {
         try {
             sendToServer(stat);
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             errorSendFailed(stat, e);
             return false;
         }
@@ -301,9 +306,7 @@ public class StatsdClient {
 
     protected void handleError(String message, String stat, Exception e) {
         if (logger != null && logger.isErrorEnabled()) {
-            logger.error("{}: sending {} to {}", new Object[] {
-                    message, stat, toString(), e
-            });
+            logger.error("{}: sending {} to {}", new Object[] { message, stat, toString(), e });
         }
     }
 }

@@ -1,9 +1,7 @@
 package com.krux.server.http;
 
 public enum StatusKeys {
-    
-    status,
-    state,
-    version
+
+    status, state, version
 
 }

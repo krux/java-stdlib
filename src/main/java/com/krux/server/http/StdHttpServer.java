@@ -1,7 +1,5 @@
 package com.krux.server.http;
 
-import java.util.Map;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -9,6 +7,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class StdHttpServer implements Runnable {
                 ServerBootstrap b = new ServerBootstrap();
                 b.option(ChannelOption.SO_BACKLOG, 1024);
                 b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                        .childHandler(new StdHttpServerInitializer( _httpHandlers ));
+                        .childHandler(new StdHttpServerInitializer(_httpHandlers));
 
                 Channel ch = b.bind(_port).sync().channel();
                 ch.closeFuture().sync();
