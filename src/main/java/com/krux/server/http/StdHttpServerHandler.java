@@ -27,6 +27,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.jr.ob.JSON;
 import com.krux.stdlib.KruxStdLib;
 
 public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
@@ -36,14 +37,20 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     private final static String STATUS_URL = "__status";
     
     private static AppState stateCode = AppState.OK;
-    private static String statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
+    private static String nominalStatusMessage = KruxStdLib.APP_NAME + " is running nominally";
     
-    private static Map<String,Object> additionalStats = Collections.synchronizedMap(
+    private static Map<String,Object> applicationState = Collections.synchronizedMap(
             new HashMap<String,Object>());
 
     private static final String BODY_404 = "<html><head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - " + KruxStdLib.APP_NAME + "</center> </body> </html>";
     
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
+    
+    static {
+        applicationState.put( StatusKeys.state.toString(), AppState.OK.toString() );
+        applicationState.put( StatusKeys.status.toString(), nominalStatusMessage );
+        applicationState.put( StatusKeys.version.toString(), KruxStdLib.APP_VERSION );
+    }
 
     public StdHttpServerHandler(Map<String, ChannelInboundHandlerAdapter> httpHandlers) {
         _httpHandlers = httpHandlers;
@@ -74,7 +81,8 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             
             if ( path.trim().endsWith( STATUS_URL ) ) {
                 FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer( 
-                        ("{ 'state':'" + stateCode.toString() + "', 'status':'" + statusResponseMessage + "', 'version':" + KruxStdLib.APP_VERSION + " }").getBytes() ));
+                        JSON.std.asString( applicationState ).getBytes() ) );
+                        //("{ 'state':'" + stateCode.toString() + "', 'status':'" + statusResponseMessage + "', 'version':" + KruxStdLib.APP_VERSION + " }").getBytes() ));
                 res.headers().set(CONTENT_TYPE, "application/json");
                 res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
                 if (!keepAlive) {
@@ -129,20 +137,16 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     }
     
     public static void setStatusCodeAndMessage( AppState state, String message ) {
-        stateCode = state;
-        statusResponseMessage = message;
-        additionalStats.put( "state",  state.toString() );
-        additionalStats.put( "status", "message" );
+        applicationState.put( StatusKeys.state.toString(),  state.toString() );
+        applicationState.put( StatusKeys.status.toString(), message );
     }
     
     public static void resetStatusCodeAndMessageOK() {
-        stateCode = AppState.OK;
-        statusResponseMessage = KruxStdLib.APP_NAME + " is running nominally";
-        additionalStats.put( "state",  stateCode.toString() );
-        additionalStats.put( "status", statusResponseMessage );
+        applicationState.put( StatusKeys.state.toString(),  AppState.OK.toString() );
+        applicationState.put( StatusKeys.status.toString(), nominalStatusMessage );
     }
     
     public static void addAdditionalStatus( String key, Object value ) {
-        additionalStats.put( key,  value );
+        applicationState.put( key,  value );
     }
 }
