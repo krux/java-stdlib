@@ -21,6 +21,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -271,7 +272,8 @@ public class KruxStdLib {
             String[] parts = mainClass.split("\\.");
             mainClass = parts[parts.length - 1];
         }
-        return mainClass;
+        String fixedClassName = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(mainClass), '_');
+        return fixedClassName.toLowerCase();
     }
 
     public static void registerShutdownHook(Runnable r) {
