@@ -57,7 +57,7 @@ public class LoggerConfigurator {
             errorAppender.setLayout(layout);
             errorAppender.setName("stdlib-console-err");
             errorAppender.setWriter(new OutputStreamWriter(System.err));
-            errorAppender.setThreshold(Level.ERROR);
+            errorAppender.setThreshold(Level.WARN);
 
             // Wrap the console appenders in an async appenders
             AsyncAppender asyncOut = new AsyncAppender();
@@ -68,7 +68,7 @@ public class LoggerConfigurator {
 
             AsyncAppender asyncErr = new AsyncAppender();
             asyncErr.setBlocking(true);
-            asyncErr.setBufferSize(2048);
+            asyncErr.setBufferSize(4096);
             asyncErr.addAppender(errorAppender);
             asyncErr.setName("stdlib-async-err");
 
