@@ -259,6 +259,22 @@ public class KruxStdLib {
             for (OptionSpec<?> spec : _options.specs()) {
                 LOGGER.info(spec.toString() + " : " + _options.valuesOf(spec));
             }
+            
+            //finally, add a shutdown hook that sleeps for 2 sec to allow last log messages to 
+            // be written
+            
+            // make sure we cancel that time, jic
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep( 2*1000 );
+                    } catch (Exception e) {
+                        LOGGER.warn("Error during last shutdown sleep", e);
+                    }
+                }
+            });
+            
         }
         return _options;
     }
