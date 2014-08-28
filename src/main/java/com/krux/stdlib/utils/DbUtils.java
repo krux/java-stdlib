@@ -1,10 +1,14 @@
 package com.krux.stdlib.utils;
 
+import com.krux.stdlib.KruxStdLib;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A collection of utility methods to interact with the Krux Console RDS instance.
@@ -16,13 +20,15 @@ public class DbUtils {
     /**
      * Get a database connection for the specified environment.
      *
-     * @param env the environment for the job (dev or prod)
      * @return the database connection if one could be established; null otherwise
      */
-    public static Connection getDbConnection(String env) {
-        ConfigProperties kprops = new ConfigProperties(env);
+    private static final Logger log = LoggerFactory.getLogger(DbUtils.class.getName());
+
+    public static Connection getDbConnection() {
+        ConfigProperties kprops = new ConfigProperties();
         Connection conn = null;
         String errorMsg = null;
+        long start = System.currentTimeMillis();
         try {
             Class.forName(kprops.getJdbcDriver());
             conn = DriverManager.getConnection(kprops.getJdbcUrl(), kprops.getJdbcUser(),
@@ -31,6 +37,9 @@ public class DbUtils {
             errorMsg = ex.getMessage();
             conn = null;
         }
+        long time = System.currentTimeMillis() - start;
+        log.info("DB connection took " + time + "ms for whole request");
+        KruxStdLib.STATSD.time(KruxStdLib.APP_NAME + "_HTTP_200", time);
         return conn;
     }
 
