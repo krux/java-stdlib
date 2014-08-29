@@ -35,7 +35,7 @@ public class DbUtils {
         } catch (Exception ex) {
             String errorMsg = ex.getMessage();
             log.error("db_util", errorMsg);
-            KruxStdLib.STATSD.count("err_db_util_get_db_conn", 1);
+            KruxStdLib.STATSD.count("db_util_get_db_conn_err", 1);
             conn = null;
         }
         long time = System.currentTimeMillis() - start;
@@ -59,7 +59,7 @@ public class DbUtils {
                 // there's really not much we can do at this point, so we log the exception and return
                 String errorMsg = sqe.getMessage();
                 log.error("db_util", errorMsg);
-                KruxStdLib.STATSD.count("err_db_util_close_db_conn", 1);
+                KruxStdLib.STATSD.count("db_util_close_db_conn_err", 1);
             }
         }
         long time = System.currentTimeMillis() - start;
@@ -82,7 +82,7 @@ public class DbUtils {
                 // there's really not much we can do at this point, so we log the exception and return
                 String errorMsg = sqe.getMessage();
                 log.error("db_util", errorMsg);
-                KruxStdLib.STATSD.count("err_db_util_close_ps", 1);
+                KruxStdLib.STATSD.count("db_util_close_ps_err", 1);
             }
         }
         long time = System.currentTimeMillis() - start;
@@ -105,7 +105,7 @@ public class DbUtils {
                 // there's really not much we can do at this point, so we log the exception and return
                 String errorMsg = sqe.getMessage();
                 log.error("db_util", errorMsg);
-                KruxStdLib.STATSD.count("err_db_util_close_rs", 1);
+                KruxStdLib.STATSD.count("db_util_close_rs_err", 1);
             }
         }
         long time = System.currentTimeMillis() - start;
