@@ -35,11 +35,12 @@ public class DbUtils {
         } catch (Exception ex) {
             String errorMsg = ex.getMessage();
             log.error("db_util", errorMsg);
+            KruxStdLib.STATSD.count("db_util_get_db_conn", 1);
             conn = null;
         }
         long time = System.currentTimeMillis() - start;
         log.info("DB get connection took " + time + "ms.");
-        KruxStdLib.STATSD.time(KruxStdLib.APP_NAME + "_get_db_conn", time);
+        KruxStdLib.STATSD.time("get_db_conn", time);
         return conn;
     }
 
@@ -58,11 +59,12 @@ public class DbUtils {
                 // there's really not much we can do at this point, so we log the exception and return
                 String errorMsg = sqe.getMessage();
                 log.error("db_util", errorMsg);
+                KruxStdLib.STATSD.count("db_util_close_db_conn", 1);
             }
         }
         long time = System.currentTimeMillis() - start;
         log.info("DB connection close took " + time + "ms.");
-        KruxStdLib.STATSD.time(KruxStdLib.APP_NAME + "_close_db_conn", time);
+        KruxStdLib.STATSD.time("close_db_conn", time);
     }
 
     /**
@@ -80,11 +82,12 @@ public class DbUtils {
                 // there's really not much we can do at this point, so we log the exception and return
                 String errorMsg = sqe.getMessage();
                 log.error("db_util", errorMsg);
+                KruxStdLib.STATSD.count("db_util_close_ps", 1);
             }
         }
         long time = System.currentTimeMillis() - start;
         log.info("DB PreparedStatement close took " + time + "ms.");
-        KruxStdLib.STATSD.time(KruxStdLib.APP_NAME + "_close_db_ps", time);
+        KruxStdLib.STATSD.time("close_db_ps", time);
     }
 
     /**
@@ -102,10 +105,11 @@ public class DbUtils {
                 // there's really not much we can do at this point, so we log the exception and return
                 String errorMsg = sqe.getMessage();
                 log.error("db_util", errorMsg);
+                KruxStdLib.STATSD.count("db_util_close_rs", 1);
             }
         }
         long time = System.currentTimeMillis() - start;
         log.info("DB ResultSet close took " + time + "ms.");
-        KruxStdLib.STATSD.time(KruxStdLib.APP_NAME + "_close_db_rs", time);
+        KruxStdLib.STATSD.time("close_db_rs", time);
     }
 }
