@@ -1,5 +1,7 @@
 package com.krux.stdlib.utils;
 
+import com.krux.stdlib.KruxStdLib;
+
 import java.util.Properties;
 
 /**
@@ -11,8 +13,8 @@ public class ConfigProperties {
 
     private Properties _kruxProps;
 
-    public ConfigProperties(String env) {
-        _kruxEnvironment = env;
+    public ConfigProperties() {
+        _kruxEnvironment = KruxStdLib.ENV;
         _kruxProps = new Properties();
         try {
             _kruxProps.load(this.getClass().getResourceAsStream("/application.properties"));
