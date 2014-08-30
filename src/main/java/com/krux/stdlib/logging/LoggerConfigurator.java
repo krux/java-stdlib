@@ -67,23 +67,8 @@ public class LoggerConfigurator {
             asyncOut.addAppender(errorAppender);
             asyncOut.setName("stdlib-async-out");
 
-//            AsyncAppender asyncErr = new AsyncAppender();
-//            asyncErr.setBlocking(true);
-//            asyncErr.setBufferSize(4096);
-//            asyncErr.addAppender(errorAppender);
-//            asyncErr.setName("stdlib-async-err");
-
-            // Define file appender with layout and output log file name
-            // String rootLoggerFile = baseAppLoggingDir + appName + ".log";
-            // DailyRollingFileAppender fileAppender = new
-            // DailyRollingFileAppender(layout, rootLoggerFile,
-            // "'.'yyyy-MM-dd");
-            // fileAppender.setEncoding("utf-8");
-            // fileAppender.setName("stdlib-file");
-
             // Add the appender to root logger
             rootLogger.addAppender(asyncOut);
-//            rootLogger.addAppender(asyncErr);
 
         } catch (Exception e) {
             System.out.println("Failed to add appender!!");

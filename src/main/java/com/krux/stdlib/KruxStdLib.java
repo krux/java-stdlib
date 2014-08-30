@@ -109,14 +109,6 @@ public class KruxStdLib {
      */
     public static OptionSet initialize(String[] args) {
 
-        Properties appProps = new Properties();
-        try {
-            appProps.load(StdHttpServerHandler.class.getClassLoader().getResourceAsStream("application.properties"));
-            APP_VERSION = appProps.getProperty("app.pom.version", "n/a");
-        } catch (Exception e) {
-            LOGGER.warn("Cannot load application properties", e);
-        }
-
         if (!_initialized) {
             // parse command line, handle common needs
 
@@ -198,6 +190,14 @@ public class KruxStdLib {
 
             // setup logging level
             LoggerConfigurator.configureLogging(BASE_APP_DIR + "/logs", _options.valueOf(logLevel), APP_NAME);
+            
+            Properties appProps = new Properties();
+            try {
+                appProps.load(StdHttpServerHandler.class.getClassLoader().getResourceAsStream("application.properties"));
+                APP_VERSION = appProps.getProperty("app.pom.version", "n/a");
+            } catch (Exception e) {
+                LOGGER.warn("Cannot load application properties", e);
+            }
 
             // setup statsd
             try {
@@ -259,22 +259,23 @@ public class KruxStdLib {
             for (OptionSpec<?> spec : _options.specs()) {
                 LOGGER.info(spec.toString() + " : " + _options.valuesOf(spec));
             }
-            
-            //finally, add a shutdown hook that sleeps for 2 sec to allow last log messages to 
+
+            // finally, add a shutdown hook that sleeps for 2 sec to allow last
+            // log messages to
             // be written
-            
-            // make sure we cancel that time, jic
+
+            // make sure we cancel that timer, jic
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
                     try {
-                        Thread.sleep( 2*1000 );
+                        Thread.sleep(2 * 1000);
                     } catch (Exception e) {
                         LOGGER.warn("Error during last shutdown sleep", e);
                     }
                 }
             });
-            
+
         }
         return _options;
     }

@@ -5,9 +5,8 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 import java.util.TimerTask;
 
-import com.sun.management.UnixOperatingSystemMXBean;
-
 import com.krux.stdlib.KruxStdLib;
+import com.sun.management.UnixOperatingSystemMXBean;
 
 public class HeapStatsdReporter extends TimerTask {
 
@@ -24,9 +23,9 @@ public class HeapStatsdReporter extends TimerTask {
 
         ThreadMXBean bean = ManagementFactory.getThreadMXBean();
         KruxStdLib.STATSD.gauge("threads_live", bean.getThreadCount());
-        
+
         OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-        if(os instanceof UnixOperatingSystemMXBean){
+        if (os instanceof UnixOperatingSystemMXBean) {
             KruxStdLib.STATSD.gauge("open_fd", ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount());
         }
     }

@@ -1,26 +1,31 @@
 package com.krux.stdlib.utils;
 
-import com.krux.stdlib.KruxStdLib;
-
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.krux.stdlib.KruxStdLib;
 
 /**
  *
  */
 public class ConfigProperties {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigProperties.class.getName());
+
     private String _kruxEnvironment;
 
     private Properties _kruxProps;
 
     public ConfigProperties() {
+        LOGGER.info("Loading Krux Properties from env: " + KruxStdLib.ENV);
         _kruxEnvironment = KruxStdLib.ENV;
         _kruxProps = new Properties();
         try {
             _kruxProps.load(this.getClass().getResourceAsStream("/application.properties"));
         } catch (Exception ex) {
-            // ignore the exception
-            // deal with missing and null values in the caller
+            LOGGER.error( "Can't load properties", ex );
         }
     }
 
@@ -32,7 +37,6 @@ public class ConfigProperties {
         }
         return value;
     }
-
 
     public String getJdbcDriver() {
         return getPropertyValue("jdbc.driver");
