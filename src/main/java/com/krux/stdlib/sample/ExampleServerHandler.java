@@ -22,41 +22,41 @@ import com.krux.stdlib.KruxStdLib;
 
 public class ExampleServerHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger log = LoggerFactory.getLogger(ExampleServerHandler.class.getName());
+    private static final Logger log = LoggerFactory.getLogger( ExampleServerHandler.class.getName() );
 
     private static final String CONTENT = "{'status':'ok','state':'" + KruxStdLib.APP_NAME
             + " is running.','class':'ExampleServerHandler'}";
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
+    public void channelReadComplete( ChannelHandlerContext ctx ) {
         ctx.flush();
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead( ChannelHandlerContext ctx, Object msg ) throws Exception {
 
-        if (msg instanceof HttpRequest) {
-            log.info("Here in the ExampleServerHandler");
+        if ( msg instanceof HttpRequest ) {
+            log.info( "Here in the ExampleServerHandler" );
             HttpRequest req = (HttpRequest) msg;
 
-            boolean keepAlive = isKeepAlive(req);
+            boolean keepAlive = isKeepAlive( req );
 
-            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(CONTENT.getBytes()));
-            res.headers().set(CONTENT_TYPE, "application/json");
-            res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
-            if (!keepAlive) {
-                ctx.write(res).addListener(ChannelFutureListener.CLOSE);
+            FullHttpResponse res = new DefaultFullHttpResponse( HTTP_1_1, OK, Unpooled.wrappedBuffer( CONTENT.getBytes() ) );
+            res.headers().set( CONTENT_TYPE, "application/json" );
+            res.headers().set( CONTENT_LENGTH, res.content().readableBytes() );
+            if ( !keepAlive ) {
+                ctx.write( res ).addListener( ChannelFutureListener.CLOSE );
             } else {
-                res.headers().set(CONNECTION, Values.KEEP_ALIVE);
-                ctx.write(res);
+                res.headers().set( CONNECTION, Values.KEEP_ALIVE );
+                ctx.write( res );
             }
         }
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("Error while processing request", cause);
-        KruxStdLib.STATSD.count("http.query.503");
+    public void exceptionCaught( ChannelHandlerContext ctx, Throwable cause ) throws Exception {
+        log.error( "Error while processing request", cause );
+        KruxStdLib.STATSD.count( "http.query.503" );
         ctx.close();
     }
 }

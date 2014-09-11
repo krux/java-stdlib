@@ -16,33 +16,33 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpServer implements Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger(HttpServer.class.getName());
+    private static final Logger log = LoggerFactory.getLogger( HttpServer.class.getName() );
 
     private int port;
 
     public void run() {
 
         try {
-            port = Integer.parseInt(System.getProperty("bitset.http.server.port", "80"));
-            log.info("Starting bitset HTTP QUERY service, listening on port " + port);
+            port = Integer.parseInt( System.getProperty( "bitset.http.server.port", "80" ) );
+            log.info( "Starting bitset HTTP QUERY service, listening on port " + port );
 
             // Configure the server.
-            EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+            EventLoopGroup bossGroup = new NioEventLoopGroup( 1 );
             EventLoopGroup workerGroup = new NioEventLoopGroup();
             try {
                 ServerBootstrap b = new ServerBootstrap();
-                b.option(ChannelOption.SO_BACKLOG, 1024);
-                b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                        .childHandler(new HttpServerInitializer());
+                b.option( ChannelOption.SO_BACKLOG, 1024 );
+                b.group( bossGroup, workerGroup ).channel( NioServerSocketChannel.class )
+                        .childHandler( new HttpServerInitializer() );
 
-                Channel ch = b.bind(port).sync().channel();
+                Channel ch = b.bind( port ).sync().channel();
                 ch.closeFuture().sync();
             } finally {
                 bossGroup.shutdownGracefully();
                 workerGroup.shutdownGracefully();
             }
-        } catch (Exception e) {
-            log.error("HTTP server failed", e);
+        } catch ( Exception e ) {
+            log.error( "HTTP server failed", e );
         }
     }
 }

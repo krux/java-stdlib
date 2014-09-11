@@ -12,8 +12,8 @@ import java.net.SocketException;
  */
 public class NoopStatsdClient extends StatsdClient {
 
-    public NoopStatsdClient(InetAddress host, int port) throws SocketException {
-        super(host, port);
+    public NoopStatsdClient( InetAddress host, int port ) throws SocketException {
+        super( host, port );
         // TODO Auto-generated constructor stub
     }
 
@@ -26,7 +26,7 @@ public class NoopStatsdClient extends StatsdClient {
         return 0;
     }
 
-    public void setQueueOfferTimeout(long queueOfferTimeout) {
+    public void setQueueOfferTimeout( long queueOfferTimeout ) {
         return;
     }
 
@@ -34,35 +34,35 @@ public class NoopStatsdClient extends StatsdClient {
         return;
     }
 
-    public boolean count(String key) {
+    public boolean count( String key ) {
         return false;
     }
 
-    public boolean count(String key, int count) {
+    public boolean count( String key, int count ) {
         return false;
     }
 
-    public boolean count(String key, double sampleRate) {
+    public boolean count( String key, double sampleRate ) {
         return false;
     }
 
-    public boolean count(String key, int count, double sampleRate) {
+    public boolean count( String key, int count, double sampleRate ) {
         return false;
     }
 
-    public boolean time(String key, long millis) {
+    public boolean time( String key, long millis ) {
         return false;
     }
 
-    public boolean time(String key, long millis, double sampleRate) {
+    public boolean time( String key, long millis, double sampleRate ) {
         return false;
     }
 
-    public boolean gauge(String key, long value) {
+    public boolean gauge( String key, long value ) {
         return false;
     }
 
-    public boolean stat(StatsdStatType type, String key, long value, double sampleRate) {
+    public boolean stat( StatsdStatType type, String key, long value, double sampleRate ) {
         return false;
     }
 

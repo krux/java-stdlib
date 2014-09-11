@@ -7,7 +7,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
-    public void initChannel(SocketChannel ch) throws Exception {
+    public void initChannel( SocketChannel ch ) throws Exception {
         ChannelPipeline p = ch.pipeline();
 
         // Uncomment the following line if you want HTTPS
@@ -16,7 +16,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         // engine.setUseClientMode(false);
         // p.addLast("ssl", new SslHandler(engine));
 
-        p.addLast("codec", new HttpServerCodec());
-        p.addLast("handler", new HttpDefaultStatusHandler());
+        p.addLast( "codec", new HttpServerCodec() );
+        p.addLast( "handler", new HttpDefaultStatusHandler() );
     }
 }
