@@ -22,13 +22,13 @@ public class LoggerConfigurator {
         logLevels.put( "INFO", Level.INFO );
     }
 
-    public static void configureLogging( String baseLoggingDir, String loglevel, String appName ) {
+    public static void configureLogging( String baseLoggingDir, String loglevel ) {
 
         if ( !baseLoggingDir.endsWith( "/" ) ) {
             baseLoggingDir = baseLoggingDir + "/";
         }
 
-        String baseAppLoggingDir = baseLoggingDir + appName + "/";
+        String baseAppLoggingDir = baseLoggingDir;
         // set a system property so other loggers write the correct place
         System.setProperty( "base-app-log-dir", baseAppLoggingDir );
 

@@ -101,6 +101,9 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                     // pass control to submitted handler
                     log.info( "Found handler" );
                     ChannelPipeline p = ctx.pipeline();
+                    try {
+                        p.remove( "final_handler" );
+                    } catch ( Exception e ){}
                     p.addLast( "final_handler", handler.getClass().newInstance() );
 
                     // is this really the best way?

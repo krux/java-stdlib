@@ -8,6 +8,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +40,18 @@ import com.krux.stdlib.statsd.StatsdClient;
  * 
  */
 public class KruxStdLib {
+    
+    static {
+        try {
+            STATSD = new NoopStatsdClient( InetAddress.getLocalHost(), 0 );
+        } catch ( SocketException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( UnknownHostException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger( KruxStdLib.class );
 
@@ -82,6 +96,13 @@ public class KruxStdLib {
      */
     public static void setOptionParser( OptionParser parser ) {
         _parser = parser;
+    }
+    
+    public static OptionParser getOptionParser() {
+        if ( _parser == null ) {
+            _parser = new OptionParser();
+        }
+        return _parser;
     }
 
     /**
@@ -166,6 +187,15 @@ public class KruxStdLib {
             BASE_APP_DIR = _options.valueOf( baseAppDirectory );
             STASD_ENV = _options.valueOf( statsEnvironment );
             _httpPort = _options.valueOf( httpListenPort );
+            
+            // set environment
+            ENV = _options.valueOf( environment );
+
+            // set global app name
+            APP_NAME = _options.valueOf( appNameOption );
+
+            // setup logging level
+            LoggerConfigurator.configureLogging( BASE_APP_DIR + "/logs", _options.valueOf( logLevel ) );
 
             // if "--help" was passed in, show some helpful guidelines and exit
             if ( _options.has( "help" ) ) {
@@ -182,14 +212,7 @@ public class KruxStdLib {
                 }
             }
 
-            // set environment
-            ENV = _options.valueOf( environment );
-
-            // set global app name
-            APP_NAME = _options.valueOf( appNameOption );
-
-            // setup logging level
-            LoggerConfigurator.configureLogging( BASE_APP_DIR + "/logs", _options.valueOf( logLevel ), APP_NAME );
+ 
 
             Properties appProps = new Properties();
             try {
@@ -299,6 +322,7 @@ public class KruxStdLib {
 
     public static void registerHttpHandler( String url, ChannelInboundHandlerAdapter handler ) {
         if ( !_initialized ) {
+            LOGGER.info( "Registering http handler for " + url );
             if ( !url.contains( "__status" ) ) {
                 httpHandlers.put( url, handler );
             }
