@@ -29,12 +29,15 @@ public class DbUtils {
 
     public static Connection getDbConnection() {
         ConfigProperties kprops = new ConfigProperties();
+        return getDbConnection(kprops.getJdbcDriver(), kprops.getJdbcUrl(), kprops.getJdbcUser(), kprops.getJdbcPassword());
+    }
+    public static Connection getDbConnection(String jdbcDriver, String jdbcUrl, String jdbcUser, String jdbcPassword) {
         Connection conn = null;
         long start = System.currentTimeMillis();
         try {
-            Class.forName( kprops.getJdbcDriver() );
-            log.info( "Connecting to " + kprops.getJdbcUrl() + " as user " + kprops.getJdbcUser() );
-            conn = DriverManager.getConnection( kprops.getJdbcUrl(), kprops.getJdbcUser(), kprops.getJdbcPassword() );
+            Class.forName( jdbcDriver );
+            log.info( "Connecting to " + jdbcUrl + " as user " + jdbcUser );
+            conn = DriverManager.getConnection( jdbcUrl, jdbcUser, jdbcPassword);
         } catch ( Exception ex ) {
             log.error( "db_util", ex );
             KruxStdLib.STATSD.count( "db_util_get_db_conn_err", 1 );
