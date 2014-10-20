@@ -24,6 +24,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,6 +118,48 @@ public class KruxStdLib {
     public static OptionSet initialize( String appDescription, String[] args ) {
         _appDescription = appDescription;
         return initialize( args );
+    }
+    
+    /** Overload for when you don't already have a string[] from the cl **/
+    public static OptionSet initialize( String appDescription, Boolean enableStatsd, String statsdHost,
+            Integer statsdPort, String statsdEnvironment, String environment, Level loggingLevel, String applicationName, Integer httpListenPort,
+            String baseAppDirectory ) {
+        List<String> params = new ArrayList<String>();
+        if ( enableStatsd ) {
+            params.add( "--stats" );
+            if ( statsdHost != null ) {
+                params.add( "--stats-host" );
+                params.add( statsdHost );
+                params.add( "--stats-port" );
+                params.add( String.valueOf( statsdPort ) );
+            }
+            if ( statsdEnvironment != null ) {
+                params.add( "--stats-environment" );
+                params.add( statsdEnvironment );
+            }
+        }
+        if ( environment != null ) {
+            params.add( "--env" );
+            params.add( environment );
+        }
+        if ( loggingLevel != null ) {
+            params.add( "--log-level" );
+            params.add( loggingLevel.toString() );
+        }
+        if ( applicationName != null ) {
+            params.add( "--app-name" );
+            params.add( applicationName );
+        }
+        if ( httpListenPort != null ) {
+            params.add( "--http-port" );
+            params.add( String.valueOf(  httpListenPort.intValue() ) );            
+        }
+        if ( baseAppDirectory != null ) {
+            params.add( "--base-dir" );
+            params.add( baseAppDirectory );            
+        }
+
+        return initialize( appDescription, params.toArray( new String[0] ));
     }
 
     /**
