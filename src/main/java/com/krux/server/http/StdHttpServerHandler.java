@@ -82,9 +82,6 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             if ( path.trim().endsWith( STATUS_URL ) ) {
                 FullHttpResponse res = new DefaultFullHttpResponse( HTTP_1_1, OK, Unpooled.wrappedBuffer( JSON.std.asString(
                         applicationState ).getBytes() ) );
-                // ("{ 'state':'" + stateCode.toString() + "', 'status':'" +
-                // statusResponseMessage + "', 'version':" +
-                // KruxStdLib.APP_VERSION + " }").getBytes() ));
                 res.headers().set( CONTENT_TYPE, "application/json" );
                 res.headers().set( CONTENT_LENGTH, res.content().readableBytes() );
                 if ( !keepAlive ) {
