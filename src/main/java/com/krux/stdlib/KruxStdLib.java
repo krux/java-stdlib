@@ -371,5 +371,12 @@ public class KruxStdLib {
             }
         }
     }
+    
+    public static void registerDefaultHttpHandler( ChannelInboundHandlerAdapter handler ) {
+        if ( !_initialized ) {
+            LOGGER.info( "Registering default http handler" );
+            httpHandlers.put( "__default", handler );
+        }
+    }
 
 }

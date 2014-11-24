@@ -95,33 +95,31 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
                 ChannelInboundHandlerAdapter handler = _httpHandlers.get( path );
                 if ( handler != null ) {
-                    // pass control to submitted handler
-                    log.info( "Found handler" );
-                    ChannelPipeline p = ctx.pipeline();
-                    try {
-                        p.remove( "final_handler" );
-                    } catch ( Exception e ){}
-                    p.addLast( "final_handler", handler.getClass().newInstance() );
-
-                    // is this really the best way?
-                    ctx.fireChannelRead( msg );
-                    ctx.fireChannelReadComplete();
+                    passToHandler( ctx, msg, handler );
 
                 } else {
+                    
+                    // use default handler if configured
+                    handler = _httpHandlers.get( "__default" );
 
-                    log.info( "No configured URL, returning 404" );
-                    FullHttpResponse res = new DefaultFullHttpResponse( HTTP_1_1, NOT_FOUND,
-                            Unpooled.wrappedBuffer( BODY_404.getBytes() ) );
-                    res.headers().set( CONTENT_TYPE, "text/html" );
-                    res.headers().set( CONTENT_LENGTH, res.content().readableBytes() );
-                    if ( !keepAlive ) {
-                        ctx.writeAndFlush( res ).addListener( ChannelFutureListener.CLOSE );
+                    if ( handler != null ) {
+                        passToHandler( ctx, msg, handler );
+                        
                     } else {
-                        res.headers().set( CONNECTION, Values.KEEP_ALIVE );
-                        ctx.writeAndFlush( res );
+                        log.info( "No configured URL, returning 404" );
+                        FullHttpResponse res = new DefaultFullHttpResponse( HTTP_1_1, NOT_FOUND,
+                                Unpooled.wrappedBuffer( BODY_404.getBytes() ) );
+                        res.headers().set( CONTENT_TYPE, "text/html" );
+                        res.headers().set( CONTENT_LENGTH, res.content().readableBytes() );
+                        if ( !keepAlive ) {
+                            ctx.writeAndFlush( res ).addListener( ChannelFutureListener.CLOSE );
+                        } else {
+                            res.headers().set( CONNECTION, Values.KEEP_ALIVE );
+                            ctx.writeAndFlush( res );
+                        }
+    
+                        KruxStdLib.STATSD.count( KruxStdLib.APP_NAME + "_HTTP_404" );
                     }
-
-                    KruxStdLib.STATSD.count( KruxStdLib.APP_NAME + "_HTTP_404" );
                 }
             }
 
@@ -130,6 +128,21 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             log.info( "Request took " + time + "ms for whole request" );
             KruxStdLib.STATSD.time( KruxStdLib.APP_NAME + "_HTTP_200", time );
         }
+    }
+
+    private void passToHandler( ChannelHandlerContext ctx, Object msg, ChannelInboundHandlerAdapter handler )
+            throws InstantiationException, IllegalAccessException {
+        // pass control to submitted handler
+        log.info( "Found handler" );
+        ChannelPipeline p = ctx.pipeline();
+        try {
+            p.remove( "final_handler" );
+        } catch ( Exception e ){}
+        p.addLast( "final_handler", handler.getClass().newInstance() );
+
+        // is this really the best way?
+        ctx.fireChannelRead( msg );
+        ctx.fireChannelReadComplete();
     }
 
     @Override
