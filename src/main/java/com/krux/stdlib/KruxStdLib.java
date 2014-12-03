@@ -42,24 +42,12 @@ import com.krux.stdlib.statsd.StatsdClient;
  */
 public class KruxStdLib {
     
-    static {
-        try {
-            STATSD = new NoopStatsdClient( InetAddress.getLocalHost(), 0 );
-        } catch ( SocketException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( UnknownHostException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
     final static Logger LOGGER = (Logger) LoggerFactory.getLogger( KruxStdLib.class );
 
     /**
      * See
      */
-    public static StatsdClient STATSD = null;
+    public static StatsdClient STATSD = new NoopStatsdClient();
     public static String ENV;
     public static String APP_NAME;
     public static String APP_VERSION;
@@ -273,7 +261,7 @@ public class KruxStdLib {
                     LOGGER.info( "statsd metrics enabled" );
                     STATSD = new KruxStatsdClient( _options.valueOf( statsdHost ), _options.valueOf( statsdPort ), LOGGER );
                 } else {
-                    STATSD = new NoopStatsdClient( InetAddress.getLocalHost(), 0 );
+                    STATSD = new NoopStatsdClient();
                 }
             } catch ( Exception e ) {
                 LOGGER.warn( "Cannot establish a statsd connection", e );

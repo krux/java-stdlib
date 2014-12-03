@@ -12,11 +12,9 @@ import java.net.SocketException;
  */
 public class NoopStatsdClient extends StatsdClient {
 
-    public NoopStatsdClient( InetAddress host, int port ) throws SocketException {
-        super( host, port );
-        // TODO Auto-generated constructor stub
+    public NoopStatsdClient() {
     }
-
+    
     @Override
     public String toString() {
         return NoopStatsdClient.class.getName();

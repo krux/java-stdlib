@@ -101,7 +101,15 @@ public class StatsdClient {
 
     private SendThread thread;
     private long queueOfferTimeout = 0;
-
+    
+    public StatsdClient() {
+        sock = null;
+        queue = null;
+        port = 0;
+        logger = null;
+        hostPortString = null;
+        host = null;
+    }
     public StatsdClient( String host, int port ) throws UnknownHostException, SocketException {
         this( host, port, null, 0 );
     }
