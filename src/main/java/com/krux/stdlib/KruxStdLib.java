@@ -42,7 +42,7 @@ import com.krux.stdlib.statsd.StatsdClient;
  */
 public class KruxStdLib {
     
-    final static Logger LOGGER = (Logger) LoggerFactory.getLogger( KruxStdLib.class );
+    static Logger LOGGER = null;
 
     /**
      * See
@@ -226,8 +226,8 @@ public class KruxStdLib {
             APP_NAME = _options.valueOf( appNameOption );
 
             // setup logging level
-            LoggerConfigurator.configureLogging( BASE_APP_DIR + "/logs", _options.valueOf( logLevel ) );
-
+            setupLogging( logLevel );
+            
             // if "--help" was passed in, show some helpful guidelines and exit
             if ( _options.has( "help" ) ) {
                 try {
@@ -334,6 +334,13 @@ public class KruxStdLib {
         return _options;
     }
 
+    private static void setupLogging( OptionSpec<String> logLevel ) {
+        if ( LOGGER == null ) {
+            LoggerConfigurator.configureLogging( BASE_APP_DIR + "/logs", _options.valueOf( logLevel ) );
+            LOGGER = LoggerFactory.getLogger( KruxStdLib.class.getName() );
+        }
+    }
+
     private static String getMainClassName() {
 
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -353,7 +360,6 @@ public class KruxStdLib {
 
     public static void registerHttpHandler( String url, ChannelInboundHandlerAdapter handler ) {
         if ( !_initialized ) {
-            LOGGER.info( "Registering http handler for " + url );
             if ( !url.contains( "__status" ) ) {
                 httpHandlers.put( url, handler );
             }
@@ -362,7 +368,6 @@ public class KruxStdLib {
     
     public static void registerDefaultHttpHandler( ChannelInboundHandlerAdapter handler ) {
         if ( !_initialized ) {
-            LOGGER.info( "Registering default http handler" );
             httpHandlers.put( "__default", handler );
         }
     }
