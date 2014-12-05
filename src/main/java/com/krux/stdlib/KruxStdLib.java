@@ -211,6 +211,9 @@ public class KruxStdLib {
             OptionSpec<Integer> heapReporterIntervalMs = parser
                     .accepts( "heap-stats-interval-ms", "Interval (ms) for used heap statsd gauge" ).withOptionalArg()
                     .ofType( Integer.class ).defaultsTo( defaultHeapReporterIntervalMs );
+            OptionSpec<Boolean> handleLogRotation = parser
+                    .accepts( "rotate-logs", "If true, log to a rolling file appender that will keep a maximum of 10 log files, 10MB each" ).withOptionalArg()
+                    .ofType( Boolean.class ).defaultsTo( false );
 
             _options = parser.parse( args );
 
@@ -226,7 +229,7 @@ public class KruxStdLib {
             APP_NAME = _options.valueOf( appNameOption );
 
             // setup logging level
-            setupLogging( logLevel );
+            setupLogging( logLevel, handleLogRotation, APP_NAME );
             
             // if "--help" was passed in, show some helpful guidelines and exit
             if ( _options.has( "help" ) ) {
@@ -334,9 +337,13 @@ public class KruxStdLib {
         return _options;
     }
 
-    private static void setupLogging( OptionSpec<String> logLevel ) {
+    private static void setupLogging( OptionSpec<String> logLevel, OptionSpec<Boolean> handleLogRotation, String appName ) {
         if ( LOGGER == null ) {
-            LoggerConfigurator.configureLogging( BASE_APP_DIR + "/logs", _options.valueOf( logLevel ) );
+            if ( _options.valueOf( handleLogRotation ) ) {
+                LoggerConfigurator.configureRotatingLogging( BASE_APP_DIR, _options.valueOf( logLevel ), appName );
+            } else {
+                LoggerConfigurator.configureStdOutLogging( _options.valueOf( logLevel ) );
+            }
             LOGGER = LoggerFactory.getLogger( KruxStdLib.class.getName() );
         }
     }
