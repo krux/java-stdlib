@@ -45,7 +45,7 @@ public class LoggerConfigurator {
             //Define file appender with layout and output log file name
             RollingFileAppender fileAppender = new RollingFileAppender(layout, baseAppLoggingDir + appName + ".log");
             fileAppender.setMaxBackupIndex( 10 );
-            fileAppender.setMaxFileSize( "10MB" );
+            fileAppender.setMaxFileSize( "100MB" );
             
             // Wrap the console appenders in an async appenders
             AsyncAppender asyncOut = new AsyncAppender();
