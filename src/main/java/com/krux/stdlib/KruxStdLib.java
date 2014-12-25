@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.krux.server.http.StdHttpServer;
 import com.krux.server.http.StdHttpServerHandler;
 import com.krux.stdlib.logging.LoggerConfigurator;
-import com.krux.stdlib.statsd.HeapStatsdReporter;
+import com.krux.stdlib.statsd.JDKAndSystemStatsdReporter;
 import com.krux.stdlib.statsd.KruxStatsdClient;
 import com.krux.stdlib.statsd.NoopStatsdClient;
 import com.krux.stdlib.statsd.StatsdClient;
@@ -284,7 +284,7 @@ public class KruxStdLib {
             // setup a simple maintenance timer for reporting used heap size
             // and other stuff in the future
             final int heapStatsInterval = _options.valueOf( heapReporterIntervalMs );
-            final TimerTask timerTask = new HeapStatsdReporter();
+            final TimerTask timerTask = new JDKAndSystemStatsdReporter();
             final Timer timer = new Timer( true );
             timer.scheduleAtFixedRate( timerTask, 2 * 1000, heapStatsInterval );
 
