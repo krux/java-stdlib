@@ -269,6 +269,8 @@ public class KruxStdLib {
             } catch ( Exception e ) {
                 LOGGER.warn( "Cannot establish a statsd connection", e );
             }
+            
+            STATSD.count( "process_start" );
 
             // finally, setup a shutdown thread to run all registered
             // application hooks
