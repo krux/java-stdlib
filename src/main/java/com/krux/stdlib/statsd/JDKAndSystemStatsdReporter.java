@@ -56,6 +56,34 @@ public class JDKAndSystemStatsdReporter extends TimerTask {
         } catch ( Exception err ) {
             KruxStdLib.STATSD.time( "cpu_collection_error", 1 );
         }
+        
+        //cpu util stats
+        try {
+            String line;
+            Process p = Runtime.getRuntime().exec( "cat /proc/loadavg" );
+            BufferedReader bri = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
+            BufferedReader bre = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
+            String[] outputs;
+            Float oneMin, fiveMin, fifteenMin;
+            int i = 0;
+            while ( ( line = bri.readLine() ) != null ) {
+                i++;
+                if ( i == 1 ) {
+                    outputs = line.split( "\\s+" );
+                    oneMin = Float.parseFloat( outputs[0] );
+                    fiveMin = Float.parseFloat( outputs[1] );
+                    fifteenMin = Float.parseFloat( outputs[2] );
+                    KruxStdLib.STATSD.gauge( "load_avg.1min", oneMin.longValue() );
+                    KruxStdLib.STATSD.gauge( "load_avg.5min", fiveMin.longValue() );
+                    KruxStdLib.STATSD.gauge( "load_avg.15min", fifteenMin.longValue() );
+                }
+            }
+            bri.close();
+            bre.close();
+            p.waitFor();
+        } catch ( Exception err ) {
+            KruxStdLib.STATSD.time( "cpu_collection_error", 1 );
+        }
 
     }
 

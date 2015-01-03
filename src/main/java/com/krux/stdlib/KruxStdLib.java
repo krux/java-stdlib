@@ -60,7 +60,7 @@ public class KruxStdLib {
 
     public static boolean httpListenerRunning = false;
 
-    private static int _httpPort = 0;
+    public static int HTTP_PORT = 0;
 
     // holds all registered Runnable shutdown hooks (which are executed
     // synchronously in the
@@ -220,7 +220,7 @@ public class KruxStdLib {
             // set base app dir
             BASE_APP_DIR = _options.valueOf( baseAppDirectory );
             STASD_ENV = _options.valueOf( statsEnvironment );
-            _httpPort = _options.valueOf( httpListenPort );
+            HTTP_PORT = _options.valueOf( httpListenPort );
             
             // set environment
             ENV = _options.valueOf( environment );
@@ -304,8 +304,8 @@ public class KruxStdLib {
 
             // set up an http listener if the submitted port != 0
             // start http service on a separate thread
-            if ( _httpPort != 0 ) {
-                Thread t = new Thread( new StdHttpServer( _httpPort, httpHandlers ) );
+            if ( HTTP_PORT != 0 ) {
+                Thread t = new Thread( new StdHttpServer( HTTP_PORT, httpHandlers ) );
                 t.setName( "MainHttpServerThread" );
                 t.start();
                 httpListenerRunning = true;
