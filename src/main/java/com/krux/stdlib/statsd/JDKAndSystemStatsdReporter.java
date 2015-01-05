@@ -30,8 +30,8 @@ public class JDKAndSystemStatsdReporter extends TimerTask {
         if ( os instanceof UnixOperatingSystemMXBean ) {
             KruxStdLib.STATSD.gauge( "open_fd", ( (UnixOperatingSystemMXBean) os ).getOpenFileDescriptorCount() );
         }
-        
-        //cpu util stats
+
+        // cpu util stats
         try {
             String line;
             Process p = Runtime.getRuntime().exec( "mpstat 1 1" );
@@ -56,8 +56,8 @@ public class JDKAndSystemStatsdReporter extends TimerTask {
         } catch ( Exception err ) {
             KruxStdLib.STATSD.time( "cpu_collection_error", 1 );
         }
-        
-        //cpu util stats
+
+        // cpu util stats
         try {
             String line;
             Process p = Runtime.getRuntime().exec( "cat /proc/loadavg" );

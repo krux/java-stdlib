@@ -98,13 +98,13 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                     passToHandler( ctx, msg, handler );
 
                 } else {
-                    
+
                     // use default handler if configured
                     handler = _httpHandlers.get( "__default" );
 
                     if ( handler != null ) {
                         passToHandler( ctx, msg, handler );
-                        
+
                     } else {
                         log.info( "No configured URL, returning 404" );
                         FullHttpResponse res = new DefaultFullHttpResponse( HTTP_1_1, NOT_FOUND,
@@ -117,7 +117,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                             res.headers().set( CONNECTION, Values.KEEP_ALIVE );
                             ctx.writeAndFlush( res );
                         }
-    
+
                         KruxStdLib.STATSD.count( KruxStdLib.APP_NAME + "_HTTP_404" );
                     }
                 }
@@ -137,7 +137,8 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
         ChannelPipeline p = ctx.pipeline();
         try {
             p.remove( "final_handler" );
-        } catch ( Exception e ){}
+        } catch ( Exception e ) {
+        }
         p.addLast( "final_handler", handler.getClass().newInstance() );
 
         // is this really the best way?

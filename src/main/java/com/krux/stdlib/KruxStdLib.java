@@ -7,9 +7,6 @@ import static java.util.Arrays.asList;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,7 +38,7 @@ import com.krux.stdlib.statsd.StatsdClient;
  * 
  */
 public class KruxStdLib {
-    
+
     static Logger LOGGER = null;
 
     /**
@@ -86,7 +83,7 @@ public class KruxStdLib {
     public static void setOptionParser( OptionParser parser ) {
         _parser = parser;
     }
-    
+
     public static OptionParser getOptionParser() {
         if ( _parser == null ) {
             _parser = new OptionParser();
@@ -107,11 +104,11 @@ public class KruxStdLib {
         _appDescription = appDescription;
         return initialize( args );
     }
-    
+
     /** Overload for when you don't already have a string[] from the cl **/
-    public static OptionSet initialize( String appDescription, Boolean enableStatsd, String statsdHost,
-            Integer statsdPort, String statsdEnvironment, String environment, Level loggingLevel, String applicationName, Integer httpListenPort,
-            String baseAppDirectory ) {
+    public static OptionSet initialize( String appDescription, Boolean enableStatsd, String statsdHost, Integer statsdPort,
+            String statsdEnvironment, String environment, Level loggingLevel, String applicationName,
+            Integer httpListenPort, String baseAppDirectory ) {
         List<String> params = new ArrayList<String>();
         if ( enableStatsd ) {
             params.add( "--stats" );
@@ -140,14 +137,14 @@ public class KruxStdLib {
         }
         if ( httpListenPort != null ) {
             params.add( "--http-port" );
-            params.add( String.valueOf(  httpListenPort.intValue() ) );            
+            params.add( String.valueOf( httpListenPort.intValue() ) );
         }
         if ( baseAppDirectory != null ) {
             params.add( "--base-dir" );
-            params.add( baseAppDirectory );            
+            params.add( baseAppDirectory );
         }
 
-        return initialize( appDescription, params.toArray( new String[0] ));
+        return initialize( appDescription, params.toArray( new String[0] ) );
     }
 
     /**
@@ -212,8 +209,9 @@ public class KruxStdLib {
                     .accepts( "heap-stats-interval-ms", "Interval (ms) for used heap statsd gauge" ).withOptionalArg()
                     .ofType( Integer.class ).defaultsTo( defaultHeapReporterIntervalMs );
             OptionSpec<Boolean> handleLogRotation = parser
-                    .accepts( "rotate-logs", "If true, log to a rolling file appender that will keep a maximum of 10 log files, 10MB each" ).withOptionalArg()
-                    .ofType( Boolean.class ).defaultsTo( false );
+                    .accepts( "rotate-logs",
+                            "If true, log to a rolling file appender that will keep a maximum of 10 log files, 10MB each" )
+                    .withOptionalArg().ofType( Boolean.class ).defaultsTo( false );
 
             _options = parser.parse( args );
 
@@ -221,7 +219,7 @@ public class KruxStdLib {
             BASE_APP_DIR = _options.valueOf( baseAppDirectory );
             STASD_ENV = _options.valueOf( statsEnvironment );
             HTTP_PORT = _options.valueOf( httpListenPort );
-            
+
             // set environment
             ENV = _options.valueOf( environment );
 
@@ -230,7 +228,7 @@ public class KruxStdLib {
 
             // setup logging level
             setupLogging( logLevel, handleLogRotation, APP_NAME );
-            
+
             // if "--help" was passed in, show some helpful guidelines and exit
             if ( _options.has( "help" ) ) {
                 try {
@@ -245,8 +243,6 @@ public class KruxStdLib {
                     System.exit( 0 );
                 }
             }
-
- 
 
             Properties appProps = new Properties();
             try {
@@ -269,7 +265,7 @@ public class KruxStdLib {
             } catch ( Exception e ) {
                 LOGGER.warn( "Cannot establish a statsd connection", e );
             }
-            
+
             STATSD.count( "process_start" );
 
             // finally, setup a shutdown thread to run all registered
@@ -374,7 +370,7 @@ public class KruxStdLib {
             }
         }
     }
-    
+
     public static void registerDefaultHttpHandler( ChannelInboundHandlerAdapter handler ) {
         if ( !_initialized ) {
             httpHandlers.put( "__default", handler );

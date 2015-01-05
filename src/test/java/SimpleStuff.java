@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
 public class SimpleStuff {
 
     @BeforeClass
@@ -31,7 +30,7 @@ public class SimpleStuff {
         long t = Long.parseLong( time );
         t = t * 1000;
         Date d = new Date( t );
-                
+
         System.out.println( d.toGMTString() );
     }
 
