@@ -1,108 +1,175 @@
 package com.krux.stdlib.logging;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.AsyncAppender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.AsyncAppender;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.filter.Filter;
+import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 
 public class LoggerConfigurator {
 
     private static Map<String, Level> logLevels = new HashMap<String, Level>();
 
-    // Define log pattern layout
-    private static PatternLayout layout = new PatternLayout( "%d{ISO8601} %-6p: [%t] %c{2} %x - %m%n" );
-
     static {
         logLevels.put( "WARN", Level.WARN );
         logLevels.put( "DEBUG", Level.DEBUG );
         logLevels.put( "ERROR", Level.ERROR );
-        logLevels.put( "FATAL", Level.FATAL );
         logLevels.put( "INFO", Level.INFO );
     }
 
     public static void configureRotatingLogging( String baseLoggingDir, String loglevel, String appName ) {
+        
         if ( !baseLoggingDir.endsWith( "/" ) ) {
             baseLoggingDir = baseLoggingDir + "/";
         }
-
+        
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        lc.reset();
+        Logger rootLogger = getRootLogger( loglevel );
+        PatternLayoutEncoder ple = getPatternLayoutEncoder( lc );
+        
         String baseAppLoggingDir = baseLoggingDir;
         // set a system property so other loggers write the correct place
-        System.setProperty( "base-app-log-dir", baseAppLoggingDir );
-
-        // This is the root logger provided by log4j
-        Logger rootLogger = Logger.getRootLogger();
-        setLogLevel( loglevel, rootLogger );
+        System.setProperty( "krux-base-app-log-dir", baseAppLoggingDir );
 
         try {
             // Define file appender with layout and output log file name
-            RollingFileAppender fileAppender = new RollingFileAppender( layout, baseAppLoggingDir + appName + ".log" );
-            fileAppender.setMaxBackupIndex( 10 );
-            fileAppender.setMaxFileSize( "100MB" );
+            RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<ILoggingEvent>();
+            fileAppender.setContext( lc );
+            fileAppender.setName( "krux-file-appender" );
+            fileAppender.setFile( baseAppLoggingDir + appName + ".log" );
+            fileAppender.setAppend( true );
+            fileAppender.setEncoder( ple );
+            
+            FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
+            rollingPolicy.setContext( lc );
+            rollingPolicy.setMinIndex( 1 );
+            rollingPolicy.setMaxIndex( 9 );
+            rollingPolicy.setFileNamePattern( baseAppLoggingDir + appName + ".%i.log.gz" );
+            rollingPolicy.setParent( fileAppender );
+            rollingPolicy.start();
+            
+            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>( "100MB" );
+            triggeringPolicy.setContext( lc );
+            triggeringPolicy.start();
+
+            fileAppender.setRollingPolicy( rollingPolicy );
+            fileAppender.setTriggeringPolicy( triggeringPolicy );
+            fileAppender.start();
 
             // Wrap the console appenders in an async appenders
             AsyncAppender asyncOut = new AsyncAppender();
-            asyncOut.setBlocking( true );
-            asyncOut.setBufferSize( 2048 );
+            asyncOut.setContext( lc );
+            asyncOut.setDiscardingThreshold( 0 );
+            asyncOut.setQueueSize( 500 );
             asyncOut.addAppender( fileAppender );
             asyncOut.setName( "stdlib-async-out" );
+            asyncOut.start();
 
             // Add the appender to root logger
             rootLogger.addAppender( asyncOut );
-        } catch ( IOException e ) {
+            
+            // wrap stdout & stderr in log4j appenders 
+            StdOutErrLog.tieSystemOutAndErrToLog();
+            
+        } catch ( Exception e ) {
             System.out.println( "Failed to add appender !!" );
             e.printStackTrace();
         }
 
     }
 
+    private static PatternLayoutEncoder getPatternLayoutEncoder( LoggerContext lc ) {
+        PatternLayoutEncoder ple = new PatternLayoutEncoder();
+        ple.setPattern("%-12date{YYYY-MM-dd'T'HH:mm:ss.SSS} |%-5level [%thread] %logger{15} - %msg%n");
+        ple.setContext(lc);
+        ple.start();
+        return ple;
+    }
+
     public static void configureStdOutLogging( String loglevel ) {
 
-        // This is the root logger provided by log4j
-        Logger rootLogger = Logger.getRootLogger();
-
-        setLogLevel( loglevel, rootLogger );
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        lc.reset();
+        Logger rootLogger = getRootLogger( loglevel );
+        PatternLayoutEncoder ple = getPatternLayoutEncoder( lc );
 
         try {
-            // DOH! nvm...ops would like us to log to console unless an app
-            // has a specific requirement not to
-            ConsoleAppender consoleAppender = new ConsoleAppender();
-            consoleAppender.setLayout( layout );
-            consoleAppender.setName( "stdlib-console-out" );
-            consoleAppender.setWriter( new OutputStreamWriter( System.out ) );
+            // ops would like us to log to console unless an app
+            // has a specific need not to
+            ConsoleAppender<ILoggingEvent> stdOutAppender = new ConsoleAppender<ILoggingEvent>();
+            stdOutAppender.setContext( lc );
+            stdOutAppender.setName( "stdlib-console-out" );
+            stdOutAppender.setTarget( "System.out" );
+            stdOutAppender.setEncoder( ple );
+            
+            Filter<ILoggingEvent> stdOutFilter = new StdOutFilter();
+            stdOutAppender.addFilter( stdOutFilter );
+            stdOutFilter.start();
+            stdOutAppender.start();
 
-            ConsoleAppender errorAppender = new ConsoleAppender();
-            errorAppender.setLayout( layout );
+            ple = getPatternLayoutEncoder( lc );
+            
+            ConsoleAppender<ILoggingEvent> errorAppender = new ConsoleAppender<ILoggingEvent>();
+            errorAppender.setContext( lc );
             errorAppender.setName( "stdlib-console-err" );
-            errorAppender.setWriter( new OutputStreamWriter( System.err ) );
-            errorAppender.setThreshold( Level.WARN );
+            errorAppender.setTarget( "System.err" );
+            errorAppender.setEncoder( ple );
+            
+            Filter<ILoggingEvent> stdErrFilter = new ErrOutFilter();
+            errorAppender.addFilter( stdErrFilter );
+            stdErrFilter.start();
+            errorAppender.start();
 
             // Wrap the console appenders in an async appenders
-            AsyncAppender asyncOut = new AsyncAppender();
-            asyncOut.setBlocking( true );
-            asyncOut.setBufferSize( 2048 );
-            asyncOut.addAppender( consoleAppender );
-            asyncOut.addAppender( errorAppender );
-            asyncOut.setName( "stdlib-async-out" );
+            AsyncAppender asyncStdOutWrapper = new AsyncAppender();
+            asyncStdOutWrapper.setContext( lc );
+            asyncStdOutWrapper.setDiscardingThreshold( 0 );
+            asyncStdOutWrapper.setQueueSize( 500 );
+            asyncStdOutWrapper.addAppender( stdOutAppender );
+            asyncStdOutWrapper.setName( "stdlib-async-out" );
+            asyncStdOutWrapper.start();
+            
+            // Wrap the console appenders in an async appenders
+            AsyncAppender asyncStdErrWrapper = new AsyncAppender();
+            asyncStdErrWrapper.setContext( lc );
+            asyncStdErrWrapper.setDiscardingThreshold( 0 );
+            asyncStdErrWrapper.setQueueSize( 500 );
+            asyncStdErrWrapper.addAppender( errorAppender ); 
+            asyncStdErrWrapper.setName( "stdlib-async-err-2" );
+            asyncStdErrWrapper.start();
 
-            // Add the appender to root logger
-            rootLogger.addAppender( asyncOut );
+            // Add the appenders to root logger
+            rootLogger.addAppender( asyncStdOutWrapper );
+            rootLogger.addAppender( asyncStdErrWrapper );
 
         } catch ( Exception e ) {
             System.out.println( "Failed to add appender!!" );
             e.printStackTrace();
         }
 
-        // wrap stdout & stderr in log4j appenders (will still also write to
-        // stdout/err)
+        // wrap stdout & stderr in log4j appenders 
         StdOutErrLog.tieSystemOutAndErrToLog();
 
+    }
+
+    private static Logger getRootLogger( String loglevel ) {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger( Logger.ROOT_LOGGER_NAME );
+        setLogLevel( loglevel, rootLogger );
+        rootLogger.setAdditive(false);
+        return rootLogger;
     }
 
     private static void setLogLevel( String loglevel, Logger rootLogger ) {
@@ -110,7 +177,7 @@ public class LoggerConfigurator {
         Level defaultLevel = logLevels.get( loglevel.toUpperCase() );
         if ( defaultLevel == null ) {
             System.err
-                    .println( "--log-level is not a valid value! Please pass WARN, DEBUG, ERROR, FATAL or INFO. Defaulting to WARN. "
+                    .println( "--log-level is not a valid value! Please pass WARN, DEBUG, ERROR, or INFO. Defaulting to WARN. "
                             + loglevel );
             defaultLevel = Level.WARN;
         }

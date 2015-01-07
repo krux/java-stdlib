@@ -68,7 +68,7 @@ public class ExampleMain {
         KruxStdLib.registerShutdownHook( new Thread() {
             @Override
             public void run() {
-                System.out.println( "This shutdown hook was registered BEFORE initializing KruxStdLib" );
+                System.out.print( "This shutdown hook was registered BEFORE initializing KruxStdLib" );
             }
         } );
 
@@ -83,7 +83,7 @@ public class ExampleMain {
         KruxStdLib.registerShutdownHook( new Thread() {
             @Override
             public void run() {
-                System.out.println( "This shutdown hook was registered AFTER initializing KruxStdLib" );
+                System.out.print( "This shutdown hook was registered AFTER initializing KruxStdLib" );
             }
         } );
 
@@ -104,8 +104,7 @@ public class ExampleMain {
         } catch ( Exception e ) {
             logger.error( "Uh oh.", e );
         }
-        System.out.println( "This is printed to standard out" );
-
+        System.out.print( "This is printed to standard out" );
     }
 
 }

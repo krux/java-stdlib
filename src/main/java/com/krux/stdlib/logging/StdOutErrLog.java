@@ -26,7 +26,6 @@ public class StdOutErrLog {
     public static PrintStream createLoggingProxy( final PrintStream realPrintStream ) {
         return new PrintStream( realPrintStream ) {
             public void print( final String string ) {
-                realPrintStream.print( string );
                 logger.info( string );
             }
         };
@@ -35,7 +34,6 @@ public class StdOutErrLog {
     public static PrintStream createLoggingProxyErr( final PrintStream realPrintStream ) {
         return new PrintStream( realPrintStream ) {
             public void print( final String string ) {
-                realPrintStream.print( string );
                 logger.error( string );
             }
         };
