@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.krux</groupId>
 	<artifactId>krux-stdlib</artifactId>
-	<version>1.5.1</version>
-	<dependencies>
+	<version>1.5.2</version>
+    <dependencies>
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
@@ -61,8 +61,7 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-		<!-- <dependency> <groupId>org.ubercraft.statsd</groupId> <artifactId>statsd-over-slf4j</artifactId> 
-			<version>1.0.0</version> </dependency> -->
+
 	</dependencies>
 
 	<distributionManagement>

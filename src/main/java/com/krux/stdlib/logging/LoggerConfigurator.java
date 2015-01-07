@@ -22,63 +22,67 @@ public class LoggerConfigurator {
 
     private static Map<String, Level> logLevels = new HashMap<String, Level>();
 
-    // Define log pattern layout
-    private static PatternLayout layout;
-
     static {
         logLevels.put( "WARN", Level.WARN );
         logLevels.put( "DEBUG", Level.DEBUG );
         logLevels.put( "ERROR", Level.ERROR );
         logLevels.put( "INFO", Level.INFO );
-        
-        layout = new PatternLayout();
-        layout.setPattern( "%date{ISO8601} %-6p: [%t] %c{2} %x - %m%n" );
     }
 
     public static void configureRotatingLogging( String baseLoggingDir, String loglevel, String appName ) {
+        
         if ( !baseLoggingDir.endsWith( "/" ) ) {
             baseLoggingDir = baseLoggingDir + "/";
         }
         
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         lc.reset();
+        Logger rootLogger = getRootLogger( loglevel );
+        PatternLayoutEncoder ple = getPatternLayoutEncoder( lc );
+        
         String baseAppLoggingDir = baseLoggingDir;
         // set a system property so other loggers write the correct place
-        System.setProperty( "base-app-log-dir", baseAppLoggingDir );
-
-        // This is the root logger provided by log4j
-        Logger rootLogger = (Logger) LoggerFactory.getLogger( Logger.ROOT_LOGGER_NAME );
-        setLogLevel( loglevel, rootLogger );
+        System.setProperty( "krux-base-app-log-dir", baseAppLoggingDir );
 
         try {
             // Define file appender with layout and output log file name
             RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<ILoggingEvent>();
-            
-            PatternLayoutEncoder ple = getPatternLayoutEncoder( lc );
-            
-            fileAppender.setEncoder( ple );
+            fileAppender.setContext( lc );
+            fileAppender.setName( "krux-file-appender" );
             fileAppender.setFile( baseAppLoggingDir + appName + ".log" );
             fileAppender.setAppend( true );
+            fileAppender.setEncoder( ple );
             
             FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
+            rollingPolicy.setContext( lc );
             rollingPolicy.setMinIndex( 1 );
-            rollingPolicy.setMaxIndex( 5 );
+            rollingPolicy.setMaxIndex( 9 );
             rollingPolicy.setFileNamePattern( baseAppLoggingDir + appName + ".%i.log.gz" );
-            fileAppender.setRollingPolicy( rollingPolicy );
+            rollingPolicy.setParent( fileAppender );
+            rollingPolicy.start();
             
-            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>( "100MB" );
+            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>( "50MB" );
+            triggeringPolicy.setContext( lc );
+            triggeringPolicy.start();
+
+            fileAppender.setRollingPolicy( rollingPolicy );
             fileAppender.setTriggeringPolicy( triggeringPolicy );
+            fileAppender.start();
 
             // Wrap the console appenders in an async appenders
             AsyncAppender asyncOut = new AsyncAppender();
+            asyncOut.setContext( lc );
             asyncOut.setDiscardingThreshold( 0 );
-            asyncOut.setQueueSize( 1000 );
+            asyncOut.setQueueSize( 500 );
             asyncOut.addAppender( fileAppender );
             asyncOut.setName( "stdlib-async-out" );
-            asyncOut.setContext( lc );
+            asyncOut.start();
 
             // Add the appender to root logger
             rootLogger.addAppender( asyncOut );
+            
+            // wrap stdout & stderr in log4j appenders 
+            StdOutErrLog.tieSystemOutAndErrToLog();
             
         } catch ( Exception e ) {
             System.out.println( "Failed to add appender !!" );
@@ -99,10 +103,7 @@ public class LoggerConfigurator {
 
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         lc.reset();
-        // This is the root logger provided by log4j
-        Logger rootLogger = (Logger) LoggerFactory.getLogger( Logger.ROOT_LOGGER_NAME );
-        setLogLevel( loglevel, rootLogger );
-        
+        Logger rootLogger = getRootLogger( loglevel );
         PatternLayoutEncoder ple = getPatternLayoutEncoder( lc );
 
         try {
@@ -153,7 +154,6 @@ public class LoggerConfigurator {
             // Add the appenders to root logger
             rootLogger.addAppender( asyncStdOutWrapper );
             rootLogger.addAppender( asyncStdErrWrapper );
-            rootLogger.setAdditive(false); //don't let the root log from it's children
 
         } catch ( Exception e ) {
             System.out.println( "Failed to add appender!!" );
@@ -163,6 +163,13 @@ public class LoggerConfigurator {
         // wrap stdout & stderr in log4j appenders 
         StdOutErrLog.tieSystemOutAndErrToLog();
 
+    }
+
+    private static Logger getRootLogger( String loglevel ) {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger( Logger.ROOT_LOGGER_NAME );
+        setLogLevel( loglevel, rootLogger );
+        rootLogger.setAdditive(false);
+        return rootLogger;
     }
 
     private static void setLogLevel( String loglevel, Logger rootLogger ) {

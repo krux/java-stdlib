@@ -105,7 +105,6 @@ public class ExampleMain {
             logger.error( "Uh oh.", e );
         }
         System.out.print( "This is printed to standard out" );
-
     }
 
 }
