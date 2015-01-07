@@ -61,7 +61,7 @@ public class LoggerConfigurator {
             rollingPolicy.setParent( fileAppender );
             rollingPolicy.start();
             
-            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>( "50MB" );
+            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>( "100MB" );
             triggeringPolicy.setContext( lc );
             triggeringPolicy.start();
 
