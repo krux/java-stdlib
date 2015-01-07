@@ -20,7 +20,7 @@ public class StdOutFilter extends ch.qos.logback.core.filter.AbstractMatcherFilt
 
         LoggingEvent loggingEvent = (LoggingEvent) event;
 
-        List<Level> eventsToKeep = Arrays.asList(Level.TRACE, Level.DEBUG, Level.INFO, Level.WARN);
+        List<Level> eventsToKeep = Arrays.asList(Level.TRACE, Level.DEBUG, Level.INFO);
         if (eventsToKeep.contains(loggingEvent.getLevel()))
         {
             return FilterReply.NEUTRAL;

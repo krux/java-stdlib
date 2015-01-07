@@ -20,7 +20,7 @@ public class ErrOutFilter extends ch.qos.logback.core.filter.AbstractMatcherFilt
 
         LoggingEvent loggingEvent = (LoggingEvent) event;
 
-        List<Level> eventsToKeep = Arrays.asList(Level.ERROR);
+        List<Level> eventsToKeep = Arrays.asList( Level.WARN, Level.ERROR );
         if (eventsToKeep.contains(loggingEvent.getLevel()))
         {
             return FilterReply.NEUTRAL;
