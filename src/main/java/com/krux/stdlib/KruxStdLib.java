@@ -21,9 +21,10 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
 
 import com.krux.server.http.StdHttpServer;
 import com.krux.server.http.StdHttpServerHandler;
