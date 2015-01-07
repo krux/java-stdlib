@@ -3,9 +3,6 @@
  */
 package com.krux.stdlib.statsd;
 
-import java.net.InetAddress;
-import java.net.SocketException;
-
 /**
  * @author cass
  * 
@@ -14,7 +11,7 @@ public class NoopStatsdClient extends StatsdClient {
 
     public NoopStatsdClient() {
     }
-    
+
     @Override
     public String toString() {
         return NoopStatsdClient.class.getName();

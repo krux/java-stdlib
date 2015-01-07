@@ -86,8 +86,8 @@ public class ExampleMain {
                 System.out.println( "This shutdown hook was registered AFTER initializing KruxStdLib" );
             }
         } );
-        
-        //get value of an option
+
+        // get value of an option
         String s = options.valueOf( optionalOption );
 
         logger.info( optionalOption.toString() + ": " + options.valueOf( optionalOption ) );

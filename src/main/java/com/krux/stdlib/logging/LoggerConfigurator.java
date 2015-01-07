@@ -15,7 +15,7 @@ import org.apache.log4j.RollingFileAppender;
 public class LoggerConfigurator {
 
     private static Map<String, Level> logLevels = new HashMap<String, Level>();
-    
+
     // Define log pattern layout
     private static PatternLayout layout = new PatternLayout( "%d{ISO8601} %-6p: [%t] %c{2} %x - %m%n" );
 
@@ -35,36 +35,33 @@ public class LoggerConfigurator {
         String baseAppLoggingDir = baseLoggingDir;
         // set a system property so other loggers write the correct place
         System.setProperty( "base-app-log-dir", baseAppLoggingDir );
-        
+
         // This is the root logger provided by log4j
         Logger rootLogger = Logger.getRootLogger();
         setLogLevel( loglevel, rootLogger );
-        
-        try
-        {
-            //Define file appender with layout and output log file name
-            RollingFileAppender fileAppender = new RollingFileAppender(layout, baseAppLoggingDir + appName + ".log");
+
+        try {
+            // Define file appender with layout and output log file name
+            RollingFileAppender fileAppender = new RollingFileAppender( layout, baseAppLoggingDir + appName + ".log" );
             fileAppender.setMaxBackupIndex( 10 );
-            fileAppender.setMaxFileSize( "10MB" );
-            
+            fileAppender.setMaxFileSize( "100MB" );
+
             // Wrap the console appenders in an async appenders
             AsyncAppender asyncOut = new AsyncAppender();
             asyncOut.setBlocking( true );
             asyncOut.setBufferSize( 2048 );
             asyncOut.addAppender( fileAppender );
             asyncOut.setName( "stdlib-async-out" );
-         
-            //Add the appender to root logger
-            rootLogger.addAppender(asyncOut);
-        }
-        catch (IOException e)
-        {
-            System.out.println("Failed to add appender !!");
+
+            // Add the appender to root logger
+            rootLogger.addAppender( asyncOut );
+        } catch ( IOException e ) {
+            System.out.println( "Failed to add appender !!" );
             e.printStackTrace();
         }
-    
+
     }
-    
+
     public static void configureStdOutLogging( String loglevel ) {
 
         // This is the root logger provided by log4j
