@@ -26,7 +26,8 @@ public class StdOutErrLog {
     public static PrintStream createLoggingProxy( final PrintStream realPrintStream ) {
         return new PrintStream( realPrintStream ) {
             public void print( final String string ) {
-                logger.info( string );
+                if ( !string.contains( "log4j:WARN" ) )
+                    logger.info( string.trim() );
             }
         };
     }
@@ -34,7 +35,8 @@ public class StdOutErrLog {
     public static PrintStream createLoggingProxyErr( final PrintStream realPrintStream ) {
         return new PrintStream( realPrintStream ) {
             public void print( final String string ) {
-                logger.error( string );
+                if ( !string.contains( "log4j:WARN" ) )
+                    logger.error( string.trim() );
             }
         };
     }

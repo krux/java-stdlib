@@ -228,6 +228,7 @@ public class KruxStdLib {
             APP_NAME = _options.valueOf( appNameOption );
 
             // setup logging level
+            // first, try to suppress log4j warnings
             setupLogging( logLevel, handleLogRotation, APP_NAME );
 
             // if "--help" was passed in, show some helpful guidelines and exit
