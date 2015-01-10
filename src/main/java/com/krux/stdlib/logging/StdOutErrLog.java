@@ -27,7 +27,11 @@ public class StdOutErrLog {
         return new PrintStream( realPrintStream ) {
             public void print( final String string ) {
                 if ( !string.contains( "log4j:WARN" ) )
-                    logger.info( string.trim() );
+                    logger.info( string.replace( '\n', ' ' ) );
+            }
+            
+            public void println( final String string ) {
+                print( string );
             }
         };
     }
@@ -36,7 +40,11 @@ public class StdOutErrLog {
         return new PrintStream( realPrintStream ) {
             public void print( final String string ) {
                 if ( !string.contains( "log4j:WARN" ) )
-                    logger.error( string.trim() );
+                    logger.error( string.replace( '\n', ' ' ) );
+            }
+            
+            public void println( final String string ) {
+                print( string );
             }
         };
     }

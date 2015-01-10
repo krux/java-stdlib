@@ -8,11 +8,12 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,6 +30,8 @@ import ch.qos.logback.classic.Level;
 import com.krux.server.http.StdHttpServer;
 import com.krux.server.http.StdHttpServerHandler;
 import com.krux.stdlib.logging.LoggerConfigurator;
+import com.krux.stdlib.shutdown.ShutdownTask;
+import com.krux.stdlib.shutdown.Shutdownable;
 import com.krux.stdlib.statsd.JDKAndSystemStatsdReporter;
 import com.krux.stdlib.statsd.KruxStatsdClient;
 import com.krux.stdlib.statsd.NoopStatsdClient;
@@ -63,7 +66,7 @@ public class KruxStdLib {
     // holds all registered Runnable shutdown hooks (which are executed
     // synchronously in the
     // order added to this list.
-    private static List<Runnable> shutdownHooks = Collections.synchronizedList( new ArrayList<Runnable>() );
+    private static Queue<ShutdownTask> shutdownHooks = new PriorityQueue<ShutdownTask>();
 
     // holds list of registered ChannelInboundHandlerAdapters for serving http
     // responses
@@ -275,8 +278,9 @@ public class KruxStdLib {
             Runtime.getRuntime().addShutdownHook( new Thread() {
                 @Override
                 public void run() {
-                    for ( Runnable r : shutdownHooks ) {
-                        r.run();
+                    ShutdownTask t;
+                    while ( ( t = shutdownHooks.poll() ) != null ) {
+                        t.run();
                     }
                 }
             } );
@@ -361,7 +365,7 @@ public class KruxStdLib {
         return fixedClassName.toLowerCase();
     }
 
-    public static void registerShutdownHook( Runnable r ) {
+    public static void registerShutdownHook( ShutdownTask r ) {
         shutdownHooks.add( r );
     }
 

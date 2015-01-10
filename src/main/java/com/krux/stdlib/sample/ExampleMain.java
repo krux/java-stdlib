@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.krux.stdlib.KruxStdLib;
+import com.krux.stdlib.shutdown.ShutdownTask;
 
 /**
  * A sample program leverages the KruxStdLib for logging, cli, statsd and http
@@ -65,10 +66,11 @@ public class ExampleMain {
         // All registered hooks will be run in a single thread (for now) in the
         // order they were
         // added to the list.
-        KruxStdLib.registerShutdownHook( new Thread() {
+        // add another shutdown hook
+        KruxStdLib.registerShutdownHook( new ShutdownTask( 50 ) {
             @Override
             public void run() {
-                System.out.print( "This shutdown hook was registered BEFORE initializing KruxStdLib" );
+                System.out.print( "This shutdown hook was registered AFTER initializing KruxStdLib with priority 50" );
             }
         } );
 
@@ -80,10 +82,10 @@ public class ExampleMain {
         OptionSet options = KruxStdLib.initialize( args );
 
         // add another shutdown hook
-        KruxStdLib.registerShutdownHook( new Thread() {
+        KruxStdLib.registerShutdownHook( new ShutdownTask( 10 ) {
             @Override
             public void run() {
-                System.out.print( "This shutdown hook was registered AFTER initializing KruxStdLib" );
+                System.out.println( "This shutdown hook was registered AFTER initializing KruxStdLib with priority 10" );
             }
         } );
 
@@ -103,6 +105,7 @@ public class ExampleMain {
             throw new Exception( "An exception was thrown" );
         } catch ( Exception e ) {
             logger.error( "Uh oh.", e );
+            //e.printStackTrace();
         }
         System.out.print( "This is printed to standard out" );
     }
