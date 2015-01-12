@@ -254,7 +254,7 @@ public class KruxStdLib {
                 appProps.load( StdHttpServerHandler.class.getClassLoader().getResourceAsStream( "application.properties" ) );
                 APP_VERSION = appProps.getProperty( "app.pom.version", "n/a" );
             } catch ( Exception e ) {
-                LOGGER.warn( "Cannot load application properties", e );
+                LOGGER.warn("Cannot load application properties");
             }
 
             // setup statsd
