@@ -3,7 +3,35 @@ java-krux-stdlib
 
 The Krux standard java library handles logging, command-line parsing, statsd reporting and other common functions for Krux applications.
 
-# Using KruxStdLib
+# Building
+
+To build, use Maven:
+
+```shell
+$ mvn compile
+```
+
+# Deploying
+
+To deploy, ensure you have updated the version in `pom.xml` and use Maven:
+
+```shell
+$ mvn clean compile deploy
+```
+
+# Using
+
+To use, add the following dependency to your pom.xml:
+
+```xml
+<dependency>
+  <groupId>com.krux</groupId>
+  <artifactId>krux-stdlib</artifactId>
+  <version>1.6.1</version>
+</dependency>
+```
+
+# Usage
 
 For the simplest use case, simply call `KruxStdLib.initialize(args)` before running your app's main logic...
 
