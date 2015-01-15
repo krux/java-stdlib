@@ -53,7 +53,7 @@ public class ExampleMain {
         // are available in the returned OptionSet object. Unrecognized options
         // will cause the
         // process to terminate with an error sent to stderr.
-        // 2. An asynchronous log4j appender that wraps a
+        // 2. An asynchronous logback appender that wraps a
         // DailyRollingFileAppender is programatically created
         // and added to the rootlogger. See LoggerConfigurator for details.
         // 3. A static statsd client library is instantiated and made available
@@ -67,10 +67,10 @@ public class ExampleMain {
         // order they were
         // added to the list.
         // add another shutdown hook
-        KruxStdLib.registerShutdownHook( new ShutdownTask( 50 ) {
+        KruxStdLib.registerShutdownHook( new ShutdownTask( 50 ) { //shutdown tasks are executed in order of priority
             @Override
             public void run() {
-                System.out.print( "This shutdown hook was registered AFTER initializing KruxStdLib with priority 50" );
+                System.out.print( "This shutdown hook was registered BEFORE initializing KruxStdLib with priority 50" );
             }
         } );
 
@@ -92,8 +92,8 @@ public class ExampleMain {
         // get value of an option
         String s = options.valueOf( optionalOption );
 
-        logger.info( optionalOption.toString() + ": " + options.valueOf( optionalOption ) );
-        logger.info( requiredOption.toString() + ": " + options.valueOf( requiredOption ) );
+        logger.info( "{}: {}", optionalOption.toString(), options.valueOf( optionalOption ) );
+        logger.info( "{}: {}", requiredOption.toString(), options.valueOf( requiredOption ) );
         logger.debug( "This was logged using the stdlib logging configuration" );
         logger.warn( "This was logged using the stdlib logging configuration" );
         logger.error( "This was logged using the stdlib logging configuration" );
@@ -105,7 +105,6 @@ public class ExampleMain {
             throw new Exception( "An exception was thrown" );
         } catch ( Exception e ) {
             logger.error( "Uh oh.", e );
-            //e.printStackTrace();
         }
         System.out.print( "This is printed to standard out" );
     }

@@ -51,7 +51,8 @@ public class StdHttpServer implements Runnable {
                 workerGroup.shutdownGracefully();
             }
         } catch ( Exception e ) {
-            log.error( "HTTP server failed", e );
+            log.error( "Cannot start HTTP server, shutting down", e );
+            System.exit(1);
         }
     }
 }
