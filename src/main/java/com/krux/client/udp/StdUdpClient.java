@@ -23,24 +23,14 @@ public final class StdUdpClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(StdUdpClient.class);
     private static final int UDP_SENDER_THREADS = 1;
     private static final int QUEUE_SIZE = 1000;
-    private static final int BUFFER_SIZE = 64 * 1024;
     private static final Charset CHAR_ENCODING = Charset.forName("UTF-8");
     private final DatagramSocket _clientSocket;
     private InetAddress _host;
     private int _port;
-    private ThreadPoolExecutor _executor;
+    private static ThreadPoolExecutor EXECUTOR;
 
-    public StdUdpClient(String hostname, int port) throws SocketException, UnknownHostException {
-
-        _host = InetAddress.getByName(hostname);
-        _port = port;
-
-        _clientSocket = new DatagramSocket();
-        _clientSocket.setSendBufferSize(BUFFER_SIZE);
-        _clientSocket.setReceiveBufferSize(BUFFER_SIZE);
-        _clientSocket.connect(_host, _port);
-
-        _executor = new ThreadPoolExecutor(UDP_SENDER_THREADS, UDP_SENDER_THREADS,
+    static {
+        EXECUTOR = new ThreadPoolExecutor(UDP_SENDER_THREADS, UDP_SENDER_THREADS,
                 Long.MAX_VALUE, TimeUnit.NANOSECONDS,
                 new ArrayBlockingQueue<Runnable>(QUEUE_SIZE),
                 new ThreadFactory() {
@@ -64,15 +54,25 @@ public final class StdUdpClient {
         });
     }
 
-    public void shutdown() {
+    public StdUdpClient(String hostname, int port) throws SocketException, UnknownHostException {
+
+        _host = InetAddress.getByName(hostname);
+        _port = port;
+
+        _clientSocket = new DatagramSocket();
+
+        _clientSocket.connect(_host, _port);
+    }
+
+    private static void shutdown() {
         LOGGER.info("UDP client Shutting down ...");
 
-        _executor.shutdown(); // Disable new tasks from being submitted
+        EXECUTOR.shutdown(); // Disable new tasks from being submitted
 
         try {
             while (true) {
                 // Wait a while for existing tasks to terminate
-                if (!_executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                if (!EXECUTOR.awaitTermination(1, TimeUnit.SECONDS)) {
                     LOGGER.debug("Waiting for UDP client to shutdown ...");
                 } else {
                     break;
@@ -81,14 +81,11 @@ public final class StdUdpClient {
         } catch (Exception e) {
             LOGGER.warn("UDP client shutdown failed", e);
         }
-        finally {
-            _clientSocket.close();
-        }
     }
 
     public void send(final String message) {
 
-        _executor.submit(new Runnable() {
+        EXECUTOR.submit(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -98,8 +95,8 @@ public final class StdUdpClient {
                     long end = System.currentTimeMillis();
                     KruxStdLib.STATSD.time("udp_send", end - start);
                 } catch (Exception e) {
-                    LOGGER.error("Failed to send UDP packet", e);
-                    KruxStdLib.STATSD.count("udp_failed");
+                    LOGGER.error("Failed to send UDP packet, " + _host + ":" + _port, e);
+                    KruxStdLib.STATSD.count("errors.udp_failed");
                 }
             }
         });
