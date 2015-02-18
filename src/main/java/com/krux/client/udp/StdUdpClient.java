@@ -96,7 +96,7 @@ public final class StdUdpClient {
                     KruxStdLib.STATSD.time("udp_send", end - start);
                 } catch (Exception e) {
                     LOGGER.error("Failed to send UDP packet, " + _host + ":" + _port, e);
-                    KruxStdLib.STATSD.count("errors.udp_failed");
+                    KruxStdLib.STATSD.count("errors.udp_send");
                 }
             }
         });
