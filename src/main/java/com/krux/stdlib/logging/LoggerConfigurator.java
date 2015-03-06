@@ -101,6 +101,11 @@ public class LoggerConfigurator {
 
     public static void configureStdOutLogging( String loglevel ) {
 
+        if (!(LoggerFactory.getILoggerFactory() instanceof LoggerContext)) {
+            System.err.println("Logger is not using logback, skipping logging configuration");
+            return;
+        }
+
         try {
             LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
             lc.reset();
@@ -156,7 +161,7 @@ public class LoggerConfigurator {
             rootLogger.addAppender( asyncStdErrWrapper );
 
         } catch ( Exception e ) {
-            System.out.println( "Failed to add appender!!" );
+            System.err.println( "Failed to add appender!!" );
             e.printStackTrace();
         }
 
