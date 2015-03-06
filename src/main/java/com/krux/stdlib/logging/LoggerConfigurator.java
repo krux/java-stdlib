@@ -101,12 +101,12 @@ public class LoggerConfigurator {
 
     public static void configureStdOutLogging( String loglevel ) {
 
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        lc.reset();
-        Logger rootLogger = getRootLogger( loglevel );
-        PatternLayoutEncoder ple = getPatternLayoutEncoder( lc );
-
         try {
+            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+            lc.reset();
+            Logger rootLogger = getRootLogger( loglevel );
+            PatternLayoutEncoder ple = getPatternLayoutEncoder( lc );
+
             // ops would like us to log to console unless an app
             // has a specific need not to
             ConsoleAppender<ILoggingEvent> stdOutAppender = new ConsoleAppender<ILoggingEvent>();
