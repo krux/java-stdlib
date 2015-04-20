@@ -3,62 +3,47 @@
  */
 package com.krux.stdlib.statsd;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author cass
  * 
  */
-public class NoopStatsdClient extends StatsdClient {
+public class NoopStatsdClient implements KruxStatsSender {
 
     public NoopStatsdClient() {
     }
 
     @Override
-    public String toString() {
-        return NoopStatsdClient.class.getName();
+    public void count(String key) {
+        // TODO Auto-generated method stub
+        
     }
 
-    public long getQueueOfferTimeout() {
-        return 0;
+    @Override
+    public void count(String key, int count) {
+        // TODO Auto-generated method stub
+        
     }
 
-    public void setQueueOfferTimeout( long queueOfferTimeout ) {
-        return;
+    @Override
+    public void time(String key, long millis) {
+        // TODO Auto-generated method stub
+        
     }
 
-    public void shutdown() {
-        return;
+    @Override
+    public void time(String key, long time, TimeUnit timeunit) {
+        // TODO Auto-generated method stub
+        
     }
 
-    public boolean count( String key ) {
-        return false;
+    @Override
+    public void gauge(String key, long value) {
+        // TODO Auto-generated method stub
+        
     }
 
-    public boolean count( String key, int count ) {
-        return false;
-    }
 
-    public boolean count( String key, double sampleRate ) {
-        return false;
-    }
-
-    public boolean count( String key, int count, double sampleRate ) {
-        return false;
-    }
-
-    public boolean time( String key, long millis ) {
-        return false;
-    }
-
-    public boolean time( String key, long millis, double sampleRate ) {
-        return false;
-    }
-
-    public boolean gauge( String key, long value ) {
-        return false;
-    }
-
-    public boolean stat( StatsdStatType type, String key, long value, double sampleRate ) {
-        return false;
-    }
 
 }

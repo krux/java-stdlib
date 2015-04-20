@@ -31,11 +31,10 @@ import com.krux.server.http.StdHttpServer;
 import com.krux.server.http.StdHttpServerHandler;
 import com.krux.stdlib.logging.LoggerConfigurator;
 import com.krux.stdlib.shutdown.ShutdownTask;
-import com.krux.stdlib.shutdown.Shutdownable;
 import com.krux.stdlib.statsd.JDKAndSystemStatsdReporter;
-import com.krux.stdlib.statsd.KruxStatsdClient;
+import com.krux.stdlib.statsd.KruxStatsSender;
+import com.krux.stdlib.statsd.KruxStatsdGraphiteClient;
 import com.krux.stdlib.statsd.NoopStatsdClient;
-import com.krux.stdlib.statsd.StatsdClient;
 
 /**
  * @author casspc
@@ -48,7 +47,7 @@ public class KruxStdLib {
     /**
      * See
      */
-    public static StatsdClient STATSD = new NoopStatsdClient();
+    public static KruxStatsSender STATSD = new NoopStatsdClient();
     public static String ENV;
     public static String APP_NAME;
     public static String APP_VERSION;
@@ -263,7 +262,7 @@ public class KruxStdLib {
                 // without a value, enables statsd
                 if ( _options.has( enableStatsd ) ) {
                     LOGGER.info( "statsd metrics enabled" );
-                    STATSD = new KruxStatsdClient( _options.valueOf( statsdHost ), _options.valueOf( statsdPort ), LOGGER );
+                    STATSD = new KruxStatsdGraphiteClient();
                 } else {
                     STATSD = new NoopStatsdClient();
                 }
