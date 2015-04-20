@@ -30,15 +30,21 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
 
     final static Logger log = (Logger) LoggerFactory.getLogger( KruxStatsdGraphiteClient.class );
 
-    final static String keyNamespace;
+    //final static String keyNamespace;
     static String statsdSuffix;
     static final MetricRegistry metrics = new MetricRegistry();
     static final Map<String,Timer> timers = new HashMap<>();
     static final Map<String,Meter> counters = new HashMap<>();
     static final Map<String,AtomicLong> gaugeValues = new HashMap<>();
+    
+    static final Map<String,String> prefixes = new HashMap<>();
+    
 
     static {
-        keyNamespace = KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".";
+        prefixes.put( "timers", "timers." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
+        prefixes.put( "counters", "counters." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
+        prefixes.put( "gauges", "gauges." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
+        //keyNamespace = KruxStdLib.STASD_ENV.toLowerCase() + ".{}." + KruxStdLib.APP_NAME.toLowerCase() + ".";
         String graphiteHost = "";
         try {
             String hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
@@ -119,44 +125,44 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
     @Override
     public void gauge( String key, long value ) {
         registerGauge( key );
-        gaugeValues.get( fullKey( key ) ).set( value );
+        gaugeValues.get( fullKey( key, "gauges" ) ).set( value );
     }
     
     private void registerGauge(String key) {
-        AtomicLong gauge = gaugeValues.get( fullKey( key ) );
+        AtomicLong gauge = gaugeValues.get( fullKey( key, "gauges" ) );
         if ( gauge == null ) {
-            gaugeValues.put( fullKey( key ), new AtomicLong() );
-            metrics.register( fullKey( key ), 
-                    new Gauge<AtomicLong>() {
+            gaugeValues.put( fullKey( key, "gauges" ), new AtomicLong() );
+            metrics.register( fullKey( key, "gauges" ), 
+                    new Gauge<Long>() {
                         
                         @Override
-                        public AtomicLong getValue() {
-                            return gaugeValues.get( fullKey( key ) );
+                        public Long getValue() {
+                            return gaugeValues.get( fullKey( key, "gauges" ) ).get();
                         }
                     });
         }
     }
 
     private Meter getCounter(String key) {
-        Meter counter = counters.get( fullKey( key ) );
+        Meter counter = counters.get( fullKey( key, "counters" ) );
         if ( counter == null ) {
-            counter = metrics.meter( fullKey( key ) );
-            counters.put( fullKey( key ), counter );
+            counter = metrics.meter( fullKey( key, "counters" ) );
+            counters.put( fullKey( key, "counters" ), counter );
         }
         return counter;
     }
     
     private Timer getTimer(String key) {
-        Timer timer = timers.get( fullKey( key ) );
+        Timer timer = timers.get( fullKey( key, "timers" ) );
         if ( timer == null ) {
-            timer = metrics.timer( fullKey( key ) );
-            timers.put( fullKey( key ), timer );
+            timer = metrics.timer( fullKey( key, "timers" ) );
+            timers.put( fullKey( key, "timers" ), timer );
         }
         return timer;
     }
 
-    private String fullKey( String appKey ) {
-        return keyNamespace + appKey.toLowerCase() + statsdSuffix;
+    private String fullKey( String appKey, String metricType ) {
+        return prefixes.get( metricType ) + appKey.toLowerCase() + statsdSuffix;
     }
 
 }
