@@ -48,12 +48,16 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
         String graphiteHost = "";
         try {
             String hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
-            if ( hostName.contains( "pdx" ) ) {
-                graphiteHost = "graphite-collector-pdx.krxd.net";
-            } else if ( hostName.contains( "dub" ) ) {
-                graphiteHost = "graphite-collector-dub.krxd.net";
+            if ( !KruxStdLib.STASD_ENV.equals("local") ) {
+                if ( hostName.contains( "pdx" ) ) {
+                    graphiteHost = "graphite-collector-pdx.krxd.net";
+                } else if ( hostName.contains( "dub" ) ) {
+                    graphiteHost = "graphite-collector-dub.krxd.net";
+                } else {
+                    graphiteHost = "graphite-collector-ash.krxd.net";
+                }
             } else {
-                graphiteHost = "graphite-collector-ash.krxd.net";
+                graphiteHost = "localhost";
             }
             if ( hostName.contains( "." ) ) {
                 String[] parts = hostName.split( "\\." );
