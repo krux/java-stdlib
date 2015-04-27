@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.krux</groupId>
     <artifactId>krux-stdlib</artifactId>
-    <version>1.6.8</version>
+    <version>1.6.10</version>
     <packaging>jar</packaging>
 
     <name>krux-stdlib</name>
@@ -51,11 +51,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>3.3.2</version>
-      </dependency>
-      <dependency>
-        <groupId>com.netflix.archaius</groupId>
-        <artifactId>archaius-core</artifactId>
-        <version>0.6.3</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
