@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.krux.stdlib;
 
 import static java.util.Arrays.asList;
@@ -31,7 +28,6 @@ import com.krux.server.http.StdHttpServer;
 import com.krux.server.http.StdHttpServerHandler;
 import com.krux.stdlib.logging.LoggerConfigurator;
 import com.krux.stdlib.shutdown.ShutdownTask;
-import com.krux.stdlib.shutdown.Shutdownable;
 import com.krux.stdlib.statsd.JDKAndSystemStatsdReporter;
 import com.krux.stdlib.statsd.KruxStatsdClient;
 import com.krux.stdlib.statsd.NoopStatsdClient;
@@ -39,15 +35,12 @@ import com.krux.stdlib.statsd.StatsdClient;
 
 /**
  * @author casspc
- * 
+ *
  */
 public class KruxStdLib {
 
     static Logger LOGGER = null;
 
-    /**
-     * See
-     */
     public static StatsdClient STATSD = new NoopStatsdClient();
     public static String ENV;
     public static String APP_NAME;
@@ -62,6 +55,15 @@ public class KruxStdLib {
     public static boolean httpListenerRunning = false;
 
     public static int HTTP_PORT = 0;
+
+    private static final String KRUX_APP_NAME_PROPERTY = "krux.app.name";
+    private static final String KRUX_APP_DIR_PROPERTY = "krux.app.dir";
+    private static final String KRUX_ENVIRONMENT_PROPERTY = "krux.environment";
+    private static final String KRUX_LOGGER_LEVEL_PROPERTY = "krux.logger.level";
+    private static final String KRUX_STATS_ENVIRONMENT_PROPERTY = "krux.stats.environment";
+    private static final String KRUX_STATS_HOST_PROPERTY = "krux.stats.host";
+    private static final String KRUX_STATS_PORT_PROPERTY = "krux.stats.port";
+    private static final String KRUX_STATS_ENABLED_PROPERTY = "krux.stats.enabled";
 
     // holds all registered Runnable shutdown hooks (which are executed
     // synchronously in the
@@ -80,7 +82,7 @@ public class KruxStdLib {
      * this class before initializing it. (see this class' source for examples
      * and http://pholser.github.io/jopt-simple/examples.html for details on how
      * to create and configure the OptionParser)
-     * 
+     *
      * @param parser
      *            a Configured OptionParser
      */
@@ -98,7 +100,7 @@ public class KruxStdLib {
     /**
      * Initializes the std libary static functions, including logging, statsd
      * client and a "status" http listener
-     * 
+     *
      * @param args
      *            The command line args that were passed to your main( String[]
      *            args )
@@ -154,7 +156,7 @@ public class KruxStdLib {
     /**
      * Initializes the std libary static functions, including logging, statsd
      * client and a "status" http listener
-     * 
+     *
      * @param args
      *            The command line args that were passed to your main( String[]
      *            args )
@@ -166,14 +168,14 @@ public class KruxStdLib {
             // parse command line, handle common needs
 
             // some defaults
-            final String defaultStatsdHost = "localhost";
-            final int defaultStatsdPort = 8125;
-            final String defaultEnv = "dev";
-            final String defaultLogLevel = "WARN";
-            final String defaultAppName = getMainClassName();
+            final String defaultStatsdHost = System.getProperty(KRUX_STATS_HOST_PROPERTY, "localhost");
+            final int defaultStatsdPort = Integer.parseInt(System.getProperty(KRUX_STATS_PORT_PROPERTY, "8125"));
+            final String defaultEnv = System.getProperty(KRUX_ENVIRONMENT_PROPERTY, "dev");
+            final String defaultLogLevel = System.getProperty(KRUX_LOGGER_LEVEL_PROPERTY, "WARN");
+            final String defaultAppName = System.getProperty(KRUX_APP_NAME_PROPERTY, getMainClassName());
+            final String baseAppDirDefault = System.getProperty(KRUX_APP_DIR_PROPERTY, "/tmp");
+            final String statsEnvironmentDefault = System.getProperty(KRUX_STATS_ENVIRONMENT_PROPERTY, "dev");
             final Integer httpListenerPort = 0;
-            final String baseAppDirDefault = "/tmp";
-            final String statsEnvironmentDefault = "dev";
             final int defaultHeapReporterIntervalMs = 1000;
 
             OptionParser parser;
@@ -231,25 +233,14 @@ public class KruxStdLib {
             APP_NAME = _options.valueOf( appNameOption );
 
             // Set system properties for things that care
-            if (_options.has(appNameOption) || System.getProperty("krux.application") == null) {
-                System.setProperty("krux.application", APP_NAME);
-            }
-            if (_options.has(environment) || System.getProperty("krux.environment") == null) {
-                System.setProperty("krux.environment", ENV);
-            }
-            if (_options.has(logLevel) || System.getProperty("krux.logger.level") == null) {
-                System.setProperty("krux.logger.level", _options.valueOf(logLevel));
-            }
-            if (_options.has(statsEnvironment) || System.getProperty("krux.stats.environment") == null) {
-                System.setProperty("krux.stats.environment", STASD_ENV);
-            }
-            if (_options.has(statsdHost) || System.getProperty("krux.stats.host") == null) {
-                System.setProperty("krux.stats.host", _options.valueOf(statsdHost));
-            }
-            if (_options.has(statsdPort) || System.getProperty("krux.stats.port") == null) {
-                System.setProperty("krux.stats.port", _options.valueOf(statsdPort).toString());
-            }
-            System.setProperty("krux.stats.enabled", _options.has(enableStatsd) ? "true" : "false");
+            System.setProperty(KRUX_ENVIRONMENT_PROPERTY, ENV);
+            System.setProperty(KRUX_APP_NAME_PROPERTY, APP_NAME);
+            System.setProperty(KRUX_APP_DIR_PROPERTY, _options.valueOf(baseAppDirectory));
+            System.setProperty(KRUX_LOGGER_LEVEL_PROPERTY, _options.valueOf(logLevel));
+            System.setProperty(KRUX_STATS_ENABLED_PROPERTY, _options.has(enableStatsd) ? "true" : "false");
+            System.setProperty(KRUX_STATS_HOST_PROPERTY, _options.valueOf(statsdHost));
+            System.setProperty(KRUX_STATS_PORT_PROPERTY, _options.valueOf(statsdPort).toString());
+            System.setProperty(KRUX_STATS_ENVIRONMENT_PROPERTY, STASD_ENV);
 
             // setup logging level
             // first, try to suppress log4j warnings
