@@ -230,6 +230,27 @@ public class KruxStdLib {
             // set global app name
             APP_NAME = _options.valueOf( appNameOption );
 
+            // Set system properties for things that care
+            if (_options.has(appNameOption) || System.getProperty("krux.application") == null) {
+                System.setProperty("krux.application", APP_NAME);
+            }
+            if (_options.has(environment) || System.getProperty("krux.environment") == null) {
+                System.setProperty("krux.environment", ENV);
+            }
+            if (_options.has(logLevel) || System.getProperty("krux.logger.level") == null) {
+                System.setProperty("krux.logger.level", _options.valueOf(logLevel));
+            }
+            if (_options.has(statsEnvironment) || System.getProperty("krux.stats.environment") == null) {
+                System.setProperty("krux.stats.environment", STASD_ENV);
+            }
+            if (_options.has(statsdHost) || System.getProperty("krux.stats.host") == null) {
+                System.setProperty("krux.stats.host", _options.valueOf(statsdHost));
+            }
+            if (_options.has(statsdPort) || System.getProperty("krux.stats.port") == null) {
+                System.setProperty("krux.stats.port", _options.valueOf(statsdPort).toString());
+            }
+            System.setProperty("krux.stats.enabled", _options.has(enableStatsd) ? "true" : "false");
+
             // setup logging level
             // first, try to suppress log4j warnings
             setupLogging( logLevel, handleLogRotation, APP_NAME );
@@ -254,7 +275,7 @@ public class KruxStdLib {
                 appProps.load( StdHttpServerHandler.class.getClassLoader().getResourceAsStream( "application.properties" ) );
                 APP_VERSION = appProps.getProperty( "app.pom.version", "n/a" );
             } catch ( Exception e ) {
-                LOGGER.warn("Cannot load application properties");
+                // Ignore. LOGGER.warn("Cannot load application properties");
             }
 
             // setup statsd
@@ -312,7 +333,7 @@ public class KruxStdLib {
                 t.start();
                 httpListenerRunning = true;
             } else {
-                LOGGER.warn( "Not starting HTTP listener, cli option 'http-port' is not set" );
+                // Ignore LOGGER.warn( "Not starting HTTP listener, cli option 'http-port' is not set" );
             }
 
             _initialized = true;
