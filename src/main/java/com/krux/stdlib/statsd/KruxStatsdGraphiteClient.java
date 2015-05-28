@@ -38,9 +38,14 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
     static final Map<String,AtomicLong> gaugeValues = new HashMap<>();
     
     static final Map<String,String> prefixes = new HashMap<>();
-    
+    static Graphite graphite = null;
+    static KruxGraphiteReporter graphiteReporter = null;
 
     static {
+        setupReporting();
+    }
+    
+    public static void setupReporting() {
         prefixes.put( "timers", "timers." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
         prefixes.put( "counters", "counters." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
         prefixes.put( "gauges", "gauges." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
@@ -69,14 +74,23 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
             statsdSuffix = "." + "unknown";
         }
         
-        final Graphite graphite = new Graphite(new InetSocketAddress(graphiteHost, 2029));
-        final KruxGraphiteReporter graphiteReporter = KruxGraphiteReporter.forRegistry(metrics)
+        if ( graphiteReporter != null ) {
+            try {
+                graphiteReporter.close();
+                graphite.close();
+            } catch ( Exception e ) {
+                log.error( "Cannot cleanly close graphite reporter", e );
+            }
+        }
+        
+        graphite = new Graphite(new InetSocketAddress(graphiteHost, 2029));
+        graphiteReporter = KruxGraphiteReporter.forRegistry(metrics)
                                                           .prefixedWith( "stats" )
                                                           .convertRatesTo(TimeUnit.SECONDS)
                                                           .convertDurationsTo(TimeUnit.MILLISECONDS)
                                                           .filter(MetricFilter.ALL)
                                                           .build(graphite);
-        graphiteReporter.start(10, TimeUnit.SECONDS);
+        graphiteReporter.start(10, TimeUnit.SECONDS);        
     }
 
     public KruxStatsdGraphiteClient() {
