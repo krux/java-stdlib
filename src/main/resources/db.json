@@ -1,0 +1,44 @@
+{
+  "dataconsole_prod": {
+    "driver": "com.mysql.jdbc.Driver",
+    "url": "jdbc:mysql://dataconsole.rds-master.krxd.net/krux?useServerPrepStmts=false&rewriteBatchedStatements=true",
+    "user": "writer",
+    "password": "kruxd"
+  },
+  "console_prod": {
+    "driver": "com.mysql.jdbc.Driver",
+    "url": "jdbc:mysql://console.rds-master.krxd.net/rb_krux?useServerPrepStmts=false&rewriteBatchedStatements=true",
+    "user": "writer",
+    "password": "kruxd"
+  },
+  "dataconsole_dev": {
+    "driver": "com.mysql.jdbc.Driver",
+    "url": "jdbc:mysql://localhost/krux",
+    "user": "writer",
+    "password": "kruxd"
+  },
+  "console_dev": {
+    "driver": "com.mysql.jdbc.Driver",
+    "url": "jdbc:mysql://localhost/rb_krux",
+    "user": "writer",
+    "password": "kruxd"
+  },
+  "console_staging": {
+    "driver": "com.mysql.jdbc.Driver",
+    "url": "jdbc:mysql://console-staging.rds-master.krxd.net/rb_krux",
+    "user": "writer",
+    "password": "kruxd"
+  },
+  "nielsen_prod": {
+    "driver": "com.mysql.jdbc.Driver",
+    "url": "jdbc:mysql://krux-nielsen.cfb1lrfxdoeo.us-east-1.rds.amazonaws.com/krux",
+    "user": "kruxnielsen",
+    "password": "Ic3Cr5am"
+  },
+  "redshift_prod": {
+    "driver": "org.postgresql.Driver",
+    "url": "jdbc:postgresql://reports.rs.krxd.net:5439/kruxreports?tcpKeepAlive=true",
+    "user": "krux",
+    "password": "C0rkscrew"
+  }
+}

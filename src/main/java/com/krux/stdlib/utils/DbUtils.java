@@ -19,14 +19,14 @@ import com.krux.stdlib.KruxStdLib;
  */
 public class DbUtils {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbUtils.class.getName());
+
     /**
      * Get a database connection for the specified environment.
-     * 
+     *
      * @return the database connection if one could be established; null
      *         otherwise
      */
-    private static final Logger log = LoggerFactory.getLogger( DbUtils.class.getName() );
-
     public static Connection getDbConnection() {
         ConfigProperties kprops = new ConfigProperties();
         return getDbConnection( kprops.getJdbcDriver(), kprops.getJdbcUrl(), kprops.getJdbcUser(), kprops.getJdbcPassword() );
@@ -37,15 +37,15 @@ public class DbUtils {
         long start = System.currentTimeMillis();
         try {
             Class.forName( jdbcDriver );
-            log.info( "Connecting to " + jdbcUrl + " as user " + jdbcUser );
+            LOGGER.info("Connecting to " + jdbcUrl + " as user " + jdbcUser);
             conn = DriverManager.getConnection( jdbcUrl, jdbcUser, jdbcPassword );
         } catch ( Exception ex ) {
-            log.error( "db_util", ex );
+            LOGGER.error("db_util", ex);
             KruxStdLib.STATSD.count( "db_util_get_db_conn_err", 1 );
             conn = null;
         }
         long time = System.currentTimeMillis() - start;
-        log.info( "DB get connection took " + time + "ms." );
+        LOGGER.info("DB get connection took " + time + "ms.");
         KruxStdLib.STATSD.time( "get_db_conn", time );
         return conn;
     }
@@ -63,15 +63,15 @@ public class DbUtils {
                 conn.close();
             } catch ( SQLException sqe ) {
                 // an error occured while closing the connection.
-                // there's really not much we can do at this point, so we log
+                // there's really not much we can do at this point, so we LOGGER
                 // the exception and return
                 String errorMsg = sqe.getMessage();
-                log.error( "db_util", errorMsg );
+                LOGGER.error("db_util", errorMsg);
                 KruxStdLib.STATSD.count( "db_util_close_db_conn_err", 1 );
             }
         }
         long time = System.currentTimeMillis() - start;
-        log.info( "DB connection close took " + time + "ms." );
+        LOGGER.info("DB connection close took " + time + "ms.");
         KruxStdLib.STATSD.time( "close_db_conn", time );
     }
 
@@ -91,12 +91,12 @@ public class DbUtils {
                 // there's really not much we can do at this point, so we log
                 // the exception and return
                 String errorMsg = sqe.getMessage();
-                log.error( "db_util", errorMsg );
+                LOGGER.error("db_util", errorMsg);
                 KruxStdLib.STATSD.count( "db_util_close_ps_err", 1 );
             }
         }
         long time = System.currentTimeMillis() - start;
-        log.info( "DB PreparedStatement close took " + time + "ms." );
+        LOGGER.info("DB PreparedStatement close took " + time + "ms.");
         KruxStdLib.STATSD.time( "close_db_ps", time );
     }
 
@@ -116,12 +116,12 @@ public class DbUtils {
                 // there's really not much we can do at this point, so we log
                 // the exception and return
                 String errorMsg = sqe.getMessage();
-                log.error( "db_util", errorMsg );
+                LOGGER.error("db_util", errorMsg);
                 KruxStdLib.STATSD.count( "db_util_close_rs_err", 1 );
             }
         }
         long time = System.currentTimeMillis() - start;
-        log.info( "DB ResultSet close took " + time + "ms." );
+        LOGGER.info("DB ResultSet close took " + time + "ms.");
         KruxStdLib.STATSD.time( "close_db_rs", time );
     }
 }
