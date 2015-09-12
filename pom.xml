@@ -28,6 +28,7 @@
         <module>krux-stdlib-cl-parsing</module>
         <module>krux-stdlib-netty-web</module>
         <module>krux-stdlib-logging</module>
+        <module>krux-stdlib-examples</module>
     </modules>
 
     <build>
