@@ -16,35 +16,35 @@ import org.slf4j.LoggerFactory;
  */
 public class StdOutErrLog {
 
-    private static final Logger logger = LoggerFactory.getLogger( StdOutErrLog.class );
+    private static final Logger logger = LoggerFactory.getLogger(StdOutErrLog.class);
 
     public static void tieSystemOutAndErrToLog() {
-        System.setOut( createLoggingProxy( System.out ) );
-        System.setErr( createLoggingProxyErr( System.err ) );
+        System.setOut(createLoggingProxy(System.out));
+        System.setErr(createLoggingProxyErr(System.err));
     }
 
-    public static PrintStream createLoggingProxy( final PrintStream realPrintStream ) {
-        return new PrintStream( realPrintStream ) {
-            public void print( final String string ) {
-                if ( !string.contains( "log4j:WARN" ) )
-                    logger.info( string.replace( '\n', ' ' ) );
+    public static PrintStream createLoggingProxy(final PrintStream realPrintStream) {
+        return new PrintStream(realPrintStream) {
+            public void print(final String string) {
+                if (!string.contains("log4j:WARN"))
+                    logger.info(string.replace('\n', ' '));
             }
-            
-            public void println( final String string ) {
-                print( string );
+
+            public void println(final String string) {
+                print(string);
             }
         };
     }
 
-    public static PrintStream createLoggingProxyErr( final PrintStream realPrintStream ) {
-        return new PrintStream( realPrintStream ) {
-            public void print( final String string ) {
-                if ( !string.contains( "log4j:WARN" ) )
-                    logger.error( string.replace( '\n', ' ' ) );
+    public static PrintStream createLoggingProxyErr(final PrintStream realPrintStream) {
+        return new PrintStream(realPrintStream) {
+            public void print(final String string) {
+                if (!string.contains("log4j:WARN"))
+                    logger.error(string.replace('\n', ' '));
             }
-            
-            public void println( final String string ) {
-                print( string );
+
+            public void println(final String string) {
+                print(string);
             }
         };
     }

@@ -19,9 +19,9 @@ import com.krux.stdlib.shutdown.ShutdownTask;
  */
 public class ExampleMain {
 
-    final static Logger logger = LoggerFactory.getLogger( ExampleMain.class );
+    final static Logger logger = LoggerFactory.getLogger(ExampleMain.class);
 
-    public static void main( String[] args ) {
+    public static void main(String[] args) {
 
         // The KruxStdLib handles parsing of a set of reserved command line
         // options common across
@@ -37,15 +37,15 @@ public class ExampleMain {
 
         // handle a couple custom cli-params
         OptionParser parser = new OptionParser();
-        OptionSpec<String> optionalOption = parser.accepts( "optional-option", "An optional custom option" )
-                .withOptionalArg().ofType( String.class ).defaultsTo( "value1" );
+        OptionSpec<String> optionalOption = parser.accepts("optional-option", "An optional custom option").withOptionalArg()
+                .ofType(String.class).defaultsTo("value1");
 
-        OptionSpec<String> requiredOption = parser.accepts( "required-option", "A required custom option" )
-                .withRequiredArg().ofType( String.class ).defaultsTo( "value2" );
+        OptionSpec<String> requiredOption = parser.accepts("required-option", "A required custom option").withRequiredArg()
+                .ofType(String.class).defaultsTo("value2");
 
         // give parser to KruxStdLib so it can add our params to the reserved
         // list
-        KruxStdLib.setOptionParser( parser );
+        KruxStdLib.setOptionParser(parser);
 
         // Initializing the KruxStdLib will do a few things:
         // 1. The command line args passed to initialize() are parsed and
@@ -67,46 +67,49 @@ public class ExampleMain {
         // order they were
         // added to the list.
         // add another shutdown hook
-        KruxStdLib.registerShutdownHook( new ShutdownTask( 50 ) { //shutdown tasks are executed in order of priority
+        KruxStdLib.registerShutdownHook(new ShutdownTask(50) { // shutdown tasks
+                                                               // are executed
+                                                               // in order of
+                                                               // priority
             @Override
             public void run() {
-                System.out.print( "This shutdown hook was registered BEFORE initializing KruxStdLib with priority 50" );
+                System.out.print("This shutdown hook was registered BEFORE initializing KruxStdLib with priority 50");
             }
-        } );
+        });
 
         // add web handlers
-        KruxStdLib.registerHttpHandler( "/myHandler", new ExampleServerHandler() );
-        KruxStdLib.registerHttpHandler( "/exception", new ExceptionServerHandler() );
+        KruxStdLib.registerHttpHandler("/myHandler", new ExampleServerHandler());
+        KruxStdLib.registerHttpHandler("/exception", new ExceptionServerHandler());
 
         // initialize the lib, watch the magic unfold
-        OptionSet options = KruxStdLib.initialize( args );
+        OptionSet options = KruxStdLib.initialize(args);
 
         // add another shutdown hook
-        KruxStdLib.registerShutdownHook( new ShutdownTask( 10 ) {
+        KruxStdLib.registerShutdownHook(new ShutdownTask(10) {
             @Override
             public void run() {
-                System.out.println( "This shutdown hook was registered AFTER initializing KruxStdLib with priority 10" );
+                System.out.println("This shutdown hook was registered AFTER initializing KruxStdLib with priority 10");
             }
-        } );
+        });
 
         // get value of an option
-        String s = options.valueOf( optionalOption );
+        String s = options.valueOf(optionalOption);
 
-        logger.info( "{}: {}", optionalOption.toString(), options.valueOf( optionalOption ) );
-        logger.info( "{}: {}", requiredOption.toString(), options.valueOf( requiredOption ) );
-        logger.debug( "This was logged using the stdlib logging configuration" );
-        logger.warn( "This was logged using the stdlib logging configuration" );
-        logger.error( "This was logged using the stdlib logging configuration" );
+        logger.info("{}: {}", optionalOption.toString(), options.valueOf(optionalOption));
+        logger.info("{}: {}", requiredOption.toString(), options.valueOf(requiredOption));
+        logger.debug("This was logged using the stdlib logging configuration");
+        logger.warn("This was logged using the stdlib logging configuration");
+        logger.error("This was logged using the stdlib logging configuration");
 
-        int webServerPort = (Integer) options.valueOf( "http-port" );
-        logger.info( "Started web server" );
+        int webServerPort = (Integer) options.valueOf("http-port");
+        logger.info("Started web server");
 
         try {
-            throw new Exception( "An exception was thrown" );
-        } catch ( Exception e ) {
-            logger.error( "Uh oh.", e );
+            throw new Exception("An exception was thrown");
+        } catch (Exception e) {
+            logger.error("Uh oh.", e);
         }
-        System.out.print( "This is printed to standard out" );
+        System.out.print("This is printed to standard out");
     }
 
 }

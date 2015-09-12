@@ -25,13 +25,15 @@ import com.codahale.metrics.graphite.GraphiteSender;
 /**
  * A reporter which publishes metric values to a Graphite server.
  *
- * @see <a href="http://graphite.wikidot.com/">Graphite - Scalable Realtime Graphing</a>
+ * @see <a href="http://graphite.wikidot.com/">Graphite - Scalable Realtime
+ *      Graphing</a>
  */
 public class KruxGraphiteReporter extends ScheduledReporter {
     /**
      * Returns a new {@link Builder} for {@link KruxGraphiteReporter}.
      *
-     * @param registry the registry to report
+     * @param registry
+     *            the registry to report
      * @return a {@link Builder} instance for a {@link KruxGraphiteReporter}
      */
     public static Builder forRegistry(MetricRegistry registry) {
@@ -39,9 +41,10 @@ public class KruxGraphiteReporter extends ScheduledReporter {
     }
 
     /**
-     * A builder for {@link KruxGraphiteReporter} instances. Defaults to not using a prefix, using the
-     * default clock, converting rates to events/second, converting durations to milliseconds, and
-     * not filtering metrics.
+     * A builder for {@link KruxGraphiteReporter} instances. Defaults to not
+     * using a prefix, using the default clock, converting rates to
+     * events/second, converting durations to milliseconds, and not filtering
+     * metrics.
      */
     public static class Builder {
         private final MetricRegistry registry;
@@ -63,7 +66,8 @@ public class KruxGraphiteReporter extends ScheduledReporter {
         /**
          * Use the given {@link Clock} instance for the time.
          *
-         * @param clock a {@link Clock} instance
+         * @param clock
+         *            a {@link Clock} instance
          * @return {@code this}
          */
         public Builder withClock(Clock clock) {
@@ -74,7 +78,8 @@ public class KruxGraphiteReporter extends ScheduledReporter {
         /**
          * Prefix all metric names with the given string.
          *
-         * @param prefix the prefix for all metric names
+         * @param prefix
+         *            the prefix for all metric names
          * @return {@code this}
          */
         public Builder prefixedWith(String prefix) {
@@ -85,7 +90,8 @@ public class KruxGraphiteReporter extends ScheduledReporter {
         /**
          * Convert rates to the given time unit.
          *
-         * @param rateUnit a unit of time
+         * @param rateUnit
+         *            a unit of time
          * @return {@code this}
          */
         public Builder convertRatesTo(TimeUnit rateUnit) {
@@ -96,7 +102,8 @@ public class KruxGraphiteReporter extends ScheduledReporter {
         /**
          * Convert durations to the given time unit.
          *
-         * @param durationUnit a unit of time
+         * @param durationUnit
+         *            a unit of time
          * @return {@code this}
          */
         public Builder convertDurationsTo(TimeUnit durationUnit) {
@@ -107,7 +114,8 @@ public class KruxGraphiteReporter extends ScheduledReporter {
         /**
          * Only report metrics which match the given filter.
          *
-         * @param filter a {@link MetricFilter}
+         * @param filter
+         *            a {@link MetricFilter}
          * @return {@code this}
          */
         public Builder filter(MetricFilter filter) {
@@ -116,20 +124,15 @@ public class KruxGraphiteReporter extends ScheduledReporter {
         }
 
         /**
-         * Builds a {@link KruxGraphiteReporter} with the given properties, sending metrics using the
-         * given {@link GraphiteSender}.
+         * Builds a {@link KruxGraphiteReporter} with the given properties,
+         * sending metrics using the given {@link GraphiteSender}.
          *
-         * @param graphite a {@link GraphiteSender}
+         * @param graphite
+         *            a {@link GraphiteSender}
          * @return a {@link KruxGraphiteReporter}
          */
         public KruxGraphiteReporter build(GraphiteSender graphite) {
-            return new KruxGraphiteReporter(registry,
-                                        graphite,
-                                        clock,
-                                        prefix,
-                                        rateUnit,
-                                        durationUnit,
-                                        filter);
+            return new KruxGraphiteReporter(registry, graphite, clock, prefix, rateUnit, durationUnit, filter);
         }
     }
 
@@ -139,13 +142,8 @@ public class KruxGraphiteReporter extends ScheduledReporter {
     private final Clock clock;
     private final String prefix;
 
-    private KruxGraphiteReporter(MetricRegistry registry,
-                             GraphiteSender graphite,
-                             Clock clock,
-                             String prefix,
-                             TimeUnit rateUnit,
-                             TimeUnit durationUnit,
-                             MetricFilter filter) {
+    private KruxGraphiteReporter(MetricRegistry registry, GraphiteSender graphite, Clock clock, String prefix,
+            TimeUnit rateUnit, TimeUnit durationUnit, MetricFilter filter) {
         super(registry, "graphite-reporter", filter, rateUnit, durationUnit);
         this.graphite = graphite;
         this.clock = clock;
@@ -153,17 +151,14 @@ public class KruxGraphiteReporter extends ScheduledReporter {
     }
 
     @Override
-    public void report(SortedMap<String, Gauge> gauges,
-                       SortedMap<String, Counter> counters,
-                       SortedMap<String, Histogram> histograms,
-                       SortedMap<String, Meter> meters,
-                       SortedMap<String, Timer> timers) {
+    public void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters,
+            SortedMap<String, Histogram> histograms, SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
         final long timestamp = clock.getTime() / 1000;
 
         // oh it'd be lovely to use Java 7 here
         try {
             if (!graphite.isConnected()) {
-    	          graphite.connect();
+                graphite.connect();
             }
 
             for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
@@ -218,45 +213,29 @@ public class KruxGraphiteReporter extends ScheduledReporter {
         graphite.send(prefix(name, "upper"), format(convertDuration(snapshot.getMax())), timestamp);
         graphite.send(prefix(name, "mean"), format(convertDuration(snapshot.getMean())), timestamp);
         graphite.send(prefix(name, "lower"), format(convertDuration(snapshot.getMin())), timestamp);
-        graphite.send(prefix(name, "std"),
-                      format(convertDuration(snapshot.getStdDev())),
-                      timestamp);
-//        graphite.send(prefix(name, "p50"),
-//                      format(convertDuration(snapshot.getMedian())),
-//                      timestamp);
-//        graphite.send(prefix(name, "p75"),
-//                      format(convertDuration(snapshot.get75thPercentile())),
-//                      timestamp);
-        graphite.send(prefix(name, "mean_95"),
-                      format(convertDuration(snapshot.get95thPercentile())),
-                      timestamp);
-//        graphite.send(prefix(name, "p98"),
-//                      format(convertDuration(snapshot.get98thPercentile())),
-//                      timestamp);
-        graphite.send(prefix(name, "mean_99"),
-                      format(convertDuration(snapshot.get99thPercentile())),
-                      timestamp);
-        graphite.send(prefix(name, "mean_999"),
-                      format(convertDuration(snapshot.get999thPercentile())),
-                      timestamp);
+        graphite.send(prefix(name, "std"), format(convertDuration(snapshot.getStdDev())), timestamp);
+        // graphite.send(prefix(name, "p50"),
+        // format(convertDuration(snapshot.getMedian())),
+        // timestamp);
+        // graphite.send(prefix(name, "p75"),
+        // format(convertDuration(snapshot.get75thPercentile())),
+        // timestamp);
+        graphite.send(prefix(name, "mean_95"), format(convertDuration(snapshot.get95thPercentile())), timestamp);
+        // graphite.send(prefix(name, "p98"),
+        // format(convertDuration(snapshot.get98thPercentile())),
+        // timestamp);
+        graphite.send(prefix(name, "mean_99"), format(convertDuration(snapshot.get99thPercentile())), timestamp);
+        graphite.send(prefix(name, "mean_999"), format(convertDuration(snapshot.get999thPercentile())), timestamp);
 
         reportMetered(name, timer, timestamp);
     }
 
     private void reportMetered(String name, Metered meter, long timestamp) throws IOException {
         graphite.send(prefix(name, "count"), format(meter.getCount()), timestamp);
-        graphite.send(prefix(name, "count_ps_m1_rate"),
-                      format(convertRate(meter.getOneMinuteRate())),
-                      timestamp);
-        graphite.send(prefix(name, "count_ps_m5_rate"),
-                      format(convertRate(meter.getFiveMinuteRate())),
-                      timestamp);
-        graphite.send(prefix(name, "count_ps_m15_rate"),
-                      format(convertRate(meter.getFifteenMinuteRate())),
-                      timestamp);
-        graphite.send(prefix(name, "count_ps"),
-                      format(convertRate(meter.getMeanRate())),
-                      timestamp);
+        graphite.send(prefix(name, "count_ps_m1_rate"), format(convertRate(meter.getOneMinuteRate())), timestamp);
+        graphite.send(prefix(name, "count_ps_m5_rate"), format(convertRate(meter.getFiveMinuteRate())), timestamp);
+        graphite.send(prefix(name, "count_ps_m15_rate"), format(convertRate(meter.getFifteenMinuteRate())), timestamp);
+        graphite.send(prefix(name, "count_ps"), format(convertRate(meter.getMeanRate())), timestamp);
     }
 
     private void reportHistogram(String name, Histogram histogram, long timestamp) throws IOException {
@@ -266,10 +245,13 @@ public class KruxGraphiteReporter extends ScheduledReporter {
         graphite.send(prefix(name, "mean"), format(snapshot.getMean()), timestamp);
         graphite.send(prefix(name, "lower"), format(snapshot.getMin()), timestamp);
         graphite.send(prefix(name, "std"), format(snapshot.getStdDev()), timestamp);
-//        graphite.send(prefix(name, "p50"), format(snapshot.getMedian()), timestamp);
-//        graphite.send(prefix(name, "p75"), format(snapshot.get75thPercentile()), timestamp);
+        // graphite.send(prefix(name, "p50"), format(snapshot.getMedian()),
+        // timestamp);
+        // graphite.send(prefix(name, "p75"),
+        // format(snapshot.get75thPercentile()), timestamp);
         graphite.send(prefix(name, "mean_95"), format(snapshot.get95thPercentile()), timestamp);
-//        graphite.send(prefix(name, "p98"), format(snapshot.get98thPercentile()), timestamp);
+        // graphite.send(prefix(name, "p98"),
+        // format(snapshot.get98thPercentile()), timestamp);
         graphite.send(prefix(name, "mean_99"), format(snapshot.get99thPercentile()), timestamp);
         graphite.send(prefix(name, "mean_999"), format(snapshot.get999thPercentile()), timestamp);
     }
@@ -311,7 +293,8 @@ public class KruxGraphiteReporter extends ScheduledReporter {
     }
 
     private String format(double v) {
-        // the Carbon plaintext format is pretty underspecified, but it seems like it just wants
+        // the Carbon plaintext format is pretty underspecified, but it seems
+        // like it just wants
         // US-formatted digits
         return String.format(Locale.US, "%2.2f", v);
     }

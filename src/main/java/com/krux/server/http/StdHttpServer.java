@@ -19,12 +19,12 @@ import org.slf4j.LoggerFactory;
  */
 public class StdHttpServer implements Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger( StdHttpServer.class.getName() );
+    private static final Logger log = LoggerFactory.getLogger(StdHttpServer.class.getName());
 
     private int _port;
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
 
-    public StdHttpServer( int port, Map<String, ChannelInboundHandlerAdapter> httpHandlers ) {
+    public StdHttpServer(int port, Map<String, ChannelInboundHandlerAdapter> httpHandlers) {
         _port = port;
         _httpHandlers = httpHandlers;
     }
@@ -32,26 +32,26 @@ public class StdHttpServer implements Runnable {
     public void run() {
 
         try {
-            log.info( "Starting HTTP Server, listening on port " + _port );
+            log.info("Starting HTTP Server, listening on port " + _port);
 
             // Configure the server.
-            EventLoopGroup bossGroup = new NioEventLoopGroup( 1 );
+            EventLoopGroup bossGroup = new NioEventLoopGroup(1);
             EventLoopGroup workerGroup = new NioEventLoopGroup();
             try {
                 ServerBootstrap b = new ServerBootstrap();
-                b.option( ChannelOption.SO_BACKLOG, 1024 );
-                b.group( bossGroup, workerGroup ).channel( NioServerSocketChannel.class )
-                        .childHandler( new StdHttpServerInitializer( _httpHandlers ) );
+                b.option(ChannelOption.SO_BACKLOG, 1024);
+                b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+                        .childHandler(new StdHttpServerInitializer(_httpHandlers));
 
-                Channel ch = b.bind( _port ).sync().channel();
+                Channel ch = b.bind(_port).sync().channel();
                 ch.closeFuture().sync();
 
             } finally {
                 bossGroup.shutdownGracefully();
                 workerGroup.shutdownGracefully();
             }
-        } catch ( Exception e ) {
-            log.error( "Cannot start HTTP server, shutting down", e );
+        } catch (Exception e) {
+            log.error("Cannot start HTTP server, shutting down", e);
             System.exit(1);
         }
     }

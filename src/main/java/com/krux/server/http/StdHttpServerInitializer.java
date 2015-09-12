@@ -13,12 +13,12 @@ public class StdHttpServerInitializer extends ChannelInitializer<SocketChannel> 
 
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
 
-    public StdHttpServerInitializer( Map<String, ChannelInboundHandlerAdapter> httpHandlers ) {
+    public StdHttpServerInitializer(Map<String, ChannelInboundHandlerAdapter> httpHandlers) {
         _httpHandlers = httpHandlers;
     }
 
     @Override
-    public void initChannel( SocketChannel ch ) throws Exception {
+    public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline p = ch.pipeline();
 
         // Uncomment the following line if you want HTTPS
@@ -27,8 +27,8 @@ public class StdHttpServerInitializer extends ChannelInitializer<SocketChannel> 
         // engine.setUseClientMode(false);
         // p.addLast("ssl", new SslHandler(engine));
 
-        p.addLast( "codec", new HttpServerCodec() );
-        p.addLast( "aggregator", new HttpObjectAggregator( 1048576 ) );
-        p.addLast( "handler", new StdHttpServerHandler( _httpHandlers ) );
+        p.addLast("codec", new HttpServerCodec());
+        p.addLast("aggregator", new HttpObjectAggregator(1048576));
+        p.addLast("handler", new StdHttpServerHandler(_httpHandlers));
     }
 }
