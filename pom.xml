@@ -11,7 +11,18 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- versions -->
         <slf4j.version>1.7.7</slf4j.version>
+        <jopt-simple.version>4.8</jopt-simple.version>
+        <commons-lang3.version>3.4</commons-lang3.version>
+        <archaius-core.version>0.7.1</archaius-core.version>
+        <logback-classic.version>1.1.2</logback-classic.version>
+        <logback-core.version>1.1.2</logback-core.version>
+        <metrics-core.version>3.1.0</metrics-core.version>
+        <metrics-graphite.version>3.1.0</metrics-graphite.version>
+        <netty-all.version>4.0.31.Final</netty-all.version>
+        <jackson-jr-objects.version>2.5.2</jackson-jr-objects.version>
+        <guice.version>4.0</guice.version>
     </properties>
 
     <distributionManagement>
@@ -74,9 +85,14 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>net.sf.jopt-simple</groupId>
                 <artifactId>jopt-simple</artifactId>
-                <version>4.8</version>
+                <version>${jopt-simple.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -86,48 +102,52 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.4</version>
+                <version>${commons-lang3.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netflix.archaius</groupId>
                 <artifactId>archaius-core</artifactId>
-                <version>0.6.3</version>
+                <version>${archaius-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.1.2</version>
+                <version>${logback-classic.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.1.2</version>
+                <version>${logback-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
-                <version>3.1.0</version>
+                <version>${metrics-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-graphite</artifactId>
-                <version>3.1.0</version>
+                <version>${metrics-graphite.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
-                <version>4.0.27.Final</version>
+                <version>${netty-all.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jr</groupId>
                 <artifactId>jackson-jr-objects</artifactId>
-                <version>2.5.2</version>
+                <version>${jackson-jr-objects.version}</version>
             </dependency>
+            
+            <!-- remove -->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>5.1.31</version>
             </dependency>
+            <!-- /remove -->
+            
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
