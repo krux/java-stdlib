@@ -4,7 +4,6 @@
 package com.krux.stdlib;
 
 import static java.util.Arrays.asList;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,27 +13,17 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Properties;
 import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.krux.stdlib.shutdown.ShutdownTask;
 
 import ch.qos.logback.classic.Level;
-
-import com.krux.server.http.StdHttpServer;
-import com.krux.server.http.StdHttpServerHandler;
-import com.krux.stdlib.logging.LoggerConfigurator;
-import com.krux.stdlib.shutdown.ShutdownTask;
-import com.krux.stdlib.statsd.JDKAndSystemStatsdReporter;
-import com.krux.stdlib.statsd.KruxStatsSender;
-import com.krux.stdlib.statsd.KruxStatsdGraphiteClient;
-import com.krux.stdlib.statsd.NoopStatsdClient;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
 /**
  * @author casspc
@@ -47,7 +36,7 @@ public class KruxStdLib {
     /**
      * See
      */
-    public static KruxStatsSender STATSD = new NoopStatsdClient();
+    public static KruxStatsSender STATSD = null;//new NoopStatsdClient();
     public static String ENV;
     public static String APP_NAME;
     public static String APP_VERSION;
@@ -249,7 +238,7 @@ public class KruxStdLib {
 
             Properties appProps = new Properties();
             try {
-                appProps.load(StdHttpServerHandler.class.getClassLoader().getResourceAsStream("application.properties"));
+//                appProps.load(StdHttpServerHandler.class.getClassLoader().getResourceAsStream("application.properties"));
                 APP_VERSION = appProps.getProperty("app.pom.version", "n/a");
             } catch (Exception e) {
                 LOGGER.warn("Cannot load application properties");
@@ -259,12 +248,12 @@ public class KruxStdLib {
             try {
                 // this one is not like the others. passing "--stats", with or
                 // without a value, enables statsd
-                if (_options.has(enableStatsd)) {
-                    LOGGER.info("statsd metrics enabled");
-                    STATSD = new KruxStatsdGraphiteClient();
-                } else {
-                    STATSD = new NoopStatsdClient();
-                }
+//                if (_options.has(enableStatsd)) {
+//                    LOGGER.info("statsd metrics enabled");
+//                    STATSD = new KruxStatsdGraphiteClient();
+//                } else {
+//                    STATSD = new NoopStatsdClient();
+//                }
             } catch (Exception e) {
                 LOGGER.warn("Cannot establish a statsd connection", e);
             }
@@ -284,18 +273,18 @@ public class KruxStdLib {
             });
 
             // setup a simple maintenance timer for reporting used heap size
-            // and other stuff in the future
-            final int heapStatsInterval = _options.valueOf(heapReporterIntervalMs);
-            final TimerTask timerTask = new JDKAndSystemStatsdReporter();
-            final Timer timer = new Timer(true);
-            timer.scheduleAtFixedRate(timerTask, 2 * 1000, heapStatsInterval);
+//            // and other stuff in the future
+//            final int heapStatsInterval = _options.valueOf(heapReporterIntervalMs);
+//            final TimerTask timerTask = new JDKAndSystemStatsdReporter();
+//            final Timer timer = new Timer(true);
+//            timer.scheduleAtFixedRate(timerTask, 2 * 1000, heapStatsInterval);
 
             // make sure we cancel that time, jic
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
                     try {
-                        timer.cancel();
+//                        timer.cancel();
                     } catch (Exception e) {
                         LOGGER.warn("Error while attemptin to shut down heap reporter", e);
                     }
@@ -305,10 +294,10 @@ public class KruxStdLib {
             // set up an http listener if the submitted port != 0
             // start http service on a separate thread
             if (HTTP_PORT != 0) {
-                Thread t = new Thread(new StdHttpServer(HTTP_PORT, httpHandlers));
-                t.setName("MainHttpServerThread");
-                t.start();
-                httpListenerRunning = true;
+//                Thread t = new Thread(new StdHttpServer(HTTP_PORT, httpHandlers));
+//                t.setName("MainHttpServerThread");
+//                t.start();
+//                httpListenerRunning = true;
             } else {
                 LOGGER.warn("Not starting HTTP listener, cli option 'http-port' is not set");
             }
@@ -340,14 +329,14 @@ public class KruxStdLib {
     }
 
     private static void setupLogging(OptionSpec<String> logLevel, OptionSpec<Boolean> handleLogRotation, String appName) {
-        if (LOGGER == null) {
-            if (_options.valueOf(handleLogRotation)) {
-                LoggerConfigurator.configureRotatingLogging(BASE_APP_DIR, _options.valueOf(logLevel), appName);
-            } else {
-                LoggerConfigurator.configureStdOutLogging(_options.valueOf(logLevel));
-            }
-            LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());
-        }
+//        if (LOGGER == null) {
+//            if (_options.valueOf(handleLogRotation)) {
+//                LoggerConfigurator.configureRotatingLogging(BASE_APP_DIR, _options.valueOf(logLevel), appName);
+//            } else {
+//                LoggerConfigurator.configureStdOutLogging(_options.valueOf(logLevel));
+//            }
+//            LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());
+//        }
     }
 
     private static String getMainClassName() {

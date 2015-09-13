@@ -3,3 +3,15 @@
 target/
 .classpath
 krux-stdlib.i*
+
+krux-stdlib-core/.project
+
+krux-stdlib-cl-parsing/.project
+
+krux-stdlib-netty-web/.project
+
+krux-stdlib-examples/.project
+
+krux-stdlib-stats/.project
+
+krux-stdlib-logging/.project
