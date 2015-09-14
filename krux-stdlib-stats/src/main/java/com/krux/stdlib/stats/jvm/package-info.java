@@ -5,4 +5,4 @@
  * @author casspc
  *
  */
-package com.krux.server.http;
+package com.krux.stdlib.stats.jvm;

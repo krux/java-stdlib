@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.krux.stdlib.statsd;
+package com.krux.stdlib.stats.graphite;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -13,14 +13,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.graphite.Graphite;
-import com.krux.stdlib.KruxStdLib;
+import com.krux.stdlib.stats.KruxStatsSender;
 
 /**
  * @author cass
@@ -42,22 +41,22 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
     static KruxGraphiteReporter graphiteReporter = null;
 
     static {
-        setupReporting();
+        setupReporting( "blah ");
     }
 
-    public static void setupReporting() {
+    public static void setupReporting( String env ) {
         prefixes.put("timers",
-                "timers." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
+                "timers." + env.toLowerCase() + "." + env.toLowerCase() + ".");
         prefixes.put("counters",
-                "counters." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
+                "counters." + env.toLowerCase() + "." + env.toLowerCase() + ".");
         prefixes.put("gauges",
-                "gauges." + KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".");
+                "gauges." + env.toLowerCase() + "." + env.toLowerCase() + ".");
         // keyNamespace = KruxStdLib.STASD_ENV.toLowerCase() + ".{}." +
         // KruxStdLib.APP_NAME.toLowerCase() + ".";
         String graphiteHost = "";
         try {
             String hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
-            if (!KruxStdLib.STASD_ENV.equals("local")) {
+            if (!env.equals("local")) {
                 if (hostName.contains("pdx")) {
                     graphiteHost = "graphite-collector-pdx.krxd.net";
                 } else if (hostName.contains("dub")) {

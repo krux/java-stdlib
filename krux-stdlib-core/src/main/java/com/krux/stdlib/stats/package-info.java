@@ -5,4 +5,4 @@
  * @author casspc
  *
  */
-package com.krux.stdlib.logging;
+package com.krux.stdlib.stats;

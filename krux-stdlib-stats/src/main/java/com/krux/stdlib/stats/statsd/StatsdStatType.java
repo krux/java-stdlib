@@ -1,4 +1,4 @@
-package com.krux.stdlib.statsd;
+package com.krux.stdlib.stats.statsd;
 
 /**
  * Enumerates the different types of stat supported by the statsd protocol.

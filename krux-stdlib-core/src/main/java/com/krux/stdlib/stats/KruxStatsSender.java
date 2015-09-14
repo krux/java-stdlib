@@ -1,4 +1,4 @@
-package com.krux.stdlib;
+package com.krux.stdlib.stats;
 
 import java.util.concurrent.TimeUnit;
 

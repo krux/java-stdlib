@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.krux.stdlib.statsd;
+package com.krux.stdlib.stats;
 
 import java.util.concurrent.TimeUnit;
 

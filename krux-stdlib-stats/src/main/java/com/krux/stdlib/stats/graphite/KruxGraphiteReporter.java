@@ -1,4 +1,4 @@
-package com.krux.stdlib.statsd;
+package com.krux.stdlib.stats.graphite;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -189,7 +189,7 @@ public class KruxGraphiteReporter extends ScheduledReporter {
             } catch (IOException e1) {
                 LOGGER.warn("Error closing Graphite", graphite, e);
             } finally {
-                KruxStatsdGraphiteClient.setupReporting();
+                KruxStatsdGraphiteClient.setupReporting( "cass" );
             }
         }
     }

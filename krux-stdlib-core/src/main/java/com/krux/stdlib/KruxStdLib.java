@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.krux.stdlib.shutdown.ShutdownTask;
+import com.krux.stdlib.stats.KruxStatsSender;
 
 import ch.qos.logback.classic.Level;
 import io.netty.channel.ChannelInboundHandlerAdapter;
