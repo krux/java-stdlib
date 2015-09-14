@@ -17,8 +17,10 @@ import java.util.Queue;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.krux.stdlib.http.server.HttpServiceManager;
 import com.krux.stdlib.shutdown.ShutdownTask;
 import com.krux.stdlib.stats.KruxStatsSender;
+import com.krux.stdlib.stats.StatsService;
 
 import ch.qos.logback.classic.Level;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -51,6 +53,19 @@ public class KruxStdLib {
     public static boolean httpListenerRunning = false;
 
     public static int HTTP_PORT = 0;
+    
+    static {
+        // setup statsd
+        try {
+            STATSD = StatsService.getInstance();
+        } catch (Exception e) {
+            LOGGER.warn("Cannot establish a statsd connection", e);
+        }
+        
+        // setup web server
+        HttpServiceManager manager = HttpServiceManager.getInstance();
+        manager.start();
+    }
 
     // holds all registered Runnable shutdown hooks (which are executed
     // synchronously in the
@@ -245,20 +260,6 @@ public class KruxStdLib {
                 LOGGER.warn("Cannot load application properties");
             }
 
-            // setup statsd
-            try {
-                // this one is not like the others. passing "--stats", with or
-                // without a value, enables statsd
-//                if (_options.has(enableStatsd)) {
-//                    LOGGER.info("statsd metrics enabled");
-//                    STATSD = new KruxStatsdGraphiteClient();
-//                } else {
-//                    STATSD = new NoopStatsdClient();
-//                }
-            } catch (Exception e) {
-                LOGGER.warn("Cannot establish a statsd connection", e);
-            }
-
             STATSD.count("process_start");
 
             // finally, setup a shutdown thread to run all registered
@@ -291,17 +292,6 @@ public class KruxStdLib {
                     }
                 }
             });
-
-            // set up an http listener if the submitted port != 0
-            // start http service on a separate thread
-            if (HTTP_PORT != 0) {
-//                Thread t = new Thread(new StdHttpServer(HTTP_PORT, httpHandlers));
-//                t.setName("MainHttpServerThread");
-//                t.start();
-//                httpListenerRunning = true;
-            } else {
-                LOGGER.warn("Not starting HTTP listener, cli option 'http-port' is not set");
-            }
 
             _initialized = true;
             LOGGER.info("** Started " + APP_NAME + " **");

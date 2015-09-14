@@ -19,13 +19,13 @@ import org.slf4j.Logger;
  * A Java statsd client. See <a
  * href="https://github.com/etsy/statsd">https://github.com/etsy/statsd</a> for
  * why you might want this.
- * <p/>
+ * <p>
  * This class has several constructors. When constructing instances of this
  * class, the <code>host</code> and <code>port</code> parameters determine where
  * to connect to the statsd server. Only the <code>host</code> parameter is
  * required. If the <code>port</code> parameter is less than zero, the default
- * port (8125) will be used.
- * <p/>
+ * port (8125) will be used.</p>
+ * <p>
  * The <code>queueSize</code> parameter is greater than 0, this instance will
  * operate an asychronous blocking queue of the given size. Instead of sending
  * stats to the server in the calling thread, new stats are enqueued. A
@@ -33,8 +33,8 @@ import org.slf4j.Logger;
  * queued stats to the server. In this mode of operation, the
  * {@link #shutdown()} method may be called to cause the background thread to
  * terminate. If the <code>queueSize</code> parameter is 0 or less, no queueing
- * is performed (and the shutdown() method does nothing).
- * <p/>
+ * is performed (and the shutdown() method does nothing).</p>
+ * <p>
  * The <code>logger</code> parameter can be used for reporting errors during
  * logging. This class has a set of protected <code>errorXxx(...)</code> methods
  * that are invoked in response to certain error conditions. The default
@@ -43,17 +43,17 @@ import org.slf4j.Logger;
  * method will log an error level message to the supplier <code>logger</code>.
  * This parameter may be null, in which case no error reporting will be done by
  * default. Users may subclass this class in order to customise error handling
- * for their own requirements.
- * <p/>
+ * for their own requirements.</p>
+ * <p>
  * Once an instance of this class has been created, it may be used to send stats
  * to a listening statsd server. The method to use depends on the type of stat
  * you wish to send. See the <code>count(...)</code>, <code>time(...)</code> and
- * <code>stat(...)</code> methods in their various forms.
- * <p/>
+ * <code>stat(...)</code> methods in their various forms.</p>
+ * <p>
  * When sending a stat to the statsd server, the message is constructed as a
  * Java string and then converted to bytes, normally using the platform default
  * charset. This choice of charset can be overridden by specifying the charset
- * name using the system property:
+ * name using the system property:</p>
  * <code>org.ubercraft.statsd.StatsdClient.CHARSET</code>.
  */
 public class StatsdClient {
