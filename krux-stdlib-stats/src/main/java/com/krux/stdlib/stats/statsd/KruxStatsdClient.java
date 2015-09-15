@@ -4,35 +4,25 @@
 package com.krux.stdlib.stats.statsd;
 
 import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.krux.stdlib.stats.KruxStatsSender;
 
 /**
  * @author cass
  * 
  */
-public class KruxStatsdClient extends StatsdClient {
+public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
 
-    final static Logger log = (Logger) LoggerFactory.getLogger( KruxStatsdClient.class );
+    final static Logger LOGGER = (Logger) LoggerFactory.getLogger( KruxStatsdClient.class );
 
-    final static String keyNamespace;
-    static String statsdSuffix;
-
-    static {
-        keyNamespace = ""; //KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".";
-        try {
-            String hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
-            if ( hostName.contains( "." ) ) {
-                String[] parts = hostName.split( "\\." );
-                hostName = parts[0];
-            }
-            statsdSuffix = "." + hostName;
-        } catch ( Exception e ) {
-            log.warn( "Cannot get a real hostname, defaulting to something stupid" );
-            statsdSuffix = "." + "unknown";
-        }
-    }
+    String _keyNamespace;
+    static String _statsdSuffix;
+    
+    public KruxStatsdClient() {}
 
     public KruxStatsdClient( String host, int port, Logger logger ) throws Exception {
         super( host, port, logger );
@@ -55,40 +45,62 @@ public class KruxStatsdClient extends StatsdClient {
         super.shutdown();
     }
 
-    public boolean count( String key ) {
-        return super.count( key );
+    @Override
+    public void count( String key ) {
+        super.count( key );
     }
 
-    public boolean count( String key, int count ) {
-        return super.count( key, count );
+    @Override
+    public void count( String key, int count ) {
+        super.count( key, count );
     }
 
-    public boolean count( String key, double sampleRate ) {
-        return super.count( key, sampleRate );
+    @Override
+    public void time( String key, long millis ) {
+        super.time( key, millis );
     }
 
-    public boolean count( String key, int count, double sampleRate ) {
-        return super.count( key, count, sampleRate );
-    }
-
-    public boolean time( String key, long millis ) {
-        return super.time( key, millis );
-    }
-
-    public boolean time( String key, long millis, double sampleRate ) {
-        return super.time( key, millis, sampleRate );
-    }
-
-    public boolean gauge( String key, long value ) {
-        return stat( StatsdStatType.GAUGE, key, value, 1.0 );
-    }
-
-    public boolean stat( StatsdStatType type, String key, long value, double sampleRate ) {
-        return super.stat( type, fullKey( key ), value, sampleRate );
+    @Override
+    public void gauge( String key, long value ) {
+        stat( StatsdStatType.GAUGE, key, value, 1.0 );
     }
 
     private String fullKey( String appKey ) {
-        return keyNamespace + appKey.toLowerCase() + statsdSuffix;
+        return _keyNamespace + appKey.toLowerCase() + _statsdSuffix;
+    }
+
+    @Override
+    public void start() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void stop() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void initialize() {
+        LOGGER.info("Initializing {}", this.getClass().getCanonicalName());
+        _keyNamespace = ""; //KruxStdLib.STASD_ENV.toLowerCase() + "." + KruxStdLib.APP_NAME.toLowerCase() + ".";
+        try {
+            String hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
+            if ( hostName.contains( "." ) ) {
+                String[] parts = hostName.split( "\\." );
+                hostName = parts[0];
+            }
+            _statsdSuffix = "." + hostName;
+        } catch ( Exception e ) {
+            LOGGER.warn( "Cannot get a real hostname, defaulting to something stupid" );
+            _statsdSuffix = "." + "unknown";
+        }
+    }
+
+    @Override
+    public void time(String key, long time, TimeUnit timeunit) {
+               
     }
 
 }

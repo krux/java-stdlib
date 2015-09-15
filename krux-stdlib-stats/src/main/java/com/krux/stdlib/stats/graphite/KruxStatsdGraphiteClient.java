@@ -191,4 +191,22 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
         return prefixes.get(metricType) + appKey.toLowerCase() + statsdSuffix;
     }
 
+    @Override
+    public void start() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void stop() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void initialize() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

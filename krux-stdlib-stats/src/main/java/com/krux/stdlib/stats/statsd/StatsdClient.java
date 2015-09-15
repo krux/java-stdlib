@@ -204,12 +204,12 @@ public class StatsdClient {
         }
     }
 
-    public boolean count( String key ) {
-        return count( key, 1 );
+    public void count( String key ) {
+        count( key, 1 );
     }
 
-    public boolean count( String key, int count ) {
-        return count( key, count, 1.0D );
+    public void count( String key, int count ) {
+        count( key, count, 1.0D );
     }
 
     public boolean count( String key, double sampleRate ) {
@@ -220,16 +220,16 @@ public class StatsdClient {
         return stat( StatsdStatType.COUNTER, key, count, sampleRate );
     }
 
-    public boolean time( String key, long millis ) {
-        return time( key, millis, 1.0 );
+    public void time( String key, long millis ) {
+        time( key, millis, 1.0 );
     }
 
-    public boolean time( String key, long millis, double sampleRate ) {
-        return stat( StatsdStatType.TIMER, key, millis, sampleRate );
+    public void time( String key, long millis, double sampleRate ) {
+        stat( StatsdStatType.TIMER, key, millis, sampleRate );
     }
 
-    public boolean gauge( String key, long value ) {
-        return stat( StatsdStatType.GAUGE, key, value, 1.0 );
+    public void gauge( String key, long value ) {
+        stat( StatsdStatType.GAUGE, key, value, 1.0 );
     }
 
     public boolean stat( StatsdStatType type, String key, long value, double sampleRate ) {

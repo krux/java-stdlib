@@ -2,7 +2,9 @@ package com.krux.stdlib.stats;
 
 import java.util.concurrent.TimeUnit;
 
-public interface KruxStatsSender {
+import com.krux.stdlib.KruxStdLibService;
+
+public interface KruxStatsSender extends KruxStdLibService {
 
     public abstract void count(String key);
 

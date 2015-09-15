@@ -31,7 +31,9 @@ public class StatsService implements KruxStatsSender {
         try {
             Iterator<KruxStatsSender> statsSenders = _loader.iterator();
             while (statsSenders.hasNext()) {
-                _senders.add(statsSenders.next());
+                KruxStatsSender sndr = statsSenders.next();
+                _senders.add(sndr);
+                LOGGER.info("KruxStatsSender providers loaded: {}", sndr.getClass().getCanonicalName()); 
             }
             if (_senders.size() > 0) {
                 LOGGER.info("{} KruxStatsSender providers loaded", _senders.size());
@@ -84,6 +86,24 @@ public class StatsService implements KruxStatsSender {
         for (KruxStatsSender sender : _senders) {
             sender.gauge(key, value);
         } 
+    }
+
+    @Override
+    public void start() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void stop() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void initialize() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

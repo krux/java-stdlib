@@ -37,4 +37,8 @@ public class NoopHttpService implements HttpService {
     public void registerHttpHandler(String url, ChannelInboundHandlerAdapter handler) {
     }
 
+    @Override
+    public void initialize() {
+    }
+
 }

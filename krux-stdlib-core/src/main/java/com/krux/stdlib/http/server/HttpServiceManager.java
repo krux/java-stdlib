@@ -84,4 +84,8 @@ public class HttpServiceManager implements HttpService {
         _service.registerHttpHandler(url, handler);
     }
 
+    @Override
+    public void initialize() {
+    }
+
 }
