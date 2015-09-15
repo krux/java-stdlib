@@ -12,10 +12,10 @@ import com.sun.management.UnixOperatingSystemMXBean;
 
 @SuppressWarnings("restriction")
 public class JDKAndSystemStatsdReporter extends TimerTask {
-    
+
     private KruxStatsSender _sender;
 
-    public JDKAndSystemStatsdReporter( KruxStatsSender sender ) {
+    public JDKAndSystemStatsdReporter(KruxStatsSender sender) {
         _sender = sender;
     }
 

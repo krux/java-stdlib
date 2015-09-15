@@ -21,28 +21,29 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  *
  */
 public class HttpServiceManager implements HttpService {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpServiceManager.class.getName());
     private static HttpServiceManager _manager;
     private static HttpService _service;
     private ServiceLoader<HttpService> _loader;
-    
+
     private HttpServiceManager(Config config) {
         boolean runHttpServer = config.getBoolean("krux.stdlib.netty.web.server.enabled");
         if (runHttpServer) {
             _loader = ServiceLoader.load(HttpService.class);
-            
+
             try {
                 Iterator<HttpService> statsSenders = _loader.iterator();
                 while (statsSenders.hasNext()) {
                     _service = statsSenders.next();
+                    _service.initialize(config);
                 }
-                
+
                 if (_service == null) {
                     LOGGER.warn("Cannot find an HTTP service provider");
                     _service = new NoopHttpService();
                 }
-    
+
             } catch (ServiceConfigurationError serviceError) {
                 LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
             }
@@ -50,14 +51,14 @@ public class HttpServiceManager implements HttpService {
             LOGGER.info("Netty web server not enabled");
         }
     }
-    
+
     public static synchronized HttpServiceManager getInstance(Config config) {
         if (_manager == null) {
             _manager = new HttpServiceManager(config);
         }
         return _manager;
     }
-    
+
     public static synchronized HttpServiceManager getInstance() {
         return getInstance(ConfigFactory.load());
     }
@@ -95,7 +96,6 @@ public class HttpServiceManager implements HttpService {
     }
 
     @Override
-    public void initialize() {
-    }
+    public void initialize(Config config) {}
 
 }

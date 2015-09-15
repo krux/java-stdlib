@@ -13,10 +13,13 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  *
  */
 public interface HttpService extends KruxStdLibService {
-    
+
     public void setStatusCodeAndMessage(AppState state, String message);
+
     public void resetStatusCodeAndMessageOK();
+
     public void addAdditionalStatus(String key, Object value);
+
     public void registerHttpHandler(String url, ChannelInboundHandlerAdapter handler);
 
 }

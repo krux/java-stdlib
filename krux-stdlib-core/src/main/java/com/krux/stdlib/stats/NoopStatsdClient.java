@@ -5,6 +5,8 @@ package com.krux.stdlib.stats;
 
 import java.util.concurrent.TimeUnit;
 
+import com.typesafe.config.Config;
+
 /**
  * @author cass
  * 
@@ -46,19 +48,19 @@ public class NoopStatsdClient implements KruxStatsSender {
     @Override
     public void start() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void stop() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void initialize() {
+    public void initialize(Config config) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

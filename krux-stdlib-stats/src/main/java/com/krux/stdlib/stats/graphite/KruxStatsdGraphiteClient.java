@@ -20,6 +20,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.graphite.Graphite;
 import com.krux.stdlib.stats.KruxStatsSender;
+import com.typesafe.config.Config;
 
 /**
  * @author cass
@@ -41,16 +42,13 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
     static KruxGraphiteReporter graphiteReporter = null;
 
     static {
-        setupReporting( "blah ");
+        setupReporting("blah ");
     }
 
-    public static void setupReporting( String env ) {
-        prefixes.put("timers",
-                "timers." + env.toLowerCase() + "." + env.toLowerCase() + ".");
-        prefixes.put("counters",
-                "counters." + env.toLowerCase() + "." + env.toLowerCase() + ".");
-        prefixes.put("gauges",
-                "gauges." + env.toLowerCase() + "." + env.toLowerCase() + ".");
+    public static void setupReporting(String env) {
+        prefixes.put("timers", "timers." + env.toLowerCase() + "." + env.toLowerCase() + ".");
+        prefixes.put("counters", "counters." + env.toLowerCase() + "." + env.toLowerCase() + ".");
+        prefixes.put("gauges", "gauges." + env.toLowerCase() + "." + env.toLowerCase() + ".");
         // keyNamespace = KruxStdLib.STASD_ENV.toLowerCase() + ".{}." +
         // KruxStdLib.APP_NAME.toLowerCase() + ".";
         String graphiteHost = "";
@@ -194,19 +192,19 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
     @Override
     public void start() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void stop() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void initialize() {
+    public void initialize(Config config) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

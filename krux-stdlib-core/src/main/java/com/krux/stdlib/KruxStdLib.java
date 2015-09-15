@@ -39,7 +39,7 @@ public class KruxStdLib {
     /**
      * See
      */
-    public static KruxStatsSender STATSD = null;//new NoopStatsdClient();
+    public static KruxStatsSender STATSD = null;// new NoopStatsdClient();
     public static String ENV;
     public static String APP_NAME;
     public static String APP_VERSION;
@@ -53,7 +53,7 @@ public class KruxStdLib {
     public static boolean httpListenerRunning = false;
 
     public static int HTTP_PORT = 0;
-    
+
     static {
         // setup statsd
         try {
@@ -61,7 +61,7 @@ public class KruxStdLib {
         } catch (Exception e) {
             LOGGER.warn("Cannot establish a statsd connection", e);
         }
-        
+
         // setup web server
         HttpServiceManager manager = HttpServiceManager.getInstance();
         manager.start();
@@ -254,7 +254,7 @@ public class KruxStdLib {
 
             Properties appProps = new Properties();
             try {
-//                appProps.load(StdHttpServerHandler.class.getClassLoader().getResourceAsStream("application.properties"));
+                // appProps.load(StdHttpServerHandler.class.getClassLoader().getResourceAsStream("application.properties"));
                 APP_VERSION = appProps.getProperty("app.pom.version", "n/a");
             } catch (Exception e) {
                 LOGGER.warn("Cannot load application properties");
@@ -275,18 +275,20 @@ public class KruxStdLib {
             });
 
             // setup a simple maintenance timer for reporting used heap size
-//            // and other stuff in the future
-//            final int heapStatsInterval = _options.valueOf(heapReporterIntervalMs);
-//            final TimerTask timerTask = new JDKAndSystemStatsdReporter();
-//            final Timer timer = new Timer(true);
-//            timer.scheduleAtFixedRate(timerTask, 2 * 1000, heapStatsInterval);
+            // // and other stuff in the future
+            // final int heapStatsInterval =
+            // _options.valueOf(heapReporterIntervalMs);
+            // final TimerTask timerTask = new JDKAndSystemStatsdReporter();
+            // final Timer timer = new Timer(true);
+            // timer.scheduleAtFixedRate(timerTask, 2 * 1000,
+            // heapStatsInterval);
 
             // make sure we cancel that time, jic
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
                     try {
-//                        timer.cancel();
+                        // timer.cancel();
                     } catch (Exception e) {
                         LOGGER.warn("Error while attemptin to shut down heap reporter", e);
                     }
@@ -320,14 +322,15 @@ public class KruxStdLib {
     }
 
     private static void setupLogging(OptionSpec<String> logLevel, OptionSpec<Boolean> handleLogRotation, String appName) {
-//        if (LOGGER == null) {
-//            if (_options.valueOf(handleLogRotation)) {
-//                LoggerConfigurator.configureRotatingLogging(BASE_APP_DIR, _options.valueOf(logLevel), appName);
-//            } else {
-//                LoggerConfigurator.configureStdOutLogging(_options.valueOf(logLevel));
-//            }
-//            LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());
-//        }
+        // if (LOGGER == null) {
+        // if (_options.valueOf(handleLogRotation)) {
+        // LoggerConfigurator.configureRotatingLogging(BASE_APP_DIR,
+        // _options.valueOf(logLevel), appName);
+        // } else {
+        // LoggerConfigurator.configureStdOutLogging(_options.valueOf(logLevel));
+        // }
+        // LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());
+        // }
     }
 
     private static String getMainClassName() {

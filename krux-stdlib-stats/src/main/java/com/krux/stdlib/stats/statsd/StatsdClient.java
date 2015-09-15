@@ -16,15 +16,16 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 /**
- * A Java statsd client. See <a
- * href="https://github.com/etsy/statsd">https://github.com/etsy/statsd</a> for
- * why you might want this.
+ * A Java statsd client. See
+ * <a href="https://github.com/etsy/statsd">https://github.com/etsy/statsd</a>
+ * for why you might want this.
  * <p>
  * This class has several constructors. When constructing instances of this
  * class, the <code>host</code> and <code>port</code> parameters determine where
  * to connect to the statsd server. Only the <code>host</code> parameter is
  * required. If the <code>port</code> parameter is less than zero, the default
- * port (8125) will be used.</p>
+ * port (8125) will be used.
+ * </p>
  * <p>
  * The <code>queueSize</code> parameter is greater than 0, this instance will
  * operate an asychronous blocking queue of the given size. Instead of sending
@@ -33,7 +34,8 @@ import org.slf4j.Logger;
  * queued stats to the server. In this mode of operation, the
  * {@link #shutdown()} method may be called to cause the background thread to
  * terminate. If the <code>queueSize</code> parameter is 0 or less, no queueing
- * is performed (and the shutdown() method does nothing).</p>
+ * is performed (and the shutdown() method does nothing).
+ * </p>
  * <p>
  * The <code>logger</code> parameter can be used for reporting errors during
  * logging. This class has a set of protected <code>errorXxx(...)</code> methods
@@ -43,17 +45,20 @@ import org.slf4j.Logger;
  * method will log an error level message to the supplier <code>logger</code>.
  * This parameter may be null, in which case no error reporting will be done by
  * default. Users may subclass this class in order to customise error handling
- * for their own requirements.</p>
+ * for their own requirements.
+ * </p>
  * <p>
  * Once an instance of this class has been created, it may be used to send stats
  * to a listening statsd server. The method to use depends on the type of stat
  * you wish to send. See the <code>count(...)</code>, <code>time(...)</code> and
- * <code>stat(...)</code> methods in their various forms.</p>
+ * <code>stat(...)</code> methods in their various forms.
+ * </p>
  * <p>
  * When sending a stat to the statsd server, the message is constructed as a
  * Java string and then converted to bytes, normally using the platform default
  * charset. This choice of charset can be overridden by specifying the charset
- * name using the system property:</p>
+ * name using the system property:
+ * </p>
  * <code>org.ubercraft.statsd.StatsdClient.CHARSET</code>.
  */
 public class StatsdClient {
@@ -72,15 +77,15 @@ public class StatsdClient {
 
     static {
         Charset charset = null;
-        String charsetName = System.getProperty( CHARSET_SYS_PROP );
-        if ( charsetName != null ) {
+        String charsetName = System.getProperty(CHARSET_SYS_PROP);
+        if (charsetName != null) {
             try {
-                charset = Charset.forName( charsetName );
-            } catch ( Exception e ) {
+                charset = Charset.forName(charsetName);
+            } catch (Exception e) {
                 // ignored
             }
         }
-        if ( charset == null ) {
+        if (charset == null) {
             charset = Charset.defaultCharset();
         }
         CHARSET = charset;
@@ -111,40 +116,40 @@ public class StatsdClient {
         host = null;
     }
 
-    public StatsdClient( String host, int port ) throws UnknownHostException, SocketException {
-        this( host, port, null, 0 );
+    public StatsdClient(String host, int port) throws UnknownHostException, SocketException {
+        this(host, port, null, 0);
     }
 
-    public StatsdClient( InetAddress host, int port ) throws SocketException {
-        this( host, port, null, 0 );
+    public StatsdClient(InetAddress host, int port) throws SocketException {
+        this(host, port, null, 0);
     }
 
-    public StatsdClient( String host, int port, int queueSize ) throws UnknownHostException, SocketException {
-        this( host, port, null, queueSize );
+    public StatsdClient(String host, int port, int queueSize) throws UnknownHostException, SocketException {
+        this(host, port, null, queueSize);
     }
 
-    public StatsdClient( InetAddress host, int port, int queueSize ) throws SocketException {
-        this( host, port, null, queueSize );
+    public StatsdClient(InetAddress host, int port, int queueSize) throws SocketException {
+        this(host, port, null, queueSize);
     }
 
-    public StatsdClient( String host, int port, Logger logger ) throws UnknownHostException, SocketException {
-        this( host, port, logger, 0 );
+    public StatsdClient(String host, int port, Logger logger) throws UnknownHostException, SocketException {
+        this(host, port, logger, 0);
     }
 
-    public StatsdClient( InetAddress host, int port, Logger logger ) throws SocketException {
-        this( host, port, logger, 0 );
+    public StatsdClient(InetAddress host, int port, Logger logger) throws SocketException {
+        this(host, port, logger, 0);
     }
 
-    public StatsdClient( String host, int port, Logger logger, int queueSize ) throws UnknownHostException, SocketException {
-        this( InetAddress.getByName( host ), port, logger, queueSize );
+    public StatsdClient(String host, int port, Logger logger, int queueSize) throws UnknownHostException, SocketException {
+        this(InetAddress.getByName(host), port, logger, queueSize);
     }
 
-    public StatsdClient( InetAddress host, int port, Logger logger, int queueSize ) throws SocketException {
-        if ( host == null ) {
-            throw new IllegalArgumentException( "null host" );
+    public StatsdClient(InetAddress host, int port, Logger logger, int queueSize) throws SocketException {
+        if (host == null) {
+            throw new IllegalArgumentException("null host");
         }
 
-        if ( port < 0 ) {
+        if (port < 0) {
             port = DEFAULT_PORT;
         }
 
@@ -156,8 +161,8 @@ public class StatsdClient {
         this.logger = logger;
         this.hostPortString = host + ":" + port;
 
-        if ( queueSize > 0 ) {
-            queue = new ArrayBlockingQueue<String>( queueSize );
+        if (queueSize > 0) {
+            queue = new ArrayBlockingQueue<String>(queueSize);
             thread = new SendThread();
             thread.start();
         } else {
@@ -175,12 +180,12 @@ public class StatsdClient {
         return queueOfferTimeout;
     }
 
-    public void setQueueOfferTimeout( long queueOfferTimeout ) {
+    public void setQueueOfferTimeout(long queueOfferTimeout) {
         this.queueOfferTimeout = queueOfferTimeout;
     }
 
     public void shutdown() {
-        if ( thread != null ) {
+        if (thread != null) {
             thread.interrupt();
             thread = null;
         }
@@ -189,133 +194,133 @@ public class StatsdClient {
     private class SendThread extends Thread {
 
         SendThread() {
-            setDaemon( true );
+            setDaemon(true);
         }
 
         @Override
         public void run() {
             try {
-                while ( thread != null ) {
-                    doSend( queue.take() );
+                while (thread != null) {
+                    doSend(queue.take());
                 }
-            } catch ( InterruptedException e ) {
+            } catch (InterruptedException e) {
                 // done;
             }
         }
     }
 
-    public void count( String key ) {
-        count( key, 1 );
+    public void count(String key) {
+        count(key, 1);
     }
 
-    public void count( String key, int count ) {
-        count( key, count, 1.0D );
+    public void count(String key, int count) {
+        count(key, count, 1.0D);
     }
 
-    public boolean count( String key, double sampleRate ) {
-        return count( key, 1, sampleRate );
+    public boolean count(String key, double sampleRate) {
+        return count(key, 1, sampleRate);
     }
 
-    public boolean count( String key, int count, double sampleRate ) {
-        return stat( StatsdStatType.COUNTER, key, count, sampleRate );
+    public boolean count(String key, int count, double sampleRate) {
+        return stat(StatsdStatType.COUNTER, key, count, sampleRate);
     }
 
-    public void time( String key, long millis ) {
-        time( key, millis, 1.0 );
+    public void time(String key, long millis) {
+        time(key, millis, 1.0);
     }
 
-    public void time( String key, long millis, double sampleRate ) {
-        stat( StatsdStatType.TIMER, key, millis, sampleRate );
+    public void time(String key, long millis, double sampleRate) {
+        stat(StatsdStatType.TIMER, key, millis, sampleRate);
     }
 
-    public void gauge( String key, long value ) {
-        stat( StatsdStatType.GAUGE, key, value, 1.0 );
+    public void gauge(String key, long value) {
+        stat(StatsdStatType.GAUGE, key, value, 1.0);
     }
 
-    public boolean stat( StatsdStatType type, String key, long value, double sampleRate ) {
+    public boolean stat(StatsdStatType type, String key, long value, double sampleRate) {
         String format;
-        switch ( type ) {
-            case COUNTER:
-                format = COUNTER_FORMAT;
-                break;
-            case TIMER:
-                format = TIMER_FORMAT;
-                break;
-            case GAUGE:
-                format = GAUGE_FORMAT;
-                break;
-            default:
-                throw new IllegalStateException();
+        switch (type) {
+        case COUNTER:
+            format = COUNTER_FORMAT;
+            break;
+        case TIMER:
+            format = TIMER_FORMAT;
+            break;
+        case GAUGE:
+            format = GAUGE_FORMAT;
+            break;
+        default:
+            throw new IllegalStateException();
         }
-        String stat = String.format( format, key, value );
-        return send( stat, sampleRate );
+        String stat = String.format(format, key, value);
+        return send(stat, sampleRate);
     }
 
-    private boolean send( String stat, double sampleRate ) {
-        if ( sampleRate < 1.0D ) {
-            if ( RANDOM.nextDouble() <= sampleRate ) {
+    private boolean send(String stat, double sampleRate) {
+        if (sampleRate < 1.0D) {
+            if (RANDOM.nextDouble() <= sampleRate) {
                 stat = String.format( //
                         Locale.US, // To use "." in "%f" disregarding the system
                                    // locale
                         SAMPLE_RATE_FORMAT, //
                         stat, //
-                        sampleRate );
-                return send( stat );
+                        sampleRate);
+                return send(stat);
             } else {
                 return false;
             }
         } else {
-            return send( stat );
+            return send(stat);
         }
     }
 
-    private boolean send( String stat ) {
-        if ( queue != null ) {
+    private boolean send(String stat) {
+        if (queue != null) {
             try {
-                if ( queue.offer( stat, queueOfferTimeout, TimeUnit.MILLISECONDS ) ) {
+                if (queue.offer(stat, queueOfferTimeout, TimeUnit.MILLISECONDS)) {
                     return true;
                 }
-            } catch ( Exception e ) {
-                errorEnqueueFailed( stat, e );
+            } catch (Exception e) {
+                errorEnqueueFailed(stat, e);
                 return false;
             }
-            errorQueueFull( stat );
+            errorQueueFull(stat);
             return false;
         } else {
-            return doSend( stat );
+            return doSend(stat);
         }
     }
 
-    private boolean doSend( String stat ) {
+    private boolean doSend(String stat) {
         try {
-            sendToServer( stat );
+            sendToServer(stat);
             return true;
-        } catch ( Exception e ) {
-            errorSendFailed( stat, e );
+        } catch (Exception e) {
+            errorSendFailed(stat, e);
             return false;
         }
     }
 
-    protected void sendToServer( String stat ) throws IOException {
-        byte[] data = stat.getBytes( CHARSET );
-        sock.send( new DatagramPacket( data, data.length, host, port ) );
+    protected void sendToServer(String stat) throws IOException {
+        byte[] data = stat.getBytes(CHARSET);
+        sock.send(new DatagramPacket(data, data.length, host, port));
     }
 
-    protected void errorQueueFull( String stat ) {
-        handleError( "Queue full", stat, null );
+    protected void errorQueueFull(String stat) {
+        handleError("Queue full", stat, null);
     }
 
-    protected void errorEnqueueFailed( String stat, Exception e ) {
-        handleError( "Enqueue failed", stat, e );
+    protected void errorEnqueueFailed(String stat, Exception e) {
+        handleError("Enqueue failed", stat, e);
     }
 
-    protected void errorSendFailed( String stat, Exception e ) {
-        handleError( "Send failed", stat, e );
+    protected void errorSendFailed(String stat, Exception e) {
+        handleError("Send failed", stat, e);
     }
 
-    protected void handleError( String message, String stat, Exception e ) {
-        if ( logger != null && logger.isErrorEnabled() ) {
-            logger.error( "{}: sending {} to {}", new Object[] { message, stat, toString(), e } );
+    protected void handleError(String message, String stat, Exception e) {
+        if (logger != null && logger.isErrorEnabled()) {
+            logger.error("{}: sending {} to {}", new Object[] { message, stat, toString(), e });
         }
     }
 }

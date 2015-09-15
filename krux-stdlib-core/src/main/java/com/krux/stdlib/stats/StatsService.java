@@ -21,13 +21,13 @@ import com.typesafe.config.ConfigFactory;
  *
  */
 public class StatsService implements KruxStatsSender {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StatsService.class.getName());
-    
+
     private static StatsService _service;
     private ServiceLoader<KruxStatsSender> _loader;
     private List<KruxStatsSender> _senders = new ArrayList<>();;
-    
+
     private StatsService(Config config) {
         boolean runStats = config.getBoolean("krux.stdlib.stats.enabled");
         if (runStats) {
@@ -36,8 +36,9 @@ public class StatsService implements KruxStatsSender {
                 Iterator<KruxStatsSender> statsSenders = _loader.iterator();
                 while (statsSenders.hasNext()) {
                     KruxStatsSender sndr = statsSenders.next();
+                    sndr.initialize(config);
                     _senders.add(sndr);
-                    LOGGER.info("KruxStatsSender providers loaded: {}", sndr.getClass().getCanonicalName()); 
+                    LOGGER.info("KruxStatsSender providers loaded: {}", sndr.getClass().getCanonicalName());
                 }
                 if (_senders.size() > 0) {
                     LOGGER.info("{} KruxStatsSender providers loaded", _senders.size());
@@ -46,20 +47,21 @@ public class StatsService implements KruxStatsSender {
                     _senders.add(new NoopStatsdClient());
                 }
             } catch (ServiceConfigurationError serviceError) {
-                LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);;
+                LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
+                ;
             }
         } else {
             LOGGER.info("Stats not enabled");
         }
     }
-    
+
     public static synchronized StatsService getInstance(Config config) {
         if (_service == null) {
             _service = new StatsService(config);
         }
         return _service;
     }
-    
+
     public static synchronized StatsService getInstance() {
         return getInstance(ConfigFactory.load());
     }
@@ -75,46 +77,46 @@ public class StatsService implements KruxStatsSender {
     public void count(String key, int count) {
         for (KruxStatsSender sender : _senders) {
             sender.count(key, count);
-        }    
+        }
     }
 
     @Override
     public void time(String key, long millis) {
         for (KruxStatsSender sender : _senders) {
             sender.time(key, millis);
-        }  
+        }
     }
 
     @Override
     public void time(String key, long time, TimeUnit timeunit) {
         for (KruxStatsSender sender : _senders) {
             sender.time(key, time, timeunit);
-        }  
+        }
     }
 
     @Override
     public void gauge(String key, long value) {
         for (KruxStatsSender sender : _senders) {
             sender.gauge(key, value);
-        } 
+        }
     }
 
     @Override
     public void start() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void stop() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void initialize() {
+    public void initialize(Config config) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

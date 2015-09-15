@@ -189,7 +189,7 @@ public class KruxGraphiteReporter extends ScheduledReporter {
             } catch (IOException e1) {
                 LOGGER.warn("Error closing Graphite", graphite, e);
             } finally {
-                KruxStatsdGraphiteClient.setupReporting( "cass" );
+                KruxStatsdGraphiteClient.setupReporting("cass");
             }
         }
     }

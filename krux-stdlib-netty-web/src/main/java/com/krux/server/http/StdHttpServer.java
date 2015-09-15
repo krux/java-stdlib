@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.krux.stdlib.AppState;
 import com.krux.stdlib.http.server.HttpService;
+import com.typesafe.config.Config;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -22,24 +23,24 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 public class StdHttpServer implements HttpService, Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger(StdHttpServer.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(StdHttpServer.class.getName());
 
     private int _port;
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
     private Thread _t;
+    private Config _config;
 
     private StdHttpServer(int port, Map<String, ChannelInboundHandlerAdapter> httpHandlers) {
         _port = port;
         _httpHandlers = httpHandlers;
     }
-    
-    public StdHttpServer(){
-    }
+
+    public StdHttpServer() {}
 
     public void run() {
-
+        _port = _config.getInt("krux.stdlib.netty.web.server.port");
         try {
-            log.info("Starting HTTP Server, listening on port " + _port);
+            LOGGER.info("Starting HTTP Server, listening on port " + _port);
 
             // Configure the server.
             EventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -58,7 +59,7 @@ public class StdHttpServer implements HttpService, Runnable {
                 workerGroup.shutdownGracefully();
             }
         } catch (Exception e) {
-            log.error("Cannot start HTTP server, shutting down", e);
+            LOGGER.error("Cannot start HTTP server, shutting down", e);
             System.exit(1);
         }
     }
@@ -66,7 +67,7 @@ public class StdHttpServer implements HttpService, Runnable {
     @Override
     public void start() {
         _t = new Thread(this);
-        _t.start();      
+        _t.start();
     }
 
     @Override
@@ -77,30 +78,30 @@ public class StdHttpServer implements HttpService, Runnable {
     @Override
     public void setStatusCodeAndMessage(AppState state, String message) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void resetStatusCodeAndMessageOK() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void addAdditionalStatus(String key, Object value) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void registerHttpHandler(String url, ChannelInboundHandlerAdapter handler) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void initialize() {
-        // TODO Auto-generated method stub
-        
+    public void initialize(Config config) {
+        LOGGER.info(config.toString());
+        _config = config;
     }
 }
