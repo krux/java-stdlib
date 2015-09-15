@@ -5,20 +5,21 @@ import java.util.Map;
 
 import org.slf4j.LoggerFactory;
 
+import com.typesafe.config.Config;
+
 import ch.qos.logback.classic.AsyncAppender;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 
-public class LoggerConfigurator {
+public class LoggerConfigurator implements LoggingSetupService {
 
     private static Map<String, Level> logLevels = new HashMap<String, Level>();
 
@@ -28,8 +29,10 @@ public class LoggerConfigurator {
         logLevels.put("ERROR", Level.ERROR);
         logLevels.put("INFO", Level.INFO);
     }
+    
+    public LoggerConfigurator() {}
 
-    public static void configureRotatingLogging(String baseLoggingDir, String loglevel, String appName) {
+    private void configureRotatingLogging(String baseLoggingDir, String loglevel, String appName) {
 
         if (!baseLoggingDir.endsWith("/")) {
             baseLoggingDir = baseLoggingDir + "/";
@@ -100,7 +103,7 @@ public class LoggerConfigurator {
         return ple;
     }
 
-    public static void configureStdOutLogging(String loglevel) {
+    private void configureStdOutLogging(String loglevel) {
 
         if (!(LoggerFactory.getILoggerFactory() instanceof LoggerContext)) {
             System.err.println("Logger is not using logback, skipping logging configuration");
@@ -171,14 +174,14 @@ public class LoggerConfigurator {
 
     }
 
-    private static Logger getRootLogger(String loglevel) {
+    private Logger getRootLogger(String loglevel) {
         Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         setLogLevel(loglevel, rootLogger);
         rootLogger.setAdditive(false);
         return rootLogger;
     }
 
-    private static void setLogLevel(String loglevel, Logger rootLogger) {
+    private void setLogLevel(String loglevel, Logger rootLogger) {
         // set default root level
         Level defaultLevel = logLevels.get(loglevel.toUpperCase());
         if (defaultLevel == null) {
@@ -188,6 +191,29 @@ public class LoggerConfigurator {
             defaultLevel = Level.WARN;
         }
         rootLogger.setLevel(defaultLevel);
+    }
+
+    @Override
+    public void start() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void stop() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void initialize(Config config) {
+        boolean rotateLogs = config.getBoolean("krux.stdlib.logging.rotate-logs");
+        if (rotateLogs) {
+            configureRotatingLogging(config.getString("krux.stdlib.base-dir"), config.getString("krux.stdlib.logging.log-level"),
+                    config.getString("krux.stdlib.app-name"));
+        } else {
+            configureStdOutLogging(config.getString("krux.stdlib.logging.log-level"));
+        }        
     }
 
 }

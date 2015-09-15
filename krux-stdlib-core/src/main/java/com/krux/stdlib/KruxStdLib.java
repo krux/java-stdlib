@@ -16,8 +16,10 @@ import java.util.Queue;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.krux.stdlib.http.server.HttpServiceManager;
+import com.krux.stdlib.logging.LoggingSetupManager;
 import com.krux.stdlib.shutdown.ShutdownTask;
 import com.krux.stdlib.stats.KruxStatsSender;
 import com.krux.stdlib.stats.StatsService;
@@ -55,6 +57,10 @@ public class KruxStdLib {
     public static int HTTP_PORT = 0;
 
     static {
+        // set logging first, so all other things can log properly
+        LoggingSetupManager lm = LoggingSetupManager.getInstance();
+        LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());
+        
         // setup statsd
         try {
             STATSD = StatsService.getInstance();
@@ -65,6 +71,7 @@ public class KruxStdLib {
         // setup web server
         HttpServiceManager manager = HttpServiceManager.getInstance();
         manager.start();
+        LOGGER.info("!!!!!!!!!!!!!!! post webserver");
     }
 
     // holds all registered Runnable shutdown hooks (which are executed
