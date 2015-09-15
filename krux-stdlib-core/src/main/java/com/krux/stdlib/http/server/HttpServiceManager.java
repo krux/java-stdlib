@@ -28,21 +28,26 @@ public class HttpServiceManager implements HttpService {
     private ServiceLoader<HttpService> _loader;
     
     private HttpServiceManager(Config config) {
-        _loader = ServiceLoader.load(HttpService.class);
-        
-        try {
-            Iterator<HttpService> statsSenders = _loader.iterator();
-            while (statsSenders.hasNext()) {
-                _service = statsSenders.next();
-            }
+        boolean runHttpServer = config.getBoolean("krux.stdlib.netty.web.server.enabled");
+        if (runHttpServer) {
+            _loader = ServiceLoader.load(HttpService.class);
             
-            if (_service == null) {
-                LOGGER.warn("Cannot find an HTTP service provider");
-                _service = new NoopHttpService();
+            try {
+                Iterator<HttpService> statsSenders = _loader.iterator();
+                while (statsSenders.hasNext()) {
+                    _service = statsSenders.next();
+                }
+                
+                if (_service == null) {
+                    LOGGER.warn("Cannot find an HTTP service provider");
+                    _service = new NoopHttpService();
+                }
+    
+            } catch (ServiceConfigurationError serviceError) {
+                LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
             }
-
-        } catch (ServiceConfigurationError serviceError) {
-            LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
+        } else {
+            LOGGER.info("Netty web server not enabled");
         }
     }
     
@@ -59,12 +64,14 @@ public class HttpServiceManager implements HttpService {
 
     @Override
     public void start() {
-        _service.start();
+        if (_service != null)
+            _service.start();
     }
 
     @Override
     public void stop() {
-        _service.stop();
+        if (_service != null)
+            _service.stop();
     }
 
     @Override
