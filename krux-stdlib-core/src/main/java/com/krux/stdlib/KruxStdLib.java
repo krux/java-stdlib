@@ -25,7 +25,6 @@ import com.krux.stdlib.stats.KruxStatsSender;
 import com.krux.stdlib.stats.StatsService;
 
 import ch.qos.logback.classic.Level;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -78,10 +77,6 @@ public class KruxStdLib {
     // synchronously in the
     // order added to this list.
     private static Queue<ShutdownTask> shutdownHooks = new PriorityQueue<ShutdownTask>();
-
-    // holds list of registered ChannelInboundHandlerAdapters for serving http
-    // responses
-    private static Map<String, ChannelInboundHandlerAdapter> httpHandlers = new HashMap<String, ChannelInboundHandlerAdapter>();
 
     private static String _appDescription = null;
 
@@ -318,20 +313,6 @@ public class KruxStdLib {
 
     public static void registerShutdownHook(ShutdownTask r) {
         shutdownHooks.add(r);
-    }
-
-    public static void registerHttpHandler(String url, ChannelInboundHandlerAdapter handler) {
-        if (!_initialized) {
-            if (!url.contains("__status")) {
-                httpHandlers.put(url, handler);
-            }
-        }
-    }
-
-    public static void registerDefaultHttpHandler(ChannelInboundHandlerAdapter handler) {
-        if (!_initialized) {
-            httpHandlers.put("__default", handler);
-        }
     }
 
 }

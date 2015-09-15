@@ -14,8 +14,6 @@ import com.krux.stdlib.AppState;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import io.netty.channel.ChannelInboundHandlerAdapter;
-
 /**
  * @author casspc
  *
@@ -88,11 +86,6 @@ public class HttpServiceManager implements HttpService {
     @Override
     public void addAdditionalStatus(String key, Object value) {
         _service.addAdditionalStatus(key, value);
-    }
-
-    @Override
-    public void registerHttpHandler(String url, ChannelInboundHandlerAdapter handler) {
-        _service.registerHttpHandler(url, handler);
     }
 
     @Override

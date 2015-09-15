@@ -94,12 +94,6 @@ public class StdHttpServer implements HttpService, Runnable {
     }
 
     @Override
-    public void registerHttpHandler(String url, ChannelInboundHandlerAdapter handler) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public void initialize(Config config) {
         LOGGER.info(config.toString());
         _config = config;
