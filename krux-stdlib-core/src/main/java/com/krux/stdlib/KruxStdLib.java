@@ -58,9 +58,9 @@ public class KruxStdLib {
 
     static {
         // set logging first, so all other things can log properly
-        LoggingSetupManager lm = LoggingSetupManager.getInstance();
+        LoggingSetupManager.getInstance();
         LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());
-        
+
         // setup statsd
         try {
             STATSD = StatsService.getInstance();
@@ -240,10 +240,6 @@ public class KruxStdLib {
             // set global app name
             APP_NAME = _options.valueOf(appNameOption);
 
-            // setup logging level
-            // first, try to suppress log4j warnings
-            setupLogging(logLevel, handleLogRotation, APP_NAME);
-
             // if "--help" was passed in, show some helpful guidelines and exit
             if (_options.has("help")) {
                 try {
@@ -281,27 +277,6 @@ public class KruxStdLib {
                 }
             });
 
-            // setup a simple maintenance timer for reporting used heap size
-            // // and other stuff in the future
-            // final int heapStatsInterval =
-            // _options.valueOf(heapReporterIntervalMs);
-            // final TimerTask timerTask = new JDKAndSystemStatsdReporter();
-            // final Timer timer = new Timer(true);
-            // timer.scheduleAtFixedRate(timerTask, 2 * 1000,
-            // heapStatsInterval);
-
-            // make sure we cancel that time, jic
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        // timer.cancel();
-                    } catch (Exception e) {
-                        LOGGER.warn("Error while attemptin to shut down heap reporter", e);
-                    }
-                }
-            });
-
             _initialized = true;
             LOGGER.info("** Started " + APP_NAME + " **");
             for (OptionSpec<?> spec : _options.specs()) {
@@ -326,18 +301,6 @@ public class KruxStdLib {
 
         }
         return _options;
-    }
-
-    private static void setupLogging(OptionSpec<String> logLevel, OptionSpec<Boolean> handleLogRotation, String appName) {
-        // if (LOGGER == null) {
-        // if (_options.valueOf(handleLogRotation)) {
-        // LoggerConfigurator.configureRotatingLogging(BASE_APP_DIR,
-        // _options.valueOf(logLevel), appName);
-        // } else {
-        // LoggerConfigurator.configureStdOutLogging(_options.valueOf(logLevel));
-        // }
-        // LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());
-        // }
     }
 
     private static String getMainClassName() {

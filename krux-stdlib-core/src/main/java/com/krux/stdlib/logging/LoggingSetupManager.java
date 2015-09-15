@@ -24,7 +24,7 @@ public class LoggingSetupManager implements LoggingSetupService {
     private ServiceLoader<LoggingSetupService> _loader;
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
     private static LoggingSetupManager _manager;
-    
+
     private LoggingSetupManager(Config config) {
         initialized.set(true);
         boolean setupLogging = config.hasPath("krux.stdlib.logging");
@@ -52,19 +52,21 @@ public class LoggingSetupManager implements LoggingSetupService {
             LOGGER.info("Netty web server not enabled");
         }
     }
-    
+
     public synchronized static LoggingSetupManager getInstance(Config config) {
         if (_manager == null) {
             _manager = new LoggingSetupManager(config);
         }
         return _manager;
     }
-    
+
     public synchronized static LoggingSetupManager getInstance() {
         return getInstance(ConfigFactory.load());
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.krux.stdlib.KruxStdLibService#start()
      */
     @Override
@@ -72,7 +74,9 @@ public class LoggingSetupManager implements LoggingSetupService {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.krux.stdlib.KruxStdLibService#stop()
      */
     @Override
@@ -80,11 +84,13 @@ public class LoggingSetupManager implements LoggingSetupService {
 
     }
 
-    /* (non-Javadoc)
-     * @see com.krux.stdlib.KruxStdLibService#initialize(com.typesafe.config.Config)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.krux.stdlib.KruxStdLibService#initialize(com.typesafe.config.Config)
      */
     @Override
-    public void initialize(Config config) {
-    }
+    public void initialize(Config config) {}
 
 }

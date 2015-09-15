@@ -29,7 +29,7 @@ public class LoggerConfigurator implements LoggingSetupService {
         logLevels.put("ERROR", Level.ERROR);
         logLevels.put("INFO", Level.INFO);
     }
-    
+
     public LoggerConfigurator() {}
 
     private void configureRotatingLogging(String baseLoggingDir, String loglevel, String appName) {
@@ -196,24 +196,24 @@ public class LoggerConfigurator implements LoggingSetupService {
     @Override
     public void start() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void stop() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void initialize(Config config) {
         boolean rotateLogs = config.getBoolean("krux.stdlib.logging.rotate-logs");
         if (rotateLogs) {
-            configureRotatingLogging(config.getString("krux.stdlib.base-dir"), config.getString("krux.stdlib.logging.log-level"),
-                    config.getString("krux.stdlib.app-name"));
+            configureRotatingLogging(config.getString("krux.stdlib.base-dir"),
+                    config.getString("krux.stdlib.logging.log-level"), config.getString("krux.stdlib.app-name"));
         } else {
             configureStdOutLogging(config.getString("krux.stdlib.logging.log-level"));
-        }        
+        }
     }
 
 }
