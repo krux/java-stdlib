@@ -11,9 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.krux.stdlib.AppState;
-import com.krux.stdlib.stats.KruxStatsSender;
-import com.krux.stdlib.stats.NoopStatsdClient;
-import com.krux.stdlib.stats.StatsService;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -28,7 +27,7 @@ public class HttpServiceManager implements HttpService {
     private static HttpService _service;
     private ServiceLoader<HttpService> _loader;
     
-    private HttpServiceManager() {
+    private HttpServiceManager(Config config) {
         _loader = ServiceLoader.load(HttpService.class);
         
         try {
@@ -47,11 +46,15 @@ public class HttpServiceManager implements HttpService {
         }
     }
     
-    public static synchronized HttpServiceManager getInstance() {
+    public static synchronized HttpServiceManager getInstance(Config config) {
         if (_manager == null) {
-            _manager = new HttpServiceManager();
+            _manager = new HttpServiceManager(config);
         }
         return _manager;
+    }
+    
+    public static synchronized HttpServiceManager getInstance() {
+        return getInstance(ConfigFactory.load());
     }
 
     @Override

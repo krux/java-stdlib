@@ -13,6 +13,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+
 /**
  * @author casspc
  *
@@ -25,7 +28,7 @@ public class StatsService implements KruxStatsSender {
     private ServiceLoader<KruxStatsSender> _loader;
     private List<KruxStatsSender> _senders;
     
-    private StatsService() {
+    private StatsService(Config config) {
         _loader = ServiceLoader.load(KruxStatsSender.class);
         _senders = new ArrayList<>();
         try {
@@ -46,11 +49,15 @@ public class StatsService implements KruxStatsSender {
         } 
     }
     
-    public static synchronized StatsService getInstance() {
+    public static synchronized StatsService getInstance(Config config) {
         if (_service == null) {
-            _service = new StatsService();
+            _service = new StatsService(config);
         }
         return _service;
+    }
+    
+    public static synchronized StatsService getInstance() {
+        return getInstance(ConfigFactory.load());
     }
 
     @Override
