@@ -26,13 +26,12 @@ public class StatsService implements KruxStatsSender {
     
     private static StatsService _service;
     private ServiceLoader<KruxStatsSender> _loader;
-    private List<KruxStatsSender> _senders;
+    private List<KruxStatsSender> _senders = new ArrayList<>();;
     
     private StatsService(Config config) {
         boolean runStats = config.getBoolean("krux.stdlib.stats.enabled");
         if (runStats) {
             _loader = ServiceLoader.load(KruxStatsSender.class);
-            _senders = new ArrayList<>();
             try {
                 Iterator<KruxStatsSender> statsSenders = _loader.iterator();
                 while (statsSenders.hasNext()) {

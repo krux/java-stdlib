@@ -35,5 +35,10 @@
             <artifactId>krux-stdlib-stats</artifactId>
             <version>3.0.0-alpha</version>
         </dependency>
+<!--         <dependency>
+            <groupId>com.krux</groupId>
+            <artifactId>krux-stdlib-core</artifactId>
+            <version>3.0.0-alpha</version>
+        </dependency> -->
     </dependencies>
 </project>
