@@ -55,7 +55,9 @@ public class KruxStdLib {
 
     public static int HTTP_PORT = 0;
 
+    private static boolean INTIALIZED = false;
     static {
+        if ( INTIALIZED == false )
         // set logging first, so all other things can log properly
         LoggingSetupManager.getInstance();
         LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());

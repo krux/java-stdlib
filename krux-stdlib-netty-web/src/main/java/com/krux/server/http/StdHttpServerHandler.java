@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.jr.ob.JSON;
+import com.krux.stdlib.AppState;
 import com.krux.stdlib.KruxStdLib;
 
 import io.netty.buffer.Unpooled;
