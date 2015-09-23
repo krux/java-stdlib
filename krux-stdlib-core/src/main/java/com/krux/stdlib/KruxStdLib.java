@@ -121,6 +121,10 @@ public class KruxStdLib {
     public static void initialize() {
         initialize(null, (Config)null);
     }
+    
+    public static OptionSet initialize(String[] args) {
+        return initialize(args, (Config)null);
+    }
 
     /**
      * Initializes the std libary static functions, including logging, statsd
