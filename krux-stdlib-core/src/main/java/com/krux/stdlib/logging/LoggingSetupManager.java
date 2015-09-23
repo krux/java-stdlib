@@ -60,10 +60,6 @@ public class LoggingSetupManager implements LoggingSetupService {
         return _manager;
     }
 
-//    public synchronized static LoggingSetupManager getInstance() {
-//        return getInstance(ConfigFactory.load());
-//    }
-
     /*
      * (non-Javadoc)
      * 
