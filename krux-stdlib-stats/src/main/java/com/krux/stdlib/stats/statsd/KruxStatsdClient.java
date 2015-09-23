@@ -4,12 +4,16 @@
 package com.krux.stdlib.stats.statsd;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
+import java.nio.channels.DatagramChannel;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.krux.stdlib.stats.KruxStatsSender;
+import com.krux.stdlib.stats.statsd.etsy.StatsdClient;
 import com.typesafe.config.Config;
 
 /**
@@ -25,45 +29,29 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
 
     public KruxStatsdClient() {}
 
-    public KruxStatsdClient(String host, int port, Logger logger) throws Exception {
-        super(host, port, logger);
-    }
-
     @Override
     public String toString() {
         return KruxStatsdClient.class.getName();
     }
 
-    public long getQueueOfferTimeout() {
-        return super.getQueueOfferTimeout();
-    }
-
-    public void setQueueOfferTimeout(long queueOfferTimeout) {
-        super.setQueueOfferTimeout(queueOfferTimeout);
-    }
-
-    public void shutdown() {
-        super.shutdown();
-    }
-
     @Override
     public void count(String key) {
-        super.count(key);
+        super.increment(fullKey(key));
     }
 
     @Override
     public void count(String key, int count) {
-        super.count(key, count);
+        super.increment(fullKey(key), count);
     }
 
     @Override
     public void time(String key, long millis) {
-        super.time(key, millis);
+        super.timing(fullKey(key), millis);
     }
 
     @Override
     public void gauge(String key, long value) {
-        stat(StatsdStatType.GAUGE, key, value, 1.0);
+        super.gauge(fullKey(key), value);
     }
 
     private String fullKey(String appKey) {
@@ -72,14 +60,10 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
 
     @Override
     public void start() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void stop() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -87,8 +71,13 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
         LOGGER.info("Initializing {}", this.getClass().getCanonicalName());
         _keyNamespace = config.getString("env").toLowerCase() + "." +
                         config.getString("app-name").toLowerCase() + ".";
+        
+        int port = config.getInt("krux.stdlib.stats.port");
+        String statsDServer = config.getString("krux.stdlib.stats.host");
+        
+        String hostName = "unspecified";
         try {
-            String hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
+            hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
             if (hostName.contains(".")) {
                 String[] parts = hostName.split("\\.");
                 hostName = parts[0];
@@ -100,6 +89,23 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
         }
         
         LOGGER.info("_keyNamespace: {}, _statsdSuffix: {}", _keyNamespace, _statsdSuffix);
+        LOGGER.info("statsDServer: {}, port: {}", statsDServer, port);
+        
+        _address = new InetSocketAddress(statsDServer, port);
+        
+        try {
+            _channel = DatagramChannel.open();
+            /* Put this in non-blocking mode so send does not block forever. */
+            _channel.configureBlocking(false);
+            /*
+             * Increase the size of the output buffer so that the size is larger
+             * than our buffer size.
+             */
+            _channel.setOption(StandardSocketOptions.SO_SNDBUF, 4096);
+            setBufferSize((short) 1500);
+        } catch (Exception e) {
+            LOGGER.error("Cannot setup statsd client", e);
+        }
     }
 
     @Override

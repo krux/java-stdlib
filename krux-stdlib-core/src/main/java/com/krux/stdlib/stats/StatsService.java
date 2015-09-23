@@ -68,6 +68,7 @@ public class StatsService implements KruxStatsSender {
 
     @Override
     public void count(String key) {
+        LOGGER.debug("I am logging: {}", key);
         for (KruxStatsSender sender : _senders) {
             sender.count(key);
         }
