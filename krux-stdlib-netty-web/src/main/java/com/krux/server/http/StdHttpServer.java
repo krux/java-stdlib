@@ -38,7 +38,7 @@ public class StdHttpServer implements HttpService, Runnable {
     public StdHttpServer() {}
 
     public void run() {
-        _port = _config.getInt("krux.stdlib.netty.web.server.port");
+        _port = _config.getInt("krux.stdlib.netty.web.server.http-port");
         try {
             LOGGER.info("Starting HTTP Server, listening on port " + _port);
 

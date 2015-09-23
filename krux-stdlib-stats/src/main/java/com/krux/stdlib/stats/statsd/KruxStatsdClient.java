@@ -75,7 +75,7 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
         int port = config.getInt("krux.stdlib.stats.port");
         String statsDServer = config.getString("krux.stdlib.stats.host");
         
-        String hostName = "unspecified";
+        String hostName = "unspecified-host";
         try {
             hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
             if (hostName.contains(".")) {

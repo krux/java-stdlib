@@ -26,24 +26,26 @@ public class HttpServiceManager implements HttpService {
     private ServiceLoader<HttpService> _loader;
 
     private HttpServiceManager(Config config) {
-        boolean runHttpServer = config.getBoolean("krux.stdlib.netty.web.server.enabled");
-        if (runHttpServer) {
-            _loader = ServiceLoader.load(HttpService.class);
-
-            try {
-                Iterator<HttpService> webService = _loader.iterator();
-                while (webService.hasNext()) {
-                    _service = webService.next();
-                    _service.initialize(config);
+        if (config.hasPath("krux.stdlib.netty.web.server.enabled")) {
+            boolean runHttpServer = config.getBoolean("krux.stdlib.netty.web.server.enabled");
+            if (runHttpServer) {
+                _loader = ServiceLoader.load(HttpService.class);
+    
+                try {
+                    Iterator<HttpService> webService = _loader.iterator();
+                    while (webService.hasNext()) {
+                        _service = webService.next();
+                        _service.initialize(config);
+                    }
+    
+                    if (_service == null) {
+                        LOGGER.warn("Cannot find an HTTP service provider");
+                        _service = new NoopHttpService();
+                    }
+    
+                } catch (ServiceConfigurationError serviceError) {
+                    LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
                 }
-
-                if (_service == null) {
-                    LOGGER.warn("Cannot find an HTTP service provider");
-                    _service = new NoopHttpService();
-                }
-
-            } catch (ServiceConfigurationError serviceError) {
-                LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
             }
         } else {
             LOGGER.info("Netty web server not enabled");
@@ -57,9 +59,9 @@ public class HttpServiceManager implements HttpService {
         return _manager;
     }
 
-    public static synchronized HttpServiceManager getInstance() {
-        return getInstance(ConfigFactory.load());
-    }
+//    public static synchronized HttpServiceManager getInstance() {
+//        return getInstance(ConfigFactory.load());
+//    }
 
     @Override
     public void start() {

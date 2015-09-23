@@ -39,7 +39,7 @@ public class LoggingSetupManager implements LoggingSetupService {
                     count++;
                 }
                 LOGGER = LoggerFactory.getLogger(LoggingSetupManager.class.getName());
-                LOGGER.debug("Found {} logging services", count);
+                LOGGER.debug("Found {} krux stdlib logging service providers on the classpath", count);
             } catch (ServiceConfigurationError serviceError) {
                 try {
                     LOGGER.error("Cannot instantiate LoggingSetupManager", serviceError);

@@ -30,7 +30,7 @@
     </distributionManagement>
 
     <dependencies>
-        <dependency>
+    <dependency>
             <groupId>com.krux</groupId>
             <artifactId>krux-stdlib-logging</artifactId>
             <version>3.0.0-alpha</version>

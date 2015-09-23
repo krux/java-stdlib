@@ -62,9 +62,9 @@ public class StatsService implements KruxStatsSender {
         return _service;
     }
 
-    public static synchronized StatsService getInstance() {
-        return getInstance(ConfigFactory.load());
-    }
+//    public static synchronized StatsService getInstance() {
+//        return getInstance(ConfigFactory.load());
+//    }
 
     @Override
     public void count(String key) {
