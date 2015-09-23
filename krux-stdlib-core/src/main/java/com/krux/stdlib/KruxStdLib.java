@@ -45,15 +45,11 @@ public class KruxStdLib {
     public static String APP_NAME;
     public static String APP_VERSION;
     public static String BASE_APP_DIR;
-    public static String STASD_ENV;
+    public static String STATS_ENV;
 
     private static OptionParser _parser = null;
     private static OptionSet _options = null;
     private static boolean _initialized = false;
-
-    public static boolean httpListenerRunning = false;
-
-    public static int HTTP_PORT = 0;
 
     public static boolean INTIALIZED = false;
 
@@ -273,7 +269,7 @@ public class KruxStdLib {
 
                 // set base app dir
                 BASE_APP_DIR = config.getString(STDLIB_BASEDIR_PROPERTY);
-                STASD_ENV = config.getString(STDLIB_STATS_PROPERTIES_PREFIX + ".env");
+                STATS_ENV = config.getString(STDLIB_STATS_PROPERTIES_PREFIX + ".env");
 
                 // set environment
                 ENV = config.getString(kruxStdLibConfigPrefix + ".env");
