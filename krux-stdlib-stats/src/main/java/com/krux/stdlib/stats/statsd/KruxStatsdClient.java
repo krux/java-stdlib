@@ -69,7 +69,7 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
     @Override
     public void initialize(Config config) {
         LOGGER.debug("Initializing {}", this.getClass().getCanonicalName());
-        _keyNamespace = config.getString("env").toLowerCase() + "." +
+        _keyNamespace = config.getString("krux.stdlib.env").toLowerCase() + "." +
                         config.getString("krux.stdlib.app-name").toLowerCase() + ".";
         
         int port = config.getInt("krux.stdlib.stats.port");
