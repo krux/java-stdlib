@@ -98,7 +98,7 @@ public class KruxStdLib {
         _appDescription = appDescription;
         return initialize(args);
     }
-    
+
     public static void initialize() {
         initialize(null);
     }
@@ -113,44 +113,44 @@ public class KruxStdLib {
      * @return the OptionSet of parsed command line arguments
      */
     public static OptionSet initialize(String[] args) {
-        
+
         try {
-    
+
             if (args == null) {
                 args = new String[0];
             }
-            
+
             if (!_initialized) {
-    
+
                 OptionParser parser;
                 if (_parser == null) {
                     parser = new OptionParser();
                 } else {
                     parser = _parser;
                 }
-    
+
                 List<String> synonyms = asList("help", "h");
                 parser.acceptsAll(synonyms, "Prints this helpful message");
-                
+
                 OptionSpec enableStatsd = parser.accepts("stats", "Enable/disable statsd broadcast");
                 OptionSpec<String> statsdHost = parser.accepts("stats-host", "Listening statsd host").withOptionalArg()
                         .ofType(String.class).defaultsTo("localhost");
                 OptionSpec<Integer> statsdPort = parser.accepts("stats-port", "Listening statsd port").withOptionalArg()
                         .ofType(Integer.class).defaultsTo(8125);
-                
+
                 OptionSpec<String> environment = parser.accepts("env", "Operating environment").withOptionalArg()
                         .ofType(String.class);
-                
+
                 OptionSpec<String> logLevel = parser
                         .accepts("log-level", "Default log4j log level. Valid values: DEBUG, INFO, WARN, " + "ERROR, FATAL")
                         .withOptionalArg().ofType(String.class);
-                
+
                 OptionSpec<String> appNameOption = parser
                         .accepts("app-name",
                                 "Application identifier, used for statsd namespaces, log file names, etc. "
                                         + "If not supplied, will use this app's entry point classname.")
                         .withOptionalArg().ofType(String.class);
-                
+
                 OptionSpec<Integer> httpListenPort = parser
                         .accepts("http-port", "Accept http connections on this port (0 = web server will not start)")
                         .withOptionalArg().ofType(Integer.class);
@@ -166,11 +166,12 @@ public class KruxStdLib {
                         .accepts("rotate-logs",
                                 "If true, log to a rolling file appender that will keep a maximum of 10 log files, 10MB each")
                         .withOptionalArg().ofType(Boolean.class).defaultsTo(false);
-    
+
                 _options = parser.parse(args);
-                
-                //print help and bail if requested
-                // if "--help" was passed in, show some helpful guidelines and exit
+
+                // print help and bail if requested
+                // if "--help" was passed in, show some helpful guidelines and
+                // exit
                 if (_options.has("help")) {
                     try {
                         if (_appDescription != null)
@@ -184,83 +185,87 @@ public class KruxStdLib {
                         System.exit(0);
                     }
                 }
-                
-                //we take all the command line values and set them as system properties
-                Map<String,Object> commandLineOverrides = new HashMap<>();
+
+                // we take all the command line values and set them as system
+                // properties
+                Map<String, Object> commandLineOverrides = new HashMap<>();
                 final String kruxStdLibConfigPrefix = "krux.stdlib";
                 final String nettyServerConfigPrefix = "netty.web.server";
                 final String loggingServerConfigPrefix = "logging";
                 final String statsConfigPrefix = "stats";
-                
-                //legacy-handling command line options overrides
-                //web server override
+
+                // legacy-handling command line options overrides
+                // web server override
                 if (_options.has(httpListenPort)) {
-                    commandLineOverrides.put(kruxStdLibConfigPrefix+"."+nettyServerConfigPrefix+".http-port", _options.valueOf(httpListenPort));
+                    commandLineOverrides.put(kruxStdLibConfigPrefix + "." + nettyServerConfigPrefix + ".http-port",
+                            _options.valueOf(httpListenPort));
                 }
-                
-                //app-name override
+
+                // app-name override
                 if (_options.has(appNameOption)) {
-                    commandLineOverrides.put(kruxStdLibConfigPrefix+".app-name", 
-                            StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(_options.valueOf(appNameOption)), '_'));
+                    commandLineOverrides.put(kruxStdLibConfigPrefix + ".app-name", StringUtils
+                            .join(StringUtils.splitByCharacterTypeCamelCase(_options.valueOf(appNameOption)), '_'));
                 }
-                
-                //env override
+
+                // env override
                 if (_options.has(environment)) {
-                    commandLineOverrides.put(kruxStdLibConfigPrefix+".env", _options.valueOf(environment));
+                    commandLineOverrides.put(kruxStdLibConfigPrefix + ".env", _options.valueOf(environment));
                 }
-                
-                //base-app override
+
+                // base-app override
                 if (_options.has(baseAppDirectory)) {
-                    commandLineOverrides.put(kruxStdLibConfigPrefix+".base-dir", _options.valueOf(baseAppDirectory));
+                    commandLineOverrides.put(kruxStdLibConfigPrefix + ".base-dir", _options.valueOf(baseAppDirectory));
                 }
-                
-                //log-level override
+
+                // log-level override
                 if (_options.has(logLevel)) {
-                    commandLineOverrides.put(kruxStdLibConfigPrefix+"."+loggingServerConfigPrefix+".log-level", _options.valueOf(logLevel));
+                    commandLineOverrides.put(kruxStdLibConfigPrefix + "." + loggingServerConfigPrefix + ".log-level",
+                            _options.valueOf(logLevel));
                 }
-                
-                //log-level override
+
+                // log-level override
                 if (!_options.has(enableStatsd)) {
-                    commandLineOverrides.put(kruxStdLibConfigPrefix+"."+statsConfigPrefix+".enabled", false);
+                    commandLineOverrides.put(kruxStdLibConfigPrefix + "." + statsConfigPrefix + ".enabled", false);
                 }
-    
+
                 ConfigRenderOptions renderOptions = ConfigRenderOptions.defaults();
                 renderOptions.setJson(true);
                 Config c = ConfigFactory.load();
-                if (!c.hasPath(kruxStdLibConfigPrefix+".app-name") && !commandLineOverrides.containsKey(kruxStdLibConfigPrefix+".app-name")) {
-                    commandLineOverrides.put(kruxStdLibConfigPrefix+".app-name", getMainClassName());
+                if (!c.hasPath(kruxStdLibConfigPrefix + ".app-name")
+                        && !commandLineOverrides.containsKey(kruxStdLibConfigPrefix + ".app-name")) {
+                    commandLineOverrides.put(kruxStdLibConfigPrefix + ".app-name", getMainClassName());
                 }
 
                 Config overridesConfig = ConfigFactory.parseMap(commandLineOverrides);
                 c = overridesConfig.withFallback(c);
-                
+
                 LoggingSetupManager.getInstance(c);
                 LOGGER = LoggerFactory.getLogger(KruxStdLib.class.getName());
-                
+
                 // set base app dir
-                BASE_APP_DIR = c.getString(kruxStdLibConfigPrefix+".base-dir");
-                STASD_ENV = c.getString(kruxStdLibConfigPrefix+".env");
-    
+                BASE_APP_DIR = c.getString(kruxStdLibConfigPrefix + ".base-dir");
+                STASD_ENV = c.getString(kruxStdLibConfigPrefix + ".env");
+
                 // set environment
-                ENV = c.getString(kruxStdLibConfigPrefix+".env");
-                APP_NAME = c.getString(kruxStdLibConfigPrefix+".app-name");
-                 
-                if ( INTIALIZED == false ) {
+                ENV = c.getString(kruxStdLibConfigPrefix + ".env");
+                APP_NAME = c.getString(kruxStdLibConfigPrefix + ".app-name");
+
+                if (INTIALIZED == false) {
                     // setup statsd
                     try {
                         STATSD = StatsService.getInstance(c);
                     } catch (Exception e) {
                         LOGGER.warn("Cannot establish a statsd connection", e);
                     }
-    
+
                     // setup web server
                     HttpServiceManager manager = HttpServiceManager.getInstance(c);
                     manager.start();
                     INTIALIZED = true;
                 }
-    
+
                 STATSD.count("process_start");
-    
+
                 // finally, setup a shutdown thread to run all registered
                 // application hooks
                 Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -272,16 +277,17 @@ public class KruxStdLib {
                         }
                     }
                 });
-    
+
                 LOGGER.warn("** Started " + APP_NAME + " **");
                 for (OptionSpec<?> spec : _options.specs()) {
                     LOGGER.info(spec.toString() + " : " + _options.valuesOf(spec));
                 }
-    
-                // finally, add a shutdown hook that sleeps for 2 sec to allow last
+
+                // finally, add a shutdown hook that sleeps for 2 sec to allow
+                // last
                 // log messages to
                 // be written
-    
+
                 // make sure we cancel that timer, jic
                 Runtime.getRuntime().addShutdownHook(new Thread() {
                     @Override
@@ -293,11 +299,11 @@ public class KruxStdLib {
                         }
                     }
                 });
-    
+
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
-            LOGGER.error("Cannot initialize KruxStdLib", e);      
+            LOGGER.error("Cannot initialize KruxStdLib", e);
         }
         return _options;
     }

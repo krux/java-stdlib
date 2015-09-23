@@ -63,22 +63,20 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
     }
 
     @Override
-    public void start() {
-    }
+    public void start() {}
 
     @Override
-    public void stop() {
-    }
+    public void stop() {}
 
     @Override
     public void initialize(Config config) {
         LOGGER.debug("Initializing {}", this.getClass().getCanonicalName());
-        _keyNamespace = config.getString("krux.stdlib.env").toLowerCase() + "." +
-                        config.getString("krux.stdlib.app-name").toLowerCase() + ".";
-        
+        _keyNamespace = config.getString("krux.stdlib.env").toLowerCase() + "."
+                + config.getString("krux.stdlib.app-name").toLowerCase() + ".";
+
         int port = config.getInt("krux.stdlib.stats.port");
         String statsDServer = config.getString("krux.stdlib.stats.host");
-        
+
         String hostName = "unspecified-host";
         try {
             hostName = InetAddress.getLocalHost().getHostName().toLowerCase();
@@ -91,12 +89,12 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
             LOGGER.warn("Cannot get a real hostname, defaulting to something stupid");
             _statsdSuffix = "." + "unknown";
         }
-        
+
         LOGGER.debug("_keyNamespace: {}, _statsdSuffix: {}", _keyNamespace, _statsdSuffix);
         LOGGER.debug("statsDServer: {}, port: {}", statsDServer, port);
-        
+
         _address = new InetSocketAddress(statsDServer, port);
-        
+
         try {
             _channel = DatagramChannel.open();
             /* Put this in non-blocking mode so send does not block forever. */
@@ -110,19 +108,19 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
         } catch (Exception e) {
             LOGGER.error("Cannot setup statsd client", e);
         }
-        
-        //start jvm stats reporting
+
+        // start jvm stats reporting
         JDKAndSystemStatsdReporter jvmReporter = new JDKAndSystemStatsdReporter(this);
         final Timer t = new Timer();
         t.schedule(jvmReporter, 5000, config.getLong("krux.stdlib.stats.jvm-stats-interval-ms"));
-        
-        KruxStdLib.registerShutdownHook( new ShutdownTask(100) {
+
+        KruxStdLib.registerShutdownHook(new ShutdownTask(100) {
             @Override
             public void run() {
                 t.cancel();
             }
         });
-        
+
     }
 
     @Override

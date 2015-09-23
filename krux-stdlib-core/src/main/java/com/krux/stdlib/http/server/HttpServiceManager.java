@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import com.krux.stdlib.AppState;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 /**
  * @author casspc
@@ -30,19 +29,19 @@ public class HttpServiceManager implements HttpService {
             boolean runHttpServer = config.getBoolean("krux.stdlib.netty.web.server.enabled");
             if (runHttpServer) {
                 _loader = ServiceLoader.load(HttpService.class);
-    
+
                 try {
                     Iterator<HttpService> webService = _loader.iterator();
                     while (webService.hasNext()) {
                         _service = webService.next();
                         _service.initialize(config);
                     }
-    
+
                     if (_service == null) {
                         LOGGER.warn("Cannot find an HTTP service provider");
                         _service = new NoopHttpService();
                     }
-    
+
                 } catch (ServiceConfigurationError serviceError) {
                     LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
                 }

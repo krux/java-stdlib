@@ -62,10 +62,7 @@ package com.krux.stdlib.stats.statsd.etsy;
  */
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.StandardSocketOptions;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Locale;
@@ -90,14 +87,15 @@ public class StatsdClient extends TimerTask {
     protected DatagramChannel _channel;
 
     public StatsdClient() {}
-    
-//    public StatsdClient(String host, int port) throws UnknownHostException, IOException {
-//        this(InetAddress.getByName(host), port);
-//    }
-//
-//    public StatsdClient(InetAddress host, int port) throws IOException {
-//
-//    }
+
+    // public StatsdClient(String host, int port) throws UnknownHostException,
+    // IOException {
+    // this(InetAddress.getByName(host), port);
+    // }
+    //
+    // public StatsdClient(InetAddress host, int port) throws IOException {
+    //
+    // }
 
     protected void finalize() {
         flush();

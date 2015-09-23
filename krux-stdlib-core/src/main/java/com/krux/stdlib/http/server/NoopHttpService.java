@@ -27,7 +27,6 @@ public class NoopHttpService implements HttpService {
     @Override
     public void addAdditionalStatus(String key, Object value) {}
 
-
     @Override
     public void initialize(Config config) {}
 

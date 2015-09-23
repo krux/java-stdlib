@@ -16,8 +16,8 @@ public class SimpleExample {
      */
     public static void main(String[] args) {
         KruxStdLib.STATSD.count("hey");
-        
-        for(int i = 0; i < 10000; i++) {
+
+        for (int i = 0; i < 10000; i++) {
             KruxStdLib.STATSD.time("hello.time", i);
         }
     }
