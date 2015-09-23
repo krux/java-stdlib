@@ -59,10 +59,6 @@ public class HttpServiceManager implements HttpService {
         return _manager;
     }
 
-//    public static synchronized HttpServiceManager getInstance() {
-//        return getInstance(ConfigFactory.load());
-//    }
-
     @Override
     public void start() {
         if (_service != null)

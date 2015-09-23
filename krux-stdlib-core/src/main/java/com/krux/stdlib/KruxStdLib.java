@@ -160,7 +160,7 @@ public class KruxStdLib {
                         .accepts("stats-environment", "Stats environment (dictates statsd prefix)").withOptionalArg()
                         .ofType(String.class);
                 OptionSpec<Integer> heapReporterIntervalMs = parser
-                        .accepts("heap-stats-interval-ms", "Interval (ms) for used heap statsd gauge").withOptionalArg()
+                        .accepts("jvm-stats-interval-ms", "Interval (ms) for used heap statsd gauge").withOptionalArg()
                         .ofType(Integer.class);
                 OptionSpec<Boolean> handleLogRotation = parser
                         .accepts("rotate-logs",
@@ -200,7 +200,8 @@ public class KruxStdLib {
                 
                 //app-name override
                 if (_options.has(appNameOption)) {
-                    commandLineOverrides.put(kruxStdLibConfigPrefix+".app-name", _options.valueOf(appNameOption));
+                    commandLineOverrides.put(kruxStdLibConfigPrefix+".app-name", 
+                            StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(_options.valueOf(appNameOption)), '_'));
                 }
                 
                 //env override
@@ -217,10 +218,18 @@ public class KruxStdLib {
                 if (_options.has(logLevel)) {
                     commandLineOverrides.put(kruxStdLibConfigPrefix+"."+loggingServerConfigPrefix+".log-level", _options.valueOf(logLevel));
                 }
+                
+                //log-level override
+                if (!_options.has(enableStatsd)) {
+                    commandLineOverrides.put(kruxStdLibConfigPrefix+"."+statsConfigPrefix+".enabled", false);
+                }
     
                 ConfigRenderOptions renderOptions = ConfigRenderOptions.defaults();
                 renderOptions.setJson(true);
                 Config c = ConfigFactory.load();
+                if (!c.hasPath(kruxStdLibConfigPrefix+".app-name") && !commandLineOverrides.containsKey(kruxStdLibConfigPrefix+".app-name")) {
+                    commandLineOverrides.put(kruxStdLibConfigPrefix+".app-name", getMainClassName());
+                }
 
                 Config overridesConfig = ConfigFactory.parseMap(commandLineOverrides);
                 c = overridesConfig.withFallback(c);
@@ -234,11 +243,8 @@ public class KruxStdLib {
     
                 // set environment
                 ENV = c.getString(kruxStdLibConfigPrefix+".env");
-    
-                // set global app name
-                APP_NAME = getMainClassName(c.getString(kruxStdLibConfigPrefix+".app-name"));
-    
-                
+                APP_NAME = c.getString(kruxStdLibConfigPrefix+".app-name");
+                 
                 if ( INTIALIZED == false ) {
                     // setup statsd
                     try {
@@ -267,7 +273,6 @@ public class KruxStdLib {
                     }
                 });
     
-                _initialized = true;
                 LOGGER.warn("** Started " + APP_NAME + " **");
                 for (OptionSpec<?> spec : _options.specs()) {
                     LOGGER.info(spec.toString() + " : " + _options.valuesOf(spec));
@@ -297,10 +302,8 @@ public class KruxStdLib {
         return _options;
     }
 
-    private static String getMainClassName(String name) {
+    private static String getMainClassName() {
 
-        if (!name.equals("unspecified")) 
-            return name;
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         StackTraceElement main = stack[stack.length - 1];
         String mainClass = main.getClassName();

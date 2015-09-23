@@ -57,7 +57,7 @@ public class JDKAndSystemStatsdReporter extends TimerTask {
             bre.close();
             p.waitFor();
         } catch (Exception err) {
-            _sender.time("cpu_collection_error", 1);
+            _sender.count("cpu_collection_error");
         }
 
         // cpu util stats
@@ -85,7 +85,7 @@ public class JDKAndSystemStatsdReporter extends TimerTask {
             bre.close();
             p.waitFor();
         } catch (Exception err) {
-            _sender.time("cpu_collection_error", 1);
+            _sender.count("cpu_collection_error");
         }
 
     }

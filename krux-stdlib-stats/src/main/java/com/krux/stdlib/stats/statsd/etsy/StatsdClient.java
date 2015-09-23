@@ -176,7 +176,6 @@ public class StatsdClient extends TimerTask {
     }
 
     public boolean increment(String key) {
-        LOGGER.debug("Inside implementation");
         return increment(key, 1, 1.0);
     }
 

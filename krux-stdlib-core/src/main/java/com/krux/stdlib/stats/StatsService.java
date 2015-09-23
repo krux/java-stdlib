@@ -29,26 +29,27 @@ public class StatsService implements KruxStatsSender {
     private List<KruxStatsSender> _senders = new ArrayList<>();;
 
     private StatsService(Config config) {
-        boolean runStats = config.getBoolean("krux.stdlib.stats.enabled");
-        if (runStats) {
-            _loader = ServiceLoader.load(KruxStatsSender.class);
-            try {
-                Iterator<KruxStatsSender> statsSenders = _loader.iterator();
-                while (statsSenders.hasNext()) {
-                    KruxStatsSender sndr = statsSenders.next();
-                    sndr.initialize(config);
-                    _senders.add(sndr);
-                    LOGGER.debug("KruxStatsSender providers loaded: {}", sndr.getClass().getCanonicalName());
+        if (config.hasPath("krux.stdlib.stats")) {
+            boolean runStats = config.getBoolean("krux.stdlib.stats.enabled");
+            if (runStats) {
+                _loader = ServiceLoader.load(KruxStatsSender.class);
+                try {
+                    Iterator<KruxStatsSender> statsSenders = _loader.iterator();
+                    while (statsSenders.hasNext()) {
+                        KruxStatsSender sndr = statsSenders.next();
+                        sndr.initialize(config);
+                        _senders.add(sndr);
+                        LOGGER.debug("KruxStatsSender providers loaded: {}", sndr.getClass().getCanonicalName());
+                    }
+                    if (_senders.size() > 0) {
+                        LOGGER.debug("{} KruxStatsSender providers loaded", _senders.size());
+                    } else {
+                        LOGGER.info("No KruxStatsSender providers found! Using NoopStatsdClient");
+                        _senders.add(new NoopStatsdClient());
+                    }
+                } catch (ServiceConfigurationError serviceError) {
+                    LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
                 }
-                if (_senders.size() > 0) {
-                    LOGGER.debug("{} KruxStatsSender providers loaded", _senders.size());
-                } else {
-                    LOGGER.info("No KruxStatsSender providers found! Using NoopStatsdClient");
-                    _senders.add(new NoopStatsdClient());
-                }
-            } catch (ServiceConfigurationError serviceError) {
-                LOGGER.error("Cannot instantiate KruxStatsSender", serviceError);
-                ;
             }
         } else {
             LOGGER.info("Stats not enabled");
@@ -61,10 +62,6 @@ public class StatsService implements KruxStatsSender {
         }
         return _service;
     }
-
-//    public static synchronized StatsService getInstance() {
-//        return getInstance(ConfigFactory.load());
-//    }
 
     @Override
     public void count(String key) {

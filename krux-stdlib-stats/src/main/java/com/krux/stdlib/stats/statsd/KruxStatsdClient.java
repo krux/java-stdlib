@@ -7,12 +7,16 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
+import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.krux.stdlib.KruxStdLib;
+import com.krux.stdlib.shutdown.ShutdownTask;
 import com.krux.stdlib.stats.KruxStatsSender;
+import com.krux.stdlib.stats.jvm.JDKAndSystemStatsdReporter;
 import com.krux.stdlib.stats.statsd.etsy.StatsdClient;
 import com.typesafe.config.Config;
 
@@ -106,6 +110,19 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
         } catch (Exception e) {
             LOGGER.error("Cannot setup statsd client", e);
         }
+        
+        //start jvm stats reporting
+        JDKAndSystemStatsdReporter jvmReporter = new JDKAndSystemStatsdReporter(this);
+        final Timer t = new Timer();
+        t.schedule(jvmReporter, 5000, config.getLong("krux.stdlib.stats.jvm-stats-interval-ms"));
+        
+        KruxStdLib.registerShutdownHook( new ShutdownTask(100) {
+            @Override
+            public void run() {
+                t.cancel();
+            }
+        });
+        
     }
 
     @Override
