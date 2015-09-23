@@ -39,7 +39,7 @@ public class LoggingSetupManager implements LoggingSetupService {
                     count++;
                 }
                 LOGGER = LoggerFactory.getLogger(LoggingSetupManager.class.getName());
-                LOGGER.info("Found {} logging services", count);
+                LOGGER.debug("Found {} logging services", count);
             } catch (ServiceConfigurationError serviceError) {
                 try {
                     LOGGER.error("Cannot instantiate LoggingSetupManager", serviceError);

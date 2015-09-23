@@ -38,12 +38,12 @@ public class StatsService implements KruxStatsSender {
                     KruxStatsSender sndr = statsSenders.next();
                     sndr.initialize(config);
                     _senders.add(sndr);
-                    LOGGER.info("KruxStatsSender providers loaded: {}", sndr.getClass().getCanonicalName());
+                    LOGGER.debug("KruxStatsSender providers loaded: {}", sndr.getClass().getCanonicalName());
                 }
                 if (_senders.size() > 0) {
-                    LOGGER.info("{} KruxStatsSender providers loaded", _senders.size());
+                    LOGGER.debug("{} KruxStatsSender providers loaded", _senders.size());
                 } else {
-                    LOGGER.warn("No KruxStatsSender providers found! Using NoopStatsdClient");
+                    LOGGER.info("No KruxStatsSender providers found! Using NoopStatsdClient");
                     _senders.add(new NoopStatsdClient());
                 }
             } catch (ServiceConfigurationError serviceError) {
@@ -68,7 +68,6 @@ public class StatsService implements KruxStatsSender {
 
     @Override
     public void count(String key) {
-        LOGGER.debug("I am logging: {}", key);
         for (KruxStatsSender sender : _senders) {
             sender.count(key);
         }

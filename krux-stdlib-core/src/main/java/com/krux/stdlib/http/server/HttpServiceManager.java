@@ -31,9 +31,9 @@ public class HttpServiceManager implements HttpService {
             _loader = ServiceLoader.load(HttpService.class);
 
             try {
-                Iterator<HttpService> statsSenders = _loader.iterator();
-                while (statsSenders.hasNext()) {
-                    _service = statsSenders.next();
+                Iterator<HttpService> webService = _loader.iterator();
+                while (webService.hasNext()) {
+                    _service = webService.next();
                     _service.initialize(config);
                 }
 

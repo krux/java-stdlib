@@ -68,7 +68,7 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
 
     @Override
     public void initialize(Config config) {
-        LOGGER.info("Initializing {}", this.getClass().getCanonicalName());
+        LOGGER.debug("Initializing {}", this.getClass().getCanonicalName());
         _keyNamespace = config.getString("env").toLowerCase() + "." +
                         config.getString("app-name").toLowerCase() + ".";
         
@@ -88,8 +88,8 @@ public class KruxStatsdClient extends StatsdClient implements KruxStatsSender {
             _statsdSuffix = "." + "unknown";
         }
         
-        LOGGER.info("_keyNamespace: {}, _statsdSuffix: {}", _keyNamespace, _statsdSuffix);
-        LOGGER.info("statsDServer: {}, port: {}", statsDServer, port);
+        LOGGER.debug("_keyNamespace: {}, _statsdSuffix: {}", _keyNamespace, _statsdSuffix);
+        LOGGER.debug("statsDServer: {}, port: {}", statsDServer, port);
         
         _address = new InetSocketAddress(statsDServer, port);
         

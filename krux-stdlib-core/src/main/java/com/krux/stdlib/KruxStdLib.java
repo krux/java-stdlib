@@ -72,7 +72,6 @@ public class KruxStdLib {
         // setup web server
         HttpServiceManager manager = HttpServiceManager.getInstance();
         manager.start();
-        LOGGER.info("!!!!!!!!!!!!!!! post webserver");
     }
 
     // holds all registered Runnable shutdown hooks (which are executed

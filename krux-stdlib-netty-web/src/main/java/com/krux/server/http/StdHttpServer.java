@@ -95,7 +95,7 @@ public class StdHttpServer implements HttpService, Runnable {
 
     @Override
     public void initialize(Config config) {
-        LOGGER.info(config.toString());
+        LOGGER.debug(config.toString());
         _config = config;
     }
 }
