@@ -59,32 +59,14 @@ public class LoggingSetupManager implements LoggingSetupService {
         return _manager;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.krux.stdlib.KruxStdLibService#start()
-     */
     @Override
     public void start() {
-
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.krux.stdlib.KruxStdLibService#stop()
-     */
     @Override
     public void stop() {
-
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.krux.stdlib.KruxStdLibService#initialize(com.typesafe.config.Config)
-     */
     @Override
     public void initialize(Config config) {}
 

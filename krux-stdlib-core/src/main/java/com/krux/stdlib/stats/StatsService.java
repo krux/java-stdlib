@@ -99,20 +99,14 @@ public class StatsService implements KruxStatsSender {
 
     @Override
     public void start() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void stop() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void initialize(Config config) {
-        // TODO Auto-generated method stub
-
     }
 
 }
