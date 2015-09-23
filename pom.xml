@@ -35,7 +35,6 @@
     <modules>
         <module>krux-stdlib-core</module>
         <module>krux-stdlib-stats</module>
-        <module>krux-stdlib-cl-parsing</module>
         <module>krux-stdlib-netty-web</module>
         <module>krux-stdlib-logging</module>
         <module>krux-stdlib-examples</module>
