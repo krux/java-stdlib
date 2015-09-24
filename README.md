@@ -7,7 +7,9 @@ The Krux Sandard Library is an easily-configurable library that provides a handf
 * A standard logging configuration, based on [SLF4J](http://www.slf4j.org), that ensures all logged events with severity >= WARN are writting to STDERR, and those with a severity <= INFO are written to STDOUT, which can be very useful for environments where individual application lifecycles are managed by external tooling that has strong opinions about log handling (such as [supervisord](http://supervisord.org))
 * A [Statsd](https://github.com/etsy/statsd) client that automatically collects and submits common JVM statistics to a Statsd server, and a API for collecting and submitting custom application metrics
 
-It also provides a handful of useful tools for command-line parsing, managing a priority-based queue of application shutdown hooks, and other helpful utilities.  
+Each of the above features is completely defeatable.  In other words, if you don't need or want that feature, you don't need to pull it into your project.
+
+The Krux Standard Library also provides a handful of useful tools for command-line parsing, managing a priority-based queue of application shutdown hooks, and other helpful utilities.  
 
 (If you're looking for our Python Standard Library, see [here](https://github.com/krux/python-krux-stdlib)).
 
@@ -128,7 +130,7 @@ krux.stdlib : {
 }
 ```
 
-Configurations can also be overridden by specifying standard Java System Properties on the command-line at application startup. To disable Statsd metrics, for example, one might pass `-Dkrux.stdlib.stats.enabled=false` to the application.
+Configurations can also be overridden by specifying standard [Java System Properties](https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html) on the command-line at application startup. To disable Statsd metrics, for example, one could pass `-Dkrux.stdlib.stats.enabled=false` to the application.
 
 ### Legacy Configuration
 
@@ -156,7 +158,7 @@ public class ExampleMain {
 
 Any configuration elements passed via the deprecated command-line method will automatically override their 3.0 equivalents.  For example, passing `--http-port 9999` will have the same effect as overriding `krux.stdlib.netty.web.server.http-port` in your application's `application.conf` file.
 
-To see a list of the standard, now-deprecated command-line options supported by a Std Lib-based application, pass '-h' or '--help' at the command line.  You will see output like...
+To see a list of the standard, now-deprecated command-line options supported by a Std Lib-based application, pass `'-h'` or `'--help'` at the command line.  You will see output like...
 
 ```
 Option                                       Description                                              
