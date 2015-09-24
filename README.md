@@ -52,16 +52,15 @@ If you want to use the Std Lib' Stats, Logging and Web Server capabilities, drop
 
 # Basic Usage
 
-For the simplest use case, simply call `KruxStdLib.initialize(args)` before running your app's main logic...
+For the simplest use cases, you can just start using the Std Lib APIs and your SLF4J Loggers as you always have. (For those upgrading from versions older than 3, note the absence of any call to `KruxStdLib.initialize()`). 
 
 ```java
 public class ExampleMain {
 
 		public static void main(String[] args) {
-			KruxStdLib.initialize(args);
-
+			
             //send a simple stat
-            KruxStdLib.STATSD.count("my-app-started");
+            KruxStats.count("my-app-started");
             
 			//...do your stuff...
 			
@@ -74,7 +73,21 @@ public class ExampleMain {
 }
 ```
 
-This will setup slf4j (via log4j) bindings for stdout and stderr, establish a statsd client for use throughout your app via `KruxStdLib.STATSD`, and parse a standard set of command line options that all Krux apps should support. To see a list of the standard command line options, build an app that uses the stdlib as above, then pass '-h' or '--help' at the command line.  You will see output like...
+This will setup SLF4J bindings for stdout and stderr, establish a Statsd client for use throughout your app via `KruxStats`, and if you've included the Netty-Web module, start an embedded web server running on port 8080 (the default, easily configurable).
+
+Configuration
+-------------
+todo
+
+Design
+------
+todo
+
+
+Command Line Parsing
+--------------------
+
+To see a list of the standard command line options, build an app that uses the stdlib as above, then pass '-h' or '--help' at the command line.  You will see output like...
 
 ```
 Option                                       Description                                              
