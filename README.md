@@ -8,8 +8,6 @@ The Krux Sandard Library is an easily-configurable library that provides a handf
 * A [Statsd](https://github.com/etsy/statsd) client that automatically collects and submits common JVM statistics to a Statsd server, and a API for collecting and submitting custom application metrics
 * A handful of useful tools for command-line parsing, managing a priority-based queue of application shutdown hooks, and other helpful utilities.
 
-Each of its capabilities is easily configurable (or completely defeatable), making it easy to adapt it to custom environments.
-
 (If you're looking for our Python Standard Library, see [here](https://github.com/krux/python-krux-stdlib)).
 
 # Using
