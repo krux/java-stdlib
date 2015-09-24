@@ -81,7 +81,7 @@ This will setup SLF4J bindings for stdout and stderr, establish a Statsd client 
 
 All Std Lib configuration is based on [Typesafe's config library](https://github.com/typesafehub/config).  Each Std Lib sub-module contains sensible default configurations compiled into thier `reference.conf` files. For example, here's the Stats' package's `reference.conf`:
 
-```json
+```
 krux.stdlib : {
 
     ## enables the sending of stats to the specified host/port   
@@ -96,7 +96,7 @@ krux.stdlib : {
 ```
 ...and here's the Netty-web's [`reference.conf`](https://github.com/krux/java-stdlib/blob/v3/krux-stdlib-netty-web/src/main/resources/reference.conf):
 
-```json
+```
 krux.stdlib : {
 
     ## enables a simple, netty-based HTTP server
@@ -113,7 +113,7 @@ At runtime, all `reference.conf` files found on the classpath are merged into a 
 
 Consuming applications can override module defaults by including an `application.conf` file on their classpath. To force the embedded Netty web server to use port 9999 instead of the default 8080 and send StatsD stats to a remote machine, an app could include the following in its `application.conf` file:
 
-```json
+```
 krux.stdlib : {
 
     ## override the defualt port for HTTP server
