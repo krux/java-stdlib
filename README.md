@@ -128,16 +128,35 @@ krux.stdlib : {
 }
 ```
 
+Configurations can also be overridden by specifying standard Java System Properties on the command-line at application startup. To disable Statsd metrics, for example, one might pass `-Dkrux.stdlib.stats.enabled=false` to the application.
 
-Design
-------
-todo
+### Legacy Configuration
 
+Older versions of the Krux Java Std Lib supported a custom, command-line-driven approach to configuration.  Version 3.0 of the library continues to support this paradigm, but it is deprecated and will be dropped in a future release. Support for the legacy approach is dependent upon specific use of the Std Lib in your app.  Specifically, your app must pass the array of command-line arguments to the `KruxStdLib.initialize()` method *before* trying to use any of the Library's capabilities, like so...
 
-Command Line Parsing
---------------------
+```java
+public class ExampleMain {
 
-To see a list of the standard command line options, build an app that uses the stdlib as above, then pass '-h' or '--help' at the command line.  You will see output like...
+        public static void main(String[] args) {
+            KruxStdLib.initialize(args);
+
+            //old-school, deprecated API ... send a simple stat
+            KruxStdLib.STATSD.count("my-app-started");
+            
+            //...do your stuff...
+            
+            //by default, will be written to STERR
+            LOGGER.warn("I MUST DO MORE!");
+            
+            //new-school API works with old-school initialize() call
+            KruxStats.count("new_api_used");
+    }
+}
+```
+
+Any configuration elements passed via the deprecated command-line method will automatically override their 3.0 equivalents.  For example, passing `--http-port 9999` will have the same effect as overriding `krux.stdlib.netty.web.server.http-port` in your application's `application.conf` file.
+
+To see a list of the standard, now-deprecated command-line options supported by a Std Lib-based application, pass '-h' or '--help' at the command line.  You will see output like...
 
 ```
 Option                                       Description                                              
@@ -159,4 +178,3 @@ Option                                       Description
 --stats-port [Integer]                       Listening statsd port (default: 8125) 
 ```
 
-In more advanced scenarios, you can specifiy custom command line options, set up shutdown hooks, tap into a standard HTTP listener and do other groovy things. See [a detailed example](https://github.com/krux/java-krux-stdlib/blob/master/src/main/java/com/krux/stdlib/sample/ExampleMain.java) for more complex uses.
