@@ -15,7 +15,7 @@ The Krux Standard Library also provides a handful of useful tools for command-li
 
 # Using
 
-As of version 3 of the Krux java Standard Library, each of the core capabilities it provides is made available via distinct build dependencies. The project contains several sub-modules:
+As of version 3.0 of the Krux java Standard Library, each of the core capabilities it provides is made available via distinct build dependencies. The project contains several sub-modules:
 
 * [krux-stdlib-core](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-core) Provides common APIs and interfaces. Most of the classes individual applications will use are contained in this project.
 * [krux-stdlib-stats](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-stats) Provides configuration and implementations for metrics gathering and transmission via a StatsD client
@@ -33,7 +33,7 @@ The Stats, Logging and Netty Web sub-modules all depend on the Core module.  To 
 </dependency>
 ```
 
-If you want to use the Std Lib' Stats, Logging and Web Server capabilities, drop all three in your pom...
+If you want to use the Std Lib's Stats, Logging and Web Server capabilities, drop all three in your pom...
 ```xml
 <dependency>
     <groupId>com.krux</groupId>
