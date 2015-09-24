@@ -6,47 +6,21 @@ The Krux Sandard Library is an easily-configurable library that provides a handf
 * A [Netty](http://netty.io)-based web server for handling HTTP-based status checks and custom URL handlers for app-specific needs
 * A standard logging configuration, based on [SLF4J](http://www.slf4j.org), that ensures all logged events with severity >= WARN are writting to STDERR, and those with a severity <= INFO are written to STDOUT, which can be very useful for environments where individual application lifecycles are managed by external tooling that has strong opinions about log handling (such as [supervisord](http://supervisord.org))
 * A [Statsd](https://github.com/etsy/statsd) client that automatically collects and submits common JVM statistics to a Statsd server, and a API for collecting and submitting custom application metrics
+* A handful of useful tools for command-line parsing, managing a priority-based queue of application shutdown hooks, and other helpful utilities.
 
-It also provides a handful of useful tools for command-line parsing, managing a priority-based queue of application shutdown hooks, and other helpful utilities.  
+Each of its capabilities is easily configurable (or completely defeatable), making it easy to adapt it to custom environments.
 
 (If you're looking for our Python Standard Library, see [here](https://github.com/krux/python-krux-stdlib)).
 
 # Using
 
-As of version 3 of the Krux java Standard Library, each of the core capabilities it provides is made available via distinct build dependencies. The project contains several sub-modules:
-
-* [krux-stdlib-core](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-core) Provides common APIs and interfaces. Most of the classes individual applications will use are contained in this project.
-* [krux-stdlib-stats](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-stats) Provides configuration and implementations for metrics gathering and transmission via a StatsD client
-* [krux-stdlib-logging](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-logging) Provides SLF4J implementations of appenders that router logged events to STDOUT or STDERR based on the event's severity.
-* [krux-stdlib-netty-web](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-netty-web) Provides a Netty-based web server that, by default, will respond to requests for "/__status" with application metrics and health information.  Custom HTTP URL handlers can be added to the server for custom application web serving needs.
-* [krux-stdlib-examples](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-examples) A collection of simple demo applications that show off the Std Lib's capabilities.
-
-The Stats, Logging and Netty Web sub-modules all depend on the Core module.  To use one or more of the above, simply include the appropriate dependencies in your build configuration.  For example, to make use of the Stats package but not the Logging or Netty Web modules in your Maven-based project, just include the Stats package in your pom.xml...
+To use, add the following dependency to your pom.xml:
 
 ```xml
 <dependency>
-    <groupId>com.krux</groupId>
-    <artifactId>krux-stdlib-stats</artifactId>
-    <version>3.0.0-alpha</version>
-</dependency>
-```
-
-If you want to use the Std Lib' Stats, Logging and Web Server capabilities, drop all three in your pom...
-```xml
-<dependency>
-    <groupId>com.krux</groupId>
-    <artifactId>krux-stdlib-logging</artifactId>
-    <version>3.0.0-alpha</version>
-</dependency>
-<dependency>
-    <groupId>com.krux</groupId>
-    <artifactId>krux-stdlib-stats</artifactId>
-    <version>3.0.0-alpha</version>
-</dependency>
-<dependency>
-    <groupId>com.krux</groupId>
-    <artifactId>krux-stdlib-netty-web</artifactId>
-    <version>3.0.0-alpha</version>
+  <groupId>com.krux</groupId>
+  <artifactId>krux-stdlib</artifactId>
+  <version>1.7.2</version>
 </dependency>
 ```
 
