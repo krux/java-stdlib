@@ -33,7 +33,7 @@ The Stats, Logging and Netty Web sub-modules all depend on the Core module.  To 
 </dependency>
 ```
 
-If you want to use the Std Lib's Stats, Logging and Web Server capabilities, drop all three in your pom...
+If you want to use the Std Lib's Stats, Logging and Web Server facilities, drop all three in your pom...
 ```xml
 <dependency>
     <groupId>com.krux</groupId>
@@ -54,7 +54,7 @@ If you want to use the Std Lib's Stats, Logging and Web Server capabilities, dro
 
 # Basic Usage
 
-For the simplest use cases, you can just start using the Std Lib APIs and your SLF4J Loggers as you always have. (For those upgrading from versions older than 3, note the absence of any call to `KruxStdLib.initialize()`). 
+For the simplest use cases, you can just start using the Std Lib APIs and your SLF4J Loggers as you always have. (For those upgrading from versions older than 3.0, note the absence of any call to `KruxStdLib.initialize()`). 
 
 ```java
 public class ExampleMain {
