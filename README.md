@@ -34,6 +34,7 @@ The Stats, Logging and Netty Web sub-modules all depend on the Core module.  To 
 ```
 
 If you want to use the Std Lib's Stats, Logging and Web Server facilities, drop all three in your pom...
+
 ```xml
 <dependency>
     <groupId>com.krux</groupId>
@@ -125,7 +126,7 @@ krux.stdlib : {
        
     ## send statsd udp packets elsewhere
     stats : {
-        host : "a.different.machine.org",
+        host : "a.different.machine.org"
     }
 }
 ```
