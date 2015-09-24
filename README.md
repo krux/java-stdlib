@@ -1,5 +1,5 @@
-java-krux-stdlib
-================
+Krux Standard Java Library
+==========================
 
 The Krux Sandard Library is an easily-configurable library that provides a handful of capabilities common across all of Krux' JVM-based applications, including:
 
@@ -9,6 +9,8 @@ The Krux Sandard Library is an easily-configurable library that provides a handf
 * A handful of useful tools for command-line parsing, managing a priority-based queue of application shutdown hooks, and other helpful utilities.
 
 Each of its capabilities is easily configurable (or completely defeatable), making it easy to adapt it to custom environments.
+
+(If you're looking for our Python Standard Library, see [here](https://github.com/krux/python-krux-stdlib).
 
 # Building
 
@@ -57,7 +59,7 @@ public class ExampleMain {
 			LOGGER.info("I've really done something.");
 			
 			//by default, will be written to STERR
-            LOGGER.info("I MUST DO MORE!");
+            LOGGER.warn("I MUST DO MORE!");
 	}
 }
 ```
