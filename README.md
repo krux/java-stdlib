@@ -75,9 +75,59 @@ public class ExampleMain {
 
 This will setup SLF4J bindings for stdout and stderr, establish a Statsd client for use throughout your app via `KruxStats`, and if you've included the Netty-Web module, start an embedded web server running on port 8080 (the default, easily configurable).
 
-Configuration
--------------
-todo
+# Configuration
+
+## Basics
+
+All Std Lib configuration is based on [Typesafe's config library](https://github.com/typesafehub/config).  Each Std Lib sub-module contains sensible default configurations compiled into thier `reference.conf` files. For example, here's the Stats' package's `reference.conf`:
+
+```json
+krux.stdlib : {
+
+    ## enables the sending of stats to the specified host/port   
+    stats : {
+        enabled : true,
+        env : dev,
+        host : "localhost",
+        port : 8125,
+        jvm-stats-interval-ms : 5000
+    }
+}
+```
+...and here's the Netty-web's [`reference.conf`](https://github.com/krux/java-stdlib/blob/v3/krux-stdlib-netty-web/src/main/resources/reference.conf):
+
+```json
+krux.stdlib : {
+
+    ## enables a simple, netty-based HTTP server
+    netty.web.server : {
+        enabled : true,
+        http-port : 8080
+    }
+}
+```
+
+At runtime, all `reference.conf` files found on the classpath are merged into a single global configuration with all of the Std Lib's configuration elements under the `krux.stdlib` namespace.
+
+### Overriding Module Default Configurations
+
+Consuming applications can override module defaults by including an `application.conf` file on their classpath. To force the embedded Netty web server to use port 9999 instead of the default 8080 and send StatsD stats to a remote machine, an app could include the following in its `application.conf` file:
+
+```json
+krux.stdlib : {
+
+    ## override the defualt port for HTTP server
+    netty.web.server : {
+        http-port : 9999
+    }
+       
+    ## send statsd udp packets elsewhere
+    stats : {
+        host : "a.different.machine.org",
+    }
+}
+```
+
 
 Design
 ------
