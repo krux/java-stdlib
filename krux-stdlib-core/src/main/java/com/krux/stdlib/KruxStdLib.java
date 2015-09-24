@@ -64,6 +64,7 @@ public class KruxStdLib {
     private static final String nettyServerConfigPrefix = "netty.web.server";
     private static final String loggingServerConfigPrefix = "logging";
     private static final String statsConfigPrefix = "stats";
+    private static Config _runningConfig = null;
     
     private static final String STDLIB_WEB_PROPERTIES_PREFIX = kruxStdLibConfigPrefix + "." + nettyServerConfigPrefix;
     private static final String STDLIB_LOGGING_PROPERTIES_PREFIX = kruxStdLibConfigPrefix + "." + loggingServerConfigPrefix;
@@ -290,6 +291,7 @@ public class KruxStdLib {
                 }
 
                 STATSD.count("process_start");
+                _runningConfig = config;
 
                 // finally, setup a shutdown thread to run all registered
                 // application hooks
@@ -348,6 +350,10 @@ public class KruxStdLib {
 
     public static void registerShutdownHook(ShutdownTask r) {
         shutdownHooks.add(r);
+    }
+
+    public static Config getConfig() {
+        return _runningConfig;
     }
 
 }
