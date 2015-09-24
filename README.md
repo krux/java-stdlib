@@ -12,22 +12,6 @@ Each of its capabilities is easily configurable (or completely defeatable), maki
 
 (If you're looking for our Python Standard Library, see [here](https://github.com/krux/python-krux-stdlib)).
 
-# Building
-
-To build, use Maven:
-
-```shell
-$ mvn compile
-```
-
-# Deploying
-
-To deploy, ensure you have updated the version in `pom.xml` and use Maven:
-
-```shell
-$ mvn clean compile deploy
-```
-
 # Using
 
 To use, add the following dependency to your pom.xml:
