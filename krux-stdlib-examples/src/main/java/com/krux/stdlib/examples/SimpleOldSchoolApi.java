@@ -9,7 +9,7 @@ import com.krux.stdlib.KruxStdLib;
  * @author casspc
  *
  */
-public class SimpleExample2 {
+public class SimpleOldSchoolApi {
 
     /**
      * @param args

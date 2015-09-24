@@ -13,9 +13,9 @@ import com.krux.stdlib.stats.KruxStats;
  * @author casspc
  *
  */
-public class SimpleExample {
+public class OldVsNewAPI {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleExample.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(OldVsNewAPI.class.getName());
 
     /**
      * @param args
@@ -32,12 +32,16 @@ public class SimpleExample {
         // new-school API.  No KruxStdLib.initialize() necessary
         KruxStats.count("there");
 
+        long start = System.currentTimeMillis();
         //now this will work, too, because KruxStats calls KruxStdLib.initialize() under the covers;
         for (int i = 0; i < 10000; i++) {
             KruxStdLib.STATSD.time("hello.time", i);
         }
+        long time = System.currentTimeMillis() - start;
         
         KruxStats.gauge("my_height", 72);
+        KruxStats.time("time-to-iterate", time);
+        
     }
 
 }

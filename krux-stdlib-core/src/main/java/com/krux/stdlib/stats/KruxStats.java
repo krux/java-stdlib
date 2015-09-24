@@ -7,6 +7,7 @@ import com.krux.stdlib.KruxStdLib;
 public class KruxStats {
     
     private final static StatsService _statsService;
+    
     static {
         KruxStdLib.initialize();
         _statsService = StatsService.getInstance(KruxStdLib.getConfig());
