@@ -10,7 +10,7 @@ The Krux Sandard Library is an easily-configurable library that provides a handf
 
 Each of its capabilities is easily configurable (or completely defeatable), making it easy to adapt it to custom environments.
 
-(If you're looking for our Python Standard Library, see [here](https://github.com/krux/python-krux-stdlib).
+(If you're looking for our Python Standard Library, see [here](https://github.com/krux/python-krux-stdlib)).
 
 # Building
 
@@ -40,7 +40,7 @@ To use, add the following dependency to your pom.xml:
 </dependency>
 ```
 
-# Usage
+# Basic Usage
 
 For the simplest use case, simply call `KruxStdLib.initialize(args)` before running your app's main logic...
 
@@ -53,7 +53,7 @@ public class ExampleMain {
             //send a simple stat
             KruxStdLib.STATSD.count("my-app-started");
             
-			//...do your stuff here...
+			//...do your stuff...
 			
 			//by default, will be written to STDOUT
 			LOGGER.info("I've really done something.");
