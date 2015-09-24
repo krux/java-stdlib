@@ -48,12 +48,21 @@ public class ExampleMain {
 		public static void main(String[] args) {
 			KruxStdLib.initialize(args);
 
+            //send a simple stat
+            KruxStdLib.STATSD.count("my-app-started");
+            
 			//...do your stuff here...
+			
+			//by default, will be written to STDOUT
+			LOGGER.info("I've really done something.");
+			
+			//by default, will be written to STERR
+            LOGGER.info("I MUST DO MORE!");
 	}
 }
 ```
 
-This will setup sl4j (via log4j) bindings for stdout and stderr, establish a statsd client for use throughout your app, and parse a standard set of command line options that all Krux apps should support. To see a list of the standard command line options, build an app that uses the stdlib as above, then pass '-h' or '--help' at the command line.  You will see output like...
+This will setup slf4j (via log4j) bindings for stdout and stderr, establish a statsd client for use throughout your app via `KruxStdLib.STATSD`, and parse a standard set of command line options that all Krux apps should support. To see a list of the standard command line options, build an app that uses the stdlib as above, then pass '-h' or '--help' at the command line.  You will see output like...
 
 ```
 Option                                       Description                                              
