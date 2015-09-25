@@ -1,6 +1,9 @@
 Krux Standard Java Library
 ==========================
 
+> *Note* - Version 3.0.0 will be released soon!  For a preview of what's changing, see the 
+> [3.0 README](https://github.com/krux/java-stdlib/tree/v3)
+
 The Krux Sandard Library is an easily-configurable library that provides a handful of capabilities common across all of Krux' JVM-based applications, including:
 
 * A [Netty](http://netty.io)-based web server for handling HTTP-based status checks and custom URL handlers for app-specific needs
