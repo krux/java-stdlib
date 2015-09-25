@@ -218,6 +218,9 @@ public class KruxStdLib {
                     .accepts( "rotate-logs",
                             "If true, log to a rolling file appender that will keep a maximum of 10 log files, 10MB each" )
                     .withOptionalArg().ofType( Boolean.class ).defaultsTo( false );
+            OptionSpec<String> configFileLocation = parser.accepts("configuration-file-location",
+                    "configuration file location for app needs.")
+                    .withOptionalArg().ofType(String.class);
 
             _options = parser.parse( args );
 
@@ -351,6 +354,10 @@ public class KruxStdLib {
 
         }
         return _options;
+    }
+
+    public static OptionSet getOptions() {
+         return _options; 
     }
 
     private static void setupLogging( OptionSpec<String> logLevel, OptionSpec<Boolean> handleLogRotation, String appName ) {
