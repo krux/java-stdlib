@@ -19,9 +19,9 @@ As of version 3.0 of the Krux java Standard Library, each of the core capabiliti
 
 * [krux-stdlib-core](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-core) Provides common APIs and interfaces. Most of the classes individual applications will use are contained in this project.
 * [krux-stdlib-stats](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-stats) Provides configuration and implementations for metrics gathering and transmission via a StatsD client
-* [krux-stdlib-logging](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-logging) Provides SLF4J implementations of appenders that router logged events to STDOUT or STDERR based on the event's severity.
-* [krux-stdlib-netty-web](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-netty-web) Provides a Netty-based web server that, by default, will respond to requests for "/__status" with application metrics and health information.  Custom HTTP URL handlers can be added to the server for custom application web serving needs.
-* [krux-stdlib-examples](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-examples) A collection of simple demo applications that show off the Std Lib's capabilities.
+* [krux-stdlib-logging](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-logging) Provides SLF4J implementations of appenders that route logged events to STDOUT or STDERR based on the event's severity.
+* [krux-stdlib-netty-web](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-netty-web) Provides a Netty-based web server that, by default, will respond to requests for "/__status" with application metrics and health information.  Custom HTTP URL handlers can be added to the server for application-specific web serving needs.
+* [krux-stdlib-examples](https://github.com/krux/java-stdlib/tree/v3/krux-stdlib-examples) A collection of simple applications that demonstrate use of the Std Lib's capabilities.
 
 The Stats, Logging and Netty Web sub-modules all depend on the Core module.  To use one or more of the above, simply include the appropriate dependencies in your build configuration.  For example, to make use of the Stats package but not the Logging or Netty Web modules in your Maven-based project, just include the Stats package in your pom.xml...
 

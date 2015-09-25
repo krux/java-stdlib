@@ -30,4 +30,9 @@ public class NoopHttpService implements HttpService {
     @Override
     public void initialize(Config config) {}
 
+    @Override
+    public HttpService getHttpServiceImpl() {
+        return null;
+    }
+
 }

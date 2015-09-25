@@ -17,5 +17,7 @@ public interface HttpService extends KruxStdLibService {
     public void resetStatusCodeAndMessageOK();
 
     public void addAdditionalStatus(String key, Object value);
+    
+    public HttpService getHttpServiceImpl();
 
 }

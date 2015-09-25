@@ -107,7 +107,7 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
      * @see com.krux.stdlib.statsd.KruxStatsSender#count(java.lang.String)
      */
     @Override
-    public void count(String key) {
+    public void count(final String key) {
         getCounter(key).mark();
     }
 
@@ -117,7 +117,7 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
      * @see com.krux.stdlib.statsd.KruxStatsSender#count(java.lang.String, int)
      */
     @Override
-    public void count(String key, int count) {
+    public void count(final String key, final int count) {
         getCounter(key).mark(count);
     }
 
@@ -127,7 +127,7 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
      * @see com.krux.stdlib.statsd.KruxStatsSender#time(java.lang.String, long)
      */
     @Override
-    public void time(String key, long millis) {
+    public void time(final String key, final long millis) {
         getTimer(key).update(millis, TimeUnit.MILLISECONDS);
     }
 
@@ -138,7 +138,7 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
      * java.util.concurrent.TimeUnit)
      */
     @Override
-    public void time(String key, long time, TimeUnit timeunit) {
+    public void time(final String key, final long time, final TimeUnit timeunit) {
         getTimer(key).update(time, timeunit);
     }
 
@@ -148,12 +148,12 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
      * @see com.krux.stdlib.statsd.KruxStatsSender#gauge(java.lang.String, long)
      */
     @Override
-    public void gauge(String key, long value) {
+    public void gauge(final String key, final long value) {
         registerGauge(key);
         gaugeValues.get(fullKey(key, "gauges")).set(value);
     }
 
-    private void registerGauge(String key) {
+    private void registerGauge(final String key) {
         AtomicLong gauge = gaugeValues.get(fullKey(key, "gauges"));
         if (gauge == null) {
             gaugeValues.put(fullKey(key, "gauges"), new AtomicLong());
@@ -167,7 +167,7 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
         }
     }
 
-    private Meter getCounter(String key) {
+    private Meter getCounter(final String key) {
         Meter counter = counters.get(fullKey(key, "counters"));
         if (counter == null) {
             counter = metrics.meter(fullKey(key, "counters"));
@@ -176,7 +176,7 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
         return counter;
     }
 
-    private Timer getTimer(String key) {
+    private Timer getTimer(final String key) {
         Timer timer = timers.get(fullKey(key, "timers"));
         if (timer == null) {
             timer = metrics.timer(fullKey(key, "timers"));
@@ -185,7 +185,7 @@ public class KruxStatsdGraphiteClient implements KruxStatsSender {
         return timer;
     }
 
-    private String fullKey(String appKey, String metricType) {
+    private String fullKey(final String appKey, final String metricType) {
         return prefixes.get(metricType) + appKey.toLowerCase() + statsdSuffix;
     }
 

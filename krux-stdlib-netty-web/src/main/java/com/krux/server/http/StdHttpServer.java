@@ -98,4 +98,9 @@ public class StdHttpServer implements HttpService, Runnable {
         LOGGER.debug(config.toString());
         _config = config;
     }
+
+    @Override
+    public HttpService getHttpServiceImpl() {
+        return this;
+    }
 }
