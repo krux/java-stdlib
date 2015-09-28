@@ -356,7 +356,7 @@ public class KruxStdLib {
         return _options;
     }
 
-    public static OptionSet get_options() {
+    public static OptionSet getOptions() {
         return _options;
     }
 
