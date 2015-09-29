@@ -357,7 +357,7 @@ public class KruxStdLib {
     }
 
     public static OptionSet getOptions() {
-         return _options; 
+        return _options;
     }
 
     private static void setupLogging( OptionSpec<String> logLevel, OptionSpec<Boolean> handleLogRotation, String appName ) {
