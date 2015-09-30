@@ -53,9 +53,8 @@ public class ExampleMain {
         // are available in the returned OptionSet object. Unrecognized options
         // will cause the
         // process to terminate with an error sent to stderr.
-        // 2. An asynchronous logback appender that wraps a
-        // DailyRollingFileAppender is programatically created
-        // and added to the rootlogger. See LoggerConfigurator for details.
+        // 2. An asynchronous console appender that wraps a
+        // is programatically created and added to the rootlogger. See LoggerConfigurator for details.
         // 3. A static statsd client library is instantiated and made available
         // as a static member of KruxStdLib
         // 4. An HTTP server is started that will respond to "/__status"
