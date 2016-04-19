@@ -47,6 +47,7 @@ public class KruxStdLib {
     public static String APP_VERSION;
     public static String BASE_APP_DIR;
     public static String STASD_ENV;
+    public static String PROPERTY_FILE;
 
     private static OptionParser _parser = null;
     private static OptionSet _options = null;
@@ -114,7 +115,7 @@ public class KruxStdLib {
     /** Overload for when you don't already have a string[] from the cl **/
     public static OptionSet initialize( String appDescription, Boolean enableStatsd, String statsdHost, Integer statsdPort,
             String statsdEnvironment, String environment, Level loggingLevel, String applicationName,
-            Integer httpListenPort, String baseAppDirectory ) {
+            Integer httpListenPort, String baseAppDirectory, String propertyFileName ) {
         List<String> params = new ArrayList<String>();
         if ( enableStatsd ) {
             params.add( "--stats" );
@@ -146,8 +147,12 @@ public class KruxStdLib {
             params.add( String.valueOf( httpListenPort.intValue() ) );
         }
         if ( baseAppDirectory != null ) {
-            params.add( "--base-dir" );
-            params.add( baseAppDirectory );
+            params.add("--base-dir");
+            params.add(baseAppDirectory);
+        }
+        if ( propertyFileName != null ) {
+            params.add( "--property-file" );
+            params.add( propertyFileName );
         }
 
         return initialize( appDescription, params.toArray( new String[0] ) );
@@ -221,6 +226,9 @@ public class KruxStdLib {
             OptionSpec<String> configFileLocation = parser.accepts("configuration-file-location",
                     "configuration file location for app needs.")
                     .withOptionalArg().ofType(String.class);
+            OptionSpec<String> propertyFileName = parser.accepts("property-file",
+                    "provide environment-specific properties.")
+                    .withOptionalArg().ofType(String.class);
 
             _options = parser.parse( args );
 
@@ -228,6 +236,7 @@ public class KruxStdLib {
             BASE_APP_DIR = _options.valueOf( baseAppDirectory );
             STASD_ENV = _options.valueOf( statsEnvironment );
             HTTP_PORT = _options.valueOf( httpListenPort );
+            PROPERTY_FILE = _options.valueOf( propertyFileName );
 
             // set environment
             ENV = _options.valueOf( environment );
