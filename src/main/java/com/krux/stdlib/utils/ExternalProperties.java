@@ -1,16 +1,19 @@
 package com.krux.stdlib.utils;
 
+import com.krux.stdlib.KruxStdLib;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.krux.stdlib.KruxStdLib;
-
 /**
+ * Loads properties from an external file, set via the --property-file
+ * command-line option.
  *
+ * For tests in your project,implement a helper class that reads the
+ * resource from test/resources.
  */
 
 public class ExternalProperties {
@@ -21,7 +24,7 @@ public class ExternalProperties {
 
     public ExternalProperties() {
         _kruxExternalProps = new Properties();
-        InputStream input = null;
+        InputStream input;
         if ( KruxStdLib.PROPERTY_FILE != null ) {
             LOGGER.debug("loading properties from " + KruxStdLib.PROPERTY_FILE);
             try {
@@ -34,11 +37,10 @@ public class ExternalProperties {
     }
 
     public String getPropertyValue( String propertyKey ) {
-        LOGGER.debug("gettting " + propertyKey);
         String value = null;
         if ( _kruxExternalProps != null && _kruxExternalProps.containsKey( propertyKey ) ) {
             value = _kruxExternalProps.getProperty( propertyKey );
-            LOGGER.debug("gettting " + propertyKey + ": " + _kruxExternalProps.getProperty( propertyKey ) );
+            LOGGER.debug("getting " + propertyKey + ": " + _kruxExternalProps.getProperty( propertyKey ) );
         }
         return value;
     }

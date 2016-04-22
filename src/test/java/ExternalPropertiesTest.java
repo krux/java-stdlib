@@ -1,47 +1,24 @@
 // KruxStdLib.PROPERTY_FILE
 
 
-import java.util.Date;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
 import com.krux.stdlib.KruxStdLib;
 import com.krux.stdlib.utils.ExternalProperties;
-
 import joptsimple.OptionSet;
+import org.junit.Test;
+
 import java.net.URL;
-import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 public class ExternalPropertiesTest {
-
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
 
     @Test
     public void testGetExternalPropertyValue() {
 
-        URL testProptertyFileURL = Thread.currentThread().getContextClassLoader().getResource("test_properties.properties");
+        URL testPropertyFileURL = Thread.currentThread().getContextClassLoader().getResource("test_properties.properties");
 
         KruxStdLib k = new KruxStdLib();
-        OptionSet options = k.initialize(null, false, null, null, null, null, null, null, null, null, testProptertyFileURL.getPath());
+        OptionSet options = k.initialize(null, false, null, null, null, null, null, null, null, null, testPropertyFileURL.getPath());
 
         ExternalProperties externalPropertyReader = new ExternalProperties();
 
