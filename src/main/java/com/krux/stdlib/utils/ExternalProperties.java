@@ -12,7 +12,7 @@ import java.util.Properties;
  * Loads properties from an external file, set via the --property-file
  * command-line option.
  *
- * For tests in your project,implement a helper class that reads the
+ * For tests in your project, implement a helper class that reads the
  * resource from test/resources.
  */
 
@@ -20,9 +20,9 @@ public class ExternalProperties {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( ExternalProperties.class.getName() );
 
-    private Properties _kruxExternalProps;
+    private static Properties _kruxExternalProps;
 
-    public ExternalProperties() {
+    static {
         _kruxExternalProps = new Properties();
         InputStream input;
         if ( KruxStdLib.PROPERTY_FILE != null ) {
@@ -32,11 +32,12 @@ public class ExternalProperties {
                 _kruxExternalProps.load( input );
             } catch ( Exception ex ) {
                 LOGGER.error( "Can't load external properties file " + KruxStdLib.PROPERTY_FILE, ex );
+                throw new RuntimeException("Can't load external properties file " + KruxStdLib.PROPERTY_FILE, ex );
             }
         }
     }
 
-    public String getPropertyValue( String propertyKey ) {
+    public static String getPropertyValue( String propertyKey ) {
         String value = null;
         if ( _kruxExternalProps != null && _kruxExternalProps.containsKey( propertyKey ) ) {
             value = _kruxExternalProps.getProperty( propertyKey );
