@@ -223,9 +223,13 @@ public class KruxStdLib {
                     .accepts( "rotate-logs",
                             "If true, log to a rolling file appender that will keep a maximum of 10 log files, 10MB each" )
                     .withOptionalArg().ofType( Boolean.class ).defaultsTo( false );
+            /* The file passed in via --configuration-file-location is not parsed by KruxStdLib, just made
+                available to the calling application for it to parse. */
             OptionSpec<String> configFileLocation = parser.accepts("configuration-file-location",
                     "configuration file location for app needs.")
                     .withOptionalArg().ofType(String.class);
+            /* the --property-file is parsed by Properties and the values are available via
+                ExternalProperties.getPropertyValue() */
             OptionSpec<String> propertyFileName = parser.accepts("property-file",
                     "provide environment-specific properties.")
                     .withOptionalArg().ofType(String.class);
