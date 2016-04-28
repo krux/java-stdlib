@@ -68,7 +68,9 @@ Option                                       Description
 --stats                                      Enable/disable statsd broadcast                          
 --stats-environment                          Stats environment (dictates statsd prefix) (default: dev)
 --stats-host                                 Listening statsd host (default: localhost)               
---stats-port [Integer]                       Listening statsd port (default: 8125) 
+--stats-port [Integer]                       Listening statsd port (default: 8125)
+--property-file [String]                     Path to an external property file, containing names of external resources
+                                             such that vary by environment, such as a database server hostname.
 ```
 
 In more advanced scenarios, you can specifiy custom command line options, set up shutdown hooks, tap into a standard HTTP listener and do other groovy things. See [a detailed example](https://github.com/krux/java-krux-stdlib/blob/master/src/main/java/com/krux/stdlib/sample/ExampleMain.java) for more complex uses.
