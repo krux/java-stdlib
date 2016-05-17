@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.krux</groupId>
     <artifactId>krux-stdlib</artifactId>
-    <version>1.7.4</version>
+    <version>1.7.6</version>
     <packaging>jar</packaging>
 
     <name>krux-stdlib</name>
@@ -65,7 +65,7 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.0.25.Final</version>
+        <version>4.0.36.Final</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.jr</groupId>
