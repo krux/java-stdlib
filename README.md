@@ -49,6 +49,31 @@ public class ExampleMain {
 }
 ```
 
+# Setting up the SLA handler
+
+Example from a consumer service sending message timestamps to the `SlaClient` for verification.
+
+```java
+import com.krux.stdlib.utils.SlaClient;
+
+public class messageProcessor { 
+    
+    private static SlaClient _slaClient = SlaClient.getInstance();
+    
+    public onMessage(String message) {
+       // send the message to the sla client to determine if the sla has been met
+       SlaClient.checkTs(GifStreamParserUtil.getTSInMillis(recordParts));
+    }
+}
+```
+
+Testing the SLA endpoint
+
+```bash
+curl localhost:8080/__sla
+```
+
+
 This will setup slf4j (via log4j) bindings for stdout and stderr, establish a statsd client for use throughout your app via `KruxStdLib.STATSD`, and parse a standard set of command line options that all Krux apps should support. To see a list of the standard command line options, build an app that uses the stdlib as above, then pass '-h' or '--help' at the command line.  You will see output like...
 
 ```
@@ -71,6 +96,7 @@ Option                                       Description
 --stats-port [Integer]                       Listening statsd port (default: 8125)
 --property-file [String]                     Path to an external property file, containing names of external resources
                                              such that vary by environment, such as a database server hostname.
+--sla                                        SLA in seconds to return on the /__sla endpoint                                          
 ```
 
 In more advanced scenarios, you can specifiy custom command line options, set up shutdown hooks, tap into a standard HTTP listener and do other groovy things. See [a detailed example](https://github.com/krux/java-krux-stdlib/blob/master/src/main/java/com/krux/stdlib/sample/ExampleMain.java) for more complex uses.

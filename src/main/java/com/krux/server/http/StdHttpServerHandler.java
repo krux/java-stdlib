@@ -42,12 +42,14 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     private final static String SLA_URL = "__sla";
 
     private static AppState stateCode = AppState.OK;
+    private static AppState failureCode = AppState.FAILURE;
     private static String nominalStatusMessage = KruxStdLib.APP_NAME + " is running nominally";
-    private static String nominalSlaMessage = KruxStdLib.APP_NAME + " is meeting its SLA of " + KruxStdLib.SLA_IN_SECONDS;
-    private static String alertSlaMessage = KruxStdLib.APP_NAME + " is not meeting its SLA of " + KruxStdLib.SLA_IN_SECONDS;
+    private static String nominalSlaMessage = KruxStdLib.APP_NAME + " is meeting its SLA of " + KruxStdLib.SLA_IN_SECONDS + " seconds.";
+    private static String failureSlaMessage = KruxStdLib.APP_NAME + " is not meeting its SLA of " + KruxStdLib.SLA_IN_SECONDS + " seconds.";
 
     private static Map<String, Object> applicationState = Collections.synchronizedMap( new HashMap<String, Object>() );
     private static Map<String, Object> applicationSlaState = Collections.synchronizedMap( new HashMap<String, Object>() );
+    private static Map<String, Object> applicationSlaFailureState = Collections.synchronizedMap( new HashMap<String, Object>() );
 
     private static final String BODY_404 = "<html><head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - "
             + KruxStdLib.APP_NAME + "</center> </body> </html>";
@@ -63,6 +65,11 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
         applicationSlaState.put( StatusKeys.state.toString(), stateCode.toString() );
         applicationSlaState.put( StatusKeys.status.toString(), nominalSlaMessage );
         applicationSlaState.put( StatusKeys.version.toString(), KruxStdLib.APP_VERSION );
+    }
+    static {
+        applicationSlaFailureState.put( StatusKeys.state.toString(), failureCode.toString() );
+        applicationSlaFailureState.put( StatusKeys.status.toString(), failureSlaMessage );
+        applicationSlaFailureState.put( StatusKeys.version.toString(), KruxStdLib.APP_VERSION );
     }
 
     public StdHttpServerHandler( Map<String, ChannelInboundHandlerAdapter> httpHandlers ) {
@@ -108,10 +115,11 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
                 FullHttpResponse res;
 
+                // if sla is met return OK message and return failure if not
                 if (slaClient.isSlaMet()) {
                     res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(JSON.std.asString(applicationSlaState).getBytes()));
                 } else {
-                    res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(alertSlaMessage.getBytes()));
+                    res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(JSON.std.asString(applicationSlaFailureState).getBytes()));
                 }
 
                 res.headers().set( CONTENT_TYPE, "application/json" );

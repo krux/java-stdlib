@@ -78,9 +78,6 @@ public class KruxStdLib {
 
     private static String _appDescription = null;
 
-    // holds the sla status value
-    public static Boolean isSlaMet = true;
-
     /**
      * If you'd like to utilize the std lib parser for your app-specific cli
      * argument parsing needs, feel free to pass a configured OptionParser to
@@ -240,7 +237,7 @@ public class KruxStdLib {
                     .withOptionalArg().ofType(String.class);
             /* the --property-file is parsed by Properties and the values are available via
                 ExternalProperties.getPropertyValue() */
-            OptionSpec<Integer> slaInSeconds = parser.accepts("sla-in-seconds",
+            OptionSpec<Integer> slaInSeconds = parser.accepts("sla",
                     "Sets the SLA in seconds for messages in kafka pipeline.")
                     .withOptionalArg().ofType(Integer.class).defaultsTo(slaInSecondsDefault);
 

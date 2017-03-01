@@ -58,7 +58,7 @@ public class SlaClientTest {
 
         // ensure the sla status is still failing
         Boolean status2 = slaClient2.isSlaMet();
-        assertEquals(false, status2);
+        assertEquals(true, status2);
     }
 
     @Test
@@ -82,22 +82,33 @@ public class SlaClientTest {
 
         // setup testing class
         class SingletonTestRunnable implements Runnable {
+
+            private volatile long timestamp;
+            private volatile Boolean expectedValue;
+
+            public SingletonTestRunnable(long timestamp, Boolean expectedValue) {
+                this.timestamp = timestamp;
+                this.expectedValue = expectedValue;
+            }
+
+
             public void run() {
                 // Get a reference to the singleton.
                 SlaClient slaClient = SlaClient.getInstance();
 
-                assertEquals(false, slaClient.isSlaMet());
+                // ensure the value is correct
+                assertEquals(this.expectedValue, slaClient.isSlaMet());
+
+                // send one timestamp
+                slaClient.checkTs(this.timestamp);
+
             }
         }
 
-        // insert a timestamp that should cause a SLA failure
-        SlaClient slaClient = SlaClient.getInstance();
-        slaClient.checkTs(failureTS);
-
         // setup the threads
-        Thread threadOne = new Thread(new SingletonTestRunnable()),
-                threadTwo = new Thread(new SingletonTestRunnable()),
-                threadThree = new Thread(new SingletonTestRunnable());
+        Thread threadOne = new Thread(new SingletonTestRunnable(failureTS, true)),
+                threadTwo = new Thread(new SingletonTestRunnable(successTS, false)),
+                threadThree = new Thread(new SingletonTestRunnable(failureTS, true));
 
         // start and run the threads
         threadOne.start();

@@ -4,7 +4,9 @@ import com.krux.stdlib.KruxStdLib;
 
 
 /**
- * Created by d.richards on 2/28/17.
+ * A client for determining if an application is running within the SLA
+ *
+ * @author David Richards
  */
 public class SlaClient {
 
@@ -22,23 +24,40 @@ public class SlaClient {
         return Loader.INSTANCE;
     }
 
-
-    static void checkTs(long timestamp) {
+    /**
+     * Check a timestamp against the SLA of the application.
+     *
+     * @param timestamp timestamp of queued message in long format
+     */
+    public static void checkTs(long timestamp) {
 
         // get current time and subtract the sla in milliseconds
         long slaMinTimestamp = System.currentTimeMillis() - _slaInMillis;
 
         // if the message received time is outside the sla threshold
         if ( timestamp < slaMinTimestamp ) {
-
-            // update the value of isSlaMet
+            // update the value of _isSlaMet. we only set false, because we
+            // want to make sure that the failure is seen by monitoring at
+            // least once. At that time we flip it back to true.
             _isSlaMet = false;
-        } else {
-            _isSlaMet = true;
         }
     }
 
+    /**
+     * Returns the current status of the SLA.
+     *
+     * @return Boolean status of application SLA
+     */
     public static Boolean isSlaMet() {
+
+        if ( !_isSlaMet ) {
+            Boolean status = _isSlaMet;
+            // flip boolean back to true after seen by monitoring
+            _isSlaMet = true;
+            // send a failure metric
+            KruxStdLib.STATSD.count("sla.failure");
+            return status;
+        }
         return _isSlaMet;
     }
 }
