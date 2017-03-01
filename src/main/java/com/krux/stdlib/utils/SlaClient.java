@@ -2,7 +2,6 @@ package com.krux.stdlib.utils;
 
 import com.krux.stdlib.KruxStdLib;
 
-
 /**
  * A client for determining if an application is running within the SLA
  *
