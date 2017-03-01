@@ -40,6 +40,9 @@ public class SlaClient {
             // want to make sure that the failure is seen by monitoring at
             // least once. At that time we flip it back to true.
             _isSlaMet = false;
+
+            // send a failure metric
+            KruxStdLib.STATSD.count("sla.failure");
         }
     }
 
@@ -54,8 +57,6 @@ public class SlaClient {
             Boolean status = _isSlaMet;
             // flip boolean back to true after seen by monitoring
             _isSlaMet = true;
-            // send a failure metric
-            KruxStdLib.STATSD.count("sla.failure");
             return status;
         }
         return _isSlaMet;
