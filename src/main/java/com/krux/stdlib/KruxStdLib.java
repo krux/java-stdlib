@@ -48,6 +48,7 @@ public class KruxStdLib {
     public static String BASE_APP_DIR;
     public static String STASD_ENV;
     public static String PROPERTY_FILE;
+    public static Integer SLA_IN_SECONDS;
 
     private static OptionParser _parser = null;
     private static OptionSet _options = null;
@@ -76,6 +77,9 @@ public class KruxStdLib {
     private static Map<String, ChannelInboundHandlerAdapter> httpHandlers = new HashMap<String, ChannelInboundHandlerAdapter>();
 
     private static String _appDescription = null;
+
+    // holds the sla status value
+    public static Boolean isSlaMet = true;
 
     /**
      * If you'd like to utilize the std lib parser for your app-specific cli
@@ -180,6 +184,7 @@ public class KruxStdLib {
             final String defaultAppName = System.getProperty(KRUX_APP_NAME_PROPERTY, getMainClassName());
             final String baseAppDirDefault = System.getProperty(KRUX_APP_DIR_PROPERTY, "/tmp");
             final String statsEnvironmentDefault = System.getProperty(KRUX_STATS_ENVIRONMENT_PROPERTY, "dev");
+            final int slaInSecondsDefault = 300;
             final Integer httpListenerPort = 0;
             final int defaultHeapReporterIntervalMs = 1000;
 
@@ -233,6 +238,11 @@ public class KruxStdLib {
             OptionSpec<String> propertyFileName = parser.accepts("property-file",
                     "provide environment-specific properties.")
                     .withOptionalArg().ofType(String.class);
+            /* the --property-file is parsed by Properties and the values are available via
+                ExternalProperties.getPropertyValue() */
+            OptionSpec<Integer> slaInSeconds = parser.accepts("sla-in-seconds",
+                    "Sets the SLA in seconds for messages in kafka pipeline.")
+                    .withOptionalArg().ofType(Integer.class).defaultsTo(slaInSecondsDefault);
 
             _options = parser.parse( args );
 
@@ -241,6 +251,7 @@ public class KruxStdLib {
             STASD_ENV = _options.valueOf( statsEnvironment );
             HTTP_PORT = _options.valueOf( httpListenPort );
             PROPERTY_FILE = _options.valueOf( propertyFileName );
+            SLA_IN_SECONDS = _options.valueOf( slaInSeconds );
 
             // set environment
             ENV = _options.valueOf( environment );
@@ -403,7 +414,7 @@ public class KruxStdLib {
 
     public static void registerHttpHandler( String url, ChannelInboundHandlerAdapter handler ) {
         if ( !_initialized ) {
-            if ( !url.contains( "__status" ) ) {
+            if ( !url.contains( "__status") && !url.contains("__sla") ) {
                 httpHandlers.put( url, handler );
             }
         }
