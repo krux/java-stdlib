@@ -29,17 +29,26 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 import com.krux.stdlib.KruxStdLib;
+import com.krux.stdlib.utils.SlaClient;
 
 public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger( StdHttpServerHandler.class.getName() );
 
+    private static SlaClient slaClient = SlaClient.getInstance();
+
     private final static String STATUS_URL = "__status";
+    private final static String SLA_URL = "__sla";
 
     private static AppState stateCode = AppState.OK;
+    private static AppState failureCode = AppState.FAILURE;
     private static String nominalStatusMessage = KruxStdLib.APP_NAME + " is running nominally";
+    private static String nominalSlaMessage = KruxStdLib.APP_NAME + " is meeting its SLA of " + KruxStdLib.SLA_IN_SECONDS + " seconds.";
+    private static String failureSlaMessage = KruxStdLib.APP_NAME + " is not meeting its SLA of " + KruxStdLib.SLA_IN_SECONDS + " seconds.";
 
     private static Map<String, Object> applicationState = Collections.synchronizedMap( new HashMap<String, Object>() );
+    private static Map<String, Object> applicationSlaState = Collections.synchronizedMap( new HashMap<String, Object>() );
+    private static Map<String, Object> applicationSlaFailureState = Collections.synchronizedMap( new HashMap<String, Object>() );
 
     private static final String BODY_404 = "<html><head><title>404 Not Found</title></head> <body bgcolor=\"white\"> <center><h1>404 Not Found</h1></center> <hr><center>Krux - "
             + KruxStdLib.APP_NAME + "</center> </body> </html>";
@@ -47,9 +56,19 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
     private Map<String, ChannelInboundHandlerAdapter> _httpHandlers;
 
     static {
-        applicationState.put( StatusKeys.state.toString(), AppState.OK.toString() );
+        applicationState.put( StatusKeys.state.toString(), stateCode.toString() );
         applicationState.put( StatusKeys.status.toString(), nominalStatusMessage );
         applicationState.put( StatusKeys.version.toString(), KruxStdLib.APP_VERSION );
+    }
+    static {
+        applicationSlaState.put( StatusKeys.state.toString(), stateCode.toString() );
+        applicationSlaState.put( StatusKeys.status.toString(), nominalSlaMessage );
+        applicationSlaState.put( StatusKeys.version.toString(), KruxStdLib.APP_VERSION );
+    }
+    static {
+        applicationSlaFailureState.put( StatusKeys.state.toString(), failureCode.toString() );
+        applicationSlaFailureState.put( StatusKeys.status.toString(), failureSlaMessage );
+        applicationSlaFailureState.put( StatusKeys.version.toString(), KruxStdLib.APP_VERSION );
     }
 
     public StdHttpServerHandler( Map<String, ChannelInboundHandlerAdapter> httpHandlers ) {
@@ -91,6 +110,25 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush( res );
                 }
 
+            } else if ( path.trim().endsWith( SLA_URL ) ) {
+
+                FullHttpResponse res;
+
+                // if sla is met return OK message and return failure if not
+                if (slaClient.isSlaMet()) {
+                    res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(JSON.std.asString(applicationSlaState).getBytes()));
+                } else {
+                    res = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(JSON.std.asString(applicationSlaFailureState).getBytes()));
+                }
+
+                res.headers().set( CONTENT_TYPE, "application/json" );
+                res.headers().set( CONTENT_LENGTH, res.content().readableBytes() );
+                if ( !keepAlive ) {
+                    ctx.writeAndFlush( res ).addListener( ChannelFutureListener.CLOSE );
+                } else {
+                    res.headers().set( CONNECTION, Values.KEEP_ALIVE );
+                    ctx.writeAndFlush( res );
+                }
             } else {
 
                 ChannelInboundHandlerAdapter handler = _httpHandlers.get( path );
