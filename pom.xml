@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.krux</groupId>
     <artifactId>krux-stdlib</artifactId>
-    <version>1.7.7</version>
+    <version>1.7.8</version>
     <packaging>jar</packaging>
 
     <name>krux-stdlib</name>
@@ -18,7 +18,7 @@
       <repository>
         <id>kruxmvn</id>
         <name>kruxmvn-releases</name>
-        <url>http://kruxmvn.artifactoryonline.com/kruxmvn/libs-releases-local</url>
+        <url>https://kruxmvn.jfrog.io/kruxmvn/libs-releases-local</url>
       </repository>
     </distributionManagement>
 
