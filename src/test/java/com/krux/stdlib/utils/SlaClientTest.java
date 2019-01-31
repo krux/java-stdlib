@@ -98,7 +98,7 @@ public class SlaClientTest {
                 assertEquals(this.expectedValue, slaClient.isSlaMet());
 
                 // send one timestamp
-                slaClient.checkTs(this.timestamp, 'ash');
+                slaClient.checkTs(this.timestamp, "ash");
 
             }
         }
