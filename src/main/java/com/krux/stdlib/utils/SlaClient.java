@@ -29,20 +29,22 @@ public class SlaClient {
      * @param timestamp timestamp of queued message in long format
      */
     public static void checkTs(long timestamp) {
+        checkSla(timestamp);
+    }
 
-        // get current time and subtract the sla in milliseconds
-        long slaMinTimestamp = System.currentTimeMillis() - _slaInMillis;
+    /**
+     * Check a timestamp against the SLA of the application. Used just like checkTs(), but includes a timer stat
+     * for message delay segmented by datacenter.
+     *
+     * @param timestamp timestamp of queued message in long format
+     * @param datacenter datacenter of beacon log origin
+     */
+    public static void checkTs(long timestamp, String datacenter) {
+        // Check log TS against current TS
+        long logDelay = checkSla(timestamp);
 
-        // if the message received time is outside the sla threshold
-        if ( timestamp < slaMinTimestamp ) {
-            // update the value of _isSlaMet. we only set false, because we
-            // want to make sure that the failure is seen by monitoring at
-            // least once. At that time we flip it back to true.
-            _isSlaMet = false;
-
-            // send a failure metric
-            KruxStdLib.STATSD.count("sla.failure");
-        }
+        // Always send timer stat so we can see kafka performance
+        KruxStdLib.STATSD.time("message.delay." + datacenter, logDelay);
     }
 
     /**
@@ -60,5 +62,27 @@ public class SlaClient {
         }
         return _isSlaMet;
     }
+
+    /**
+     * Check beacon log timestamp against current timestamp to determine if the log is outside of SLA.
+     * @param timestamp
+     * @return
+     */
+    private static long checkSla(long timestamp) {
+        // get current time and subtract the sla in milliseconds
+        long slaMinTimestamp = System.currentTimeMillis() - _slaInMillis;
+        // if the message received time is outside the sla threshold
+        if ( timestamp < slaMinTimestamp ) {
+            // update the value of _isSlaMet. we only set false, because we
+            // want to make sure that the failure is seen by monitoring at
+            // least once. At that time we flip it back to true.
+            _isSlaMet = false;
+
+            // send a failure metric
+            KruxStdLib.STATSD.count("sla.failure");
+        }
+        return timestamp - slaMinTimestamp;
+    }
+
 }
 
