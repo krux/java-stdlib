@@ -1,13 +1,14 @@
 package com.krux.stdlib.utils;
 
+import com.krux.stdlib.KruxStdLib;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.net.URL;
-import static org.junit.Assert.assertEquals;
 
-import com.krux.stdlib.KruxStdLib;
+import java.net.URL;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by d.richards on 2/28/17.
@@ -97,7 +98,7 @@ public class SlaClientTest {
                 assertEquals(this.expectedValue, slaClient.isSlaMet());
 
                 // send one timestamp
-                slaClient.checkTs(this.timestamp);
+                slaClient.checkTs(this.timestamp, "ash");
 
             }
         }
