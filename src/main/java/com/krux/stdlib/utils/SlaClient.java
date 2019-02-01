@@ -81,7 +81,7 @@ public class SlaClient {
             // send a failure metric
             KruxStdLib.STATSD.count("sla.failure");
         }
-        return timestamp - slaMinTimestamp;
+        return System.currentTimeMillis() - timestamp;
     }
 
 }
