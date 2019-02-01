@@ -69,10 +69,10 @@ public class SlaClient {
      * @return
      */
     private static long checkSla(long timestamp) {
-        // get current time and subtract the sla in milliseconds
-        long slaMinTimestamp = System.currentTimeMillis() - _slaInMillis;
+        // get current time and subtract against beacon timestamp to get delay
+        long delay = System.currentTimeMillis() - timestamp;
         // if the message received time is outside the sla threshold
-        if ( timestamp < slaMinTimestamp ) {
+        if ( delay >  _slaInMillis) {
             // update the value of _isSlaMet. we only set false, because we
             // want to make sure that the failure is seen by monitoring at
             // least once. At that time we flip it back to true.
@@ -81,7 +81,7 @@ public class SlaClient {
             // send a failure metric
             KruxStdLib.STATSD.count("sla.failure");
         }
-        return System.currentTimeMillis() - timestamp;
+        return delay;
     }
 
 }
