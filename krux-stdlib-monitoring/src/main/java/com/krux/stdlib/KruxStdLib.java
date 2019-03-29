@@ -475,6 +475,23 @@ public class KruxStdLib {
             statsdHost = optionSet.valueOf(statsdHostOption);
             statsdPort = optionSet.valueOf(statsdPortOption);
 
+
+            LOGGER.info("Using baseAppDir: {}", baseAppDir);
+            LOGGER.info("Using httpPort: {}", httpPort);
+            LOGGER.info("Using propertyFile: {}", propertyFile);
+            LOGGER.info("Using slaInSeconds: {}", slaInSeconds);
+            LOGGER.info("Using env: {}", env);
+            LOGGER.info("Using appName: {}", appName);
+            LOGGER.info("Using logLevel: {}", logLevel);
+            LOGGER.info("Using heapReporterIntervalMs: {}", heapReporterIntervalMs);
+            LOGGER.info("Using handleLogRotation: {}", handleLogRotation);
+            LOGGER.info("Using configFileLocation: {}", configFileLocation);
+
+            LOGGER.info("Using enableStatsd: {}", enableStatsd);
+            LOGGER.info("Using statsdEnv: {}", statsdEnv);
+            LOGGER.info("Using statsdHost: {}", statsdHost);
+            LOGGER.info("Using statsdPort: {}", statsdPort);
+
             // Set system properties for things that care
             System.setProperty(KRUX_ENVIRONMENT_PROPERTY, env);
             System.setProperty(KRUX_APP_NAME_PROPERTY, appName);
