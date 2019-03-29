@@ -120,11 +120,12 @@ public class SlaClientTest {
 
 
         // these ensure the order of thread execution is what's desired:
+        CountDownLatch noWait = new CountDownLatch(0);
         CountDownLatch latchOne = new CountDownLatch(1);
         CountDownLatch latchTwo = new CountDownLatch(1);
         CountDownLatch latchThree = new CountDownLatch(1);
 
-        SingletonTestRunnable one = new SingletonTestRunnable(failureTS, true, new CountDownLatch(0), latchOne);
+        SingletonTestRunnable one = new SingletonTestRunnable(failureTS, true, noWait, latchOne);
         SingletonTestRunnable two = new SingletonTestRunnable(successTS, false, latchOne, latchTwo);
         SingletonTestRunnable three = new SingletonTestRunnable(failureTS, true, latchTwo, latchThree);
         // setup the threads
@@ -141,6 +142,7 @@ public class SlaClientTest {
         threadOne.join();
         threadTwo.join();
         threadThree.join();
+        latchThree.await();
 
         assertEquals(one.expectedValue, one.actual);
         assertEquals(two.expectedValue, two.actual);
