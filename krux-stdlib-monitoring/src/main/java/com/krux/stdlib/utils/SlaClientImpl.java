@@ -37,7 +37,8 @@ public class SlaClientImpl implements SlaClient {
      */
     @Override
     public void checkTs(long timestamp) {
-        checkSla(timestamp);
+        long delay = checkSla(timestamp);
+        statsd.time("message.delay.unknown-datacenter", delay);
     }
 
     /**
