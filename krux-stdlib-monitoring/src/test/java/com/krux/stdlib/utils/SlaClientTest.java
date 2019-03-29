@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
 
@@ -82,31 +83,50 @@ public class SlaClientTest {
         // setup testing class
         class SingletonTestRunnable implements Runnable {
 
-            private volatile long timestamp;
-            private volatile boolean expectedValue;
-            private volatile boolean actual;
+            private CountDownLatch latch;
+            private CountDownLatch counter;
+            private long timestamp;
+            private boolean expectedValue;
+            private boolean actual;
 
-            public SingletonTestRunnable(long timestamp, boolean expectedValue) {
+            public SingletonTestRunnable(long timestamp, boolean expectedValue, CountDownLatch latch, CountDownLatch counter) {
+                this.latch = latch;
+                this.counter = counter;
                 this.timestamp = timestamp;
                 this.expectedValue = expectedValue;
             }
 
+            private void await() {
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
             public void run() {
                 // Get a reference to the singleton.
                 SlaClient slaClient = stdLib.getSlaClient();
+                await();
 
                 // ensure the value is correct
                 actual = slaClient.isSlaMet();
 
                 // send one timestamp
                 slaClient.checkTs(this.timestamp, "ash");
+                counter.countDown();
             }
         }
 
-        SingletonTestRunnable one = new SingletonTestRunnable(failureTS, true);
-        SingletonTestRunnable two = new SingletonTestRunnable(successTS, false);
-        SingletonTestRunnable three = new SingletonTestRunnable(failureTS, true);
+
+        // these ensure the order of thread execution is what's desired:
+        CountDownLatch latchOne = new CountDownLatch(1);
+        CountDownLatch latchTwo = new CountDownLatch(1);
+        CountDownLatch latchThree = new CountDownLatch(1);
+
+        SingletonTestRunnable one = new SingletonTestRunnable(failureTS, true, new CountDownLatch(0), latchOne);
+        SingletonTestRunnable two = new SingletonTestRunnable(successTS, false, latchOne, latchTwo);
+        SingletonTestRunnable three = new SingletonTestRunnable(failureTS, true, latchTwo, latchThree);
         // setup the threads
         Thread threadOne = new Thread(one),
                 threadTwo = new Thread(two),
