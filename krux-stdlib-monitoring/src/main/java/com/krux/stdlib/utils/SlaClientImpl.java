@@ -29,7 +29,13 @@ public class SlaClientImpl implements SlaClient {
      * {@inheritDoc}
      */
     public boolean isSlaMet() {
-        return slaMet;
+        // first capture the current status of the sla so it can be returned
+        boolean isMet = slaMet;
+
+        // now switch it back to true ('cause we've reported the status to the caller)
+        // the reason for this is that checkSla never sets slaMet = true (it only records failures)
+        slaMet = true;
+        return isMet;
     }
 
     /**
@@ -69,8 +75,6 @@ public class SlaClientImpl implements SlaClient {
 
             // send a failure metric
             statsd.count("sla.failure");
-        } else {
-            slaMet = true;
         }
 
         return delay;

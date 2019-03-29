@@ -5,8 +5,6 @@ import com.krux.stdlib.status.StatusHandler;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 
@@ -16,8 +14,6 @@ import static org.junit.Assert.assertEquals;
  * Created by d.richards on 2/28/17.
  */
 public class SlaClientTest {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger( ExternalProperties.class.getName() );
 
     private long failureTS;
     private long successTS;
@@ -60,7 +56,7 @@ public class SlaClientTest {
         SlaClient slaClient2 = stdLib.getSlaClient();
 
         // ensure the sla status is still failing
-        Boolean status2 = slaClient2.isSlaMet();
+        boolean status2 = slaClient2.isSlaMet();
         assertEquals(true, status2);
     }
 
@@ -74,7 +70,7 @@ public class SlaClientTest {
         slaClient.checkTs(successTS);
 
         // check sla status
-        Boolean status = slaClient.isSlaMet();
+        boolean status = slaClient.isSlaMet();
 
         // verify the success
         assertEquals(true, status);
@@ -87,9 +83,10 @@ public class SlaClientTest {
         class SingletonTestRunnable implements Runnable {
 
             private volatile long timestamp;
-            private volatile Boolean expectedValue;
+            private volatile boolean expectedValue;
+            private volatile boolean actual;
 
-            public SingletonTestRunnable(long timestamp, Boolean expectedValue) {
+            public SingletonTestRunnable(long timestamp, boolean expectedValue) {
                 this.timestamp = timestamp;
                 this.expectedValue = expectedValue;
             }
@@ -100,18 +97,20 @@ public class SlaClientTest {
                 SlaClient slaClient = stdLib.getSlaClient();
 
                 // ensure the value is correct
-                assertEquals(this.expectedValue, slaClient.isSlaMet());
+                actual = slaClient.isSlaMet();
 
                 // send one timestamp
                 slaClient.checkTs(this.timestamp, "ash");
-
             }
         }
 
+        SingletonTestRunnable one = new SingletonTestRunnable(failureTS, true);
+        SingletonTestRunnable two = new SingletonTestRunnable(successTS, false);
+        SingletonTestRunnable three = new SingletonTestRunnable(failureTS, true);
         // setup the threads
-        Thread threadOne = new Thread(new SingletonTestRunnable(failureTS, true)),
-                threadTwo = new Thread(new SingletonTestRunnable(successTS, false)),
-                threadThree = new Thread(new SingletonTestRunnable(failureTS, true));
+        Thread threadOne = new Thread(one),
+                threadTwo = new Thread(two),
+                threadThree = new Thread(three);
 
         // start and run the threads
         threadOne.start();
@@ -122,5 +121,9 @@ public class SlaClientTest {
         threadOne.join();
         threadTwo.join();
         threadThree.join();
+
+        assertEquals(one.expectedValue, one.actual);
+        assertEquals(two.expectedValue, two.actual);
+        assertEquals(three.expectedValue, three.actual);
     }
 }
