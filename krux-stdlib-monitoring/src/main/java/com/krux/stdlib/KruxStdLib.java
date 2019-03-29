@@ -442,21 +442,21 @@ public class KruxStdLib {
             optionSet = parser.parse( args );
 
             // set base app dir
-            baseAppDir = options.valueOf( baseAppDirectoryOption );
-            httpPort = options.valueOf( httpListenPortOption );
-            propertyFile = options.valueOf( propertyFileNameOption );
-            slaInSeconds = options.valueOf( slaInSecondsOption );
-            env = options.valueOf( environmentOption );
-            appName = options.valueOf( appNameOption );
-            logLevel = options.valueOf(logLevelOption);
-            heapReporterIntervalMs = options.valueOf(heapReporterIntervalMsOption);
-            handleLogRotation = options.has(handleLogRotationOption);
-            configFileLocation = options.valueOf(configFileLocationOption);
+            baseAppDir = optionSet.valueOf( baseAppDirectoryOption );
+            httpPort = optionSet.valueOf( httpListenPortOption );
+            propertyFile = optionSet.valueOf( propertyFileNameOption );
+            slaInSeconds = optionSet.valueOf( slaInSecondsOption );
+            env = optionSet.valueOf( environmentOption );
+            appName = optionSet.valueOf( appNameOption );
+            logLevel = optionSet.valueOf(logLevelOption);
+            heapReporterIntervalMs = optionSet.valueOf(heapReporterIntervalMsOption);
+            handleLogRotation = optionSet.has(handleLogRotationOption);
+            configFileLocation = optionSet.valueOf(configFileLocationOption);
 
-            enableStatsd = options.has(enableStatsdOption);
-            statsdEnv = options.valueOf( statsEnvironmentOption );
-            statsdHost = options.valueOf(statsdHostOption);
-            statsdPort = options.valueOf(statsdPortOption);
+            enableStatsd = optionSet.has(enableStatsdOption);
+            statsdEnv = optionSet.valueOf( statsEnvironmentOption );
+            statsdHost = optionSet.valueOf(statsdHostOption);
+            statsdPort = optionSet.valueOf(statsdPortOption);
 
             // Set system properties for things that care
             System.setProperty(KRUX_ENVIRONMENT_PROPERTY, env);
