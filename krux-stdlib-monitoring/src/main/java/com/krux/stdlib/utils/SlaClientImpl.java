@@ -1,6 +1,8 @@
 package com.krux.stdlib.utils;
 
 import java.time.Clock;
+import java.util.concurrent.atomic.AtomicLong;
+
 import com.krux.stdlib.statsd.StatsdClient;
 
 /**
@@ -13,7 +15,7 @@ public class SlaClientImpl implements SlaClient {
     private StatsdClient statsd;
     private Clock clock;
     private long slaMillis;
-    private boolean slaMet = true;
+    private AtomicLong slaFailures = new AtomicLong();
 
     public SlaClientImpl(StatsdClient statsd, long slaMillis) {
         this(statsd, slaMillis, Clock.systemUTC());
@@ -25,17 +27,9 @@ public class SlaClientImpl implements SlaClient {
         this.slaMillis = slaMillis;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isSlaMet() {
-        // first capture the current status of the sla so it can be returned
-        boolean isMet = slaMet;
-
-        // now switch it back to true ('cause we've reported the status to the caller)
-        // the reason for this is that checkSla never sets slaMet = true (it only records failures)
-        slaMet = true;
-        return isMet;
+    public long getSlaFailureCount() {
+        // we get an set so that we start fresh for the next time the status is queried:
+        return slaFailures.getAndSet(0);
     }
 
     /**
@@ -68,10 +62,9 @@ public class SlaClientImpl implements SlaClient {
         long delay = clock.millis() - timestamp;
         // if the message received time is outside the sla threshold
         if (delay >  slaMillis) {
-            // update the value of _isSlaMet. we only set false, because we
-            // want to make sure that the failure is seen by monitoring at
-            // least once. At that time we flip it back to true.
-            slaMet = false;
+            // we increment the number of failures we've seen,
+            // this is only reset when the monitoring API queries the failure count
+            slaFailures.incrementAndGet();
 
             // send a failure metric
             statsd.count("sla.failure");

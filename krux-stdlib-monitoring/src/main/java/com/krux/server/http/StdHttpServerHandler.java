@@ -83,7 +83,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
         applicationSlaState.put( StatusKeys.version.toString(), stdLib.getAppVersion() );
 
         applicationSlaFailureState.put( StatusKeys.state.toString(), failureCode.toString() );
-        applicationSlaFailureState.put( StatusKeys.status.toString(), getFailureSlaMessage() );
+        applicationSlaFailureState.put( StatusKeys.status.toString(), getFailureSlaMessage(0) );
         applicationSlaFailureState.put( StatusKeys.version.toString(), stdLib.getAppVersion() );
     }
 
@@ -100,8 +100,8 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
         return stdLib.getAppName() + " is meeting its SLA of " + stdLib.getSlaInSeconds() + " seconds.";
     }
 
-    protected String getFailureSlaMessage() {
-        return stdLib.getAppName() + " is not meeting its SLA of " + stdLib.getSlaInSeconds() + " seconds.";
+    protected String getFailureSlaMessage(long failureCount) {
+        return stdLib.getAppName() + " is not meeting its SLA of " + stdLib.getSlaInSeconds() + " seconds (" + failureCount + ").";
     }
 
     protected String getNotFoundBody() {
@@ -145,9 +145,11 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
 
                 String message;
                 // if sla is met return OK message and return failure if not
-                if (slaClient.isSlaMet()) {
+                long slaFailures = slaClient.getSlaFailureCount();
+                if (slaFailures == 0) {
                     message = JSON.std.asString(applicationSlaState);
                 } else {
+                    applicationSlaFailureState.put( StatusKeys.status.toString(), getFailureSlaMessage(slaFailures));
                     message = JSON.std.asString(applicationSlaFailureState);
                 }
 

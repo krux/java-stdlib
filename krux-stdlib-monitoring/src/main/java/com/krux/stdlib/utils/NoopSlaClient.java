@@ -14,12 +14,9 @@ public class NoopSlaClient implements SlaClient {
     @Override
     public void checkTs(long timestamp, String datacenter) {  }
 
-    /**
-     * Always returns true.
-     */
     @Override
-    public boolean isSlaMet() {
-        return true;
+    public long getSlaFailureCount() {
+        return 0;
     }
 
 }

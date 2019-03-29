@@ -50,15 +50,15 @@ public class SlaClientTest {
         slaClient.checkTs(failureTS);
 
         // ensure the sla status has false
-        Boolean status = slaClient.isSlaMet();
-        assertEquals(false, status);
+        long failures = slaClient.getSlaFailureCount();
+        assertEquals(1, failures);
 
         // get the singleton class again
         SlaClient slaClient2 = stdLib.getSlaClient();
 
         // ensure the sla status is still failing
-        boolean status2 = slaClient2.isSlaMet();
-        assertEquals(true, status2);
+        long failures2 = slaClient2.getSlaFailureCount();
+        assertEquals(0, failures2);
     }
 
     @Test
@@ -70,11 +70,8 @@ public class SlaClientTest {
         // send a timestamp that should return successful
         slaClient.checkTs(successTS);
 
-        // check sla status
-        boolean status = slaClient.isSlaMet();
-
         // verify the success
-        assertEquals(true, status);
+        assertEquals(0, slaClient.getSlaFailureCount());
     }
 
     @Test
@@ -86,10 +83,10 @@ public class SlaClientTest {
             private CountDownLatch latch;
             private CountDownLatch counter;
             private long timestamp;
-            private boolean expectedValue;
-            private boolean actual;
+            private long expectedValue;
+            private long actual;
 
-            public SingletonTestRunnable(long timestamp, boolean expectedValue, CountDownLatch latch, CountDownLatch counter) {
+            public SingletonTestRunnable(long timestamp, long expectedValue, CountDownLatch latch, CountDownLatch counter) {
                 this.latch = latch;
                 this.counter = counter;
                 this.timestamp = timestamp;
@@ -110,7 +107,7 @@ public class SlaClientTest {
                 await();
 
                 // ensure the value is correct
-                actual = slaClient.isSlaMet();
+                actual = slaClient.getSlaFailureCount();
 
                 // send one timestamp
                 slaClient.checkTs(this.timestamp, "ash");
@@ -125,9 +122,9 @@ public class SlaClientTest {
         CountDownLatch latchTwo = new CountDownLatch(1);
         CountDownLatch latchThree = new CountDownLatch(1);
 
-        SingletonTestRunnable one = new SingletonTestRunnable(failureTS, true, noWait, latchOne);
-        SingletonTestRunnable two = new SingletonTestRunnable(successTS, false, latchOne, latchTwo);
-        SingletonTestRunnable three = new SingletonTestRunnable(failureTS, true, latchTwo, latchThree);
+        SingletonTestRunnable one = new SingletonTestRunnable(failureTS, 0, noWait, latchOne);
+        SingletonTestRunnable two = new SingletonTestRunnable(successTS, 1, latchOne, latchTwo);
+        SingletonTestRunnable three = new SingletonTestRunnable(failureTS, 0, latchTwo, latchThree);
         // setup the threads
         Thread threadOne = new Thread(one),
                 threadTwo = new Thread(two),

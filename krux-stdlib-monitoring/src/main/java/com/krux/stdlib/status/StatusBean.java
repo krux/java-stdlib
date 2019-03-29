@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class StatusBean {
 
-    private final AppState appStatus;
+    private final AppState state;
 
     private final String message;
 
@@ -15,14 +15,14 @@ public class StatusBean {
     private final List<String> errors = new ArrayList<>();
 
     public StatusBean(AppState appStatus, String message) {
-        this.appStatus = appStatus;
+        this.state = appStatus;
         this.message = message;
     }
 
     @Override
     public int hashCode() {
         // only the status and message contribute to this objects "identity"
-        return Objects.hash(appStatus, message);
+        return Objects.hash(state, message);
     }
 
     @Override
@@ -35,17 +35,17 @@ public class StatusBean {
         }
 
         StatusBean that = (StatusBean) obj;
-        return Objects.equals(this.appStatus, that.appStatus)
+        return Objects.equals(this.state, that.state)
             && Objects.equals(this.message, that.message);
     }
 
     @Override
     public String toString() {
-        return "StatusBean(" + appStatus + ", " + message + ", warnings: " + warnings + ", errors: " + errors + ")";
+        return "StatusBean(" + state + ", " + message + ", warnings: " + warnings + ", errors: " + errors + ")";
     }
 
     public AppState getAppStatus() {
-        return appStatus;
+        return state;
     }
 
     public String getMessage() {

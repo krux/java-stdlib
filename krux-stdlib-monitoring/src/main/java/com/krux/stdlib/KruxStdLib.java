@@ -31,6 +31,7 @@ import com.krux.stdlib.statsd.JDKAndSystemStatsdReporter;
 import com.krux.stdlib.statsd.KruxStatsdClient;
 import com.krux.stdlib.statsd.NoopStatsdClient;
 import com.krux.stdlib.statsd.StatsdClient;
+import com.krux.stdlib.status.NoopStatusHandler;
 import com.krux.stdlib.status.StatusHandler;
 import com.krux.stdlib.status.StatusHandlerWrapper;
 import com.krux.stdlib.utils.NoopSlaClient;
@@ -317,6 +318,22 @@ public class KruxStdLib {
             parser = new OptionParser();
         }
         return parser;
+    }
+
+    public OptionSet parseAndInitialize(String appDescription, String[] args) {
+        OptionSet optionSet = parse(appDescription, args);
+        initialize(optionSet, new NoopStatusHandler());
+        return optionSet;
+    }
+
+    public OptionSet parseAndInitialize(ArgBuilder builder) {
+        return parseAndInitialize(builder.applicationName, builder.toArgs());
+    }
+
+    public OptionSet parseAndInitialize(String[] args) {
+        OptionSet optionSet = parse(args);
+        initialize(optionSet, new NoopStatusHandler());
+        return optionSet;
     }
 
     /**

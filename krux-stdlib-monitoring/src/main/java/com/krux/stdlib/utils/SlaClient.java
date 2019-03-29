@@ -23,9 +23,10 @@ public interface SlaClient {
     void checkTs(long timestamp, String datacenter);
 
     /**
-     * Returns true if the <b>last message</b> met the configured sla, false otherwise.
-     * After a new message is received, this value may change (i.e.: it is computed upon each message arrival)
+     * Returns the number of times the SLA has been missed since the last time this method was called.
+     * Calling this method resets the failure count to zero.
      * @return
      */
-    boolean isSlaMet();
+    long getSlaFailureCount();
+
 }
