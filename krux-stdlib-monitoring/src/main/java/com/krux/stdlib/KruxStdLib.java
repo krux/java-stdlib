@@ -66,6 +66,12 @@ public class KruxStdLib {
      * @return The initialized instance, or null if none has been initialized yet.
      */
     public static KruxStdLib get() {
+        if (instance == null) {
+            instance = new KruxStdLib();
+            // empty instance config, to avoid null pointers for time when
+            // people don't initialize correctly
+            instance.parseAndInitialize(new String[] {});
+        }
         return instance;
     }
 
