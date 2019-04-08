@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class StatusBean {
 
     private final AppState state;
@@ -39,9 +42,17 @@ public class StatusBean {
             && Objects.equals(this.message, that.message);
     }
 
+    protected ToStringBuilder toStringBuilder() {
+        return new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE)
+                .append("state", state)
+                .append("message", message)
+                .append("warnings", warnings)
+                .append("errors", errors);
+    }
+
     @Override
     public String toString() {
-        return "StatusBean(" + state + ", " + message + ", warnings: " + warnings + ", errors: " + errors + ")";
+        return toStringBuilder().build();
     }
 
     public AppState getAppStatus() {
