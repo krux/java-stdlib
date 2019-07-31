@@ -26,7 +26,7 @@ public class KruxStatsdClient extends StatsdClient {
     }
 
     protected void init(KruxStdLib stdLib) {
-        keyNamespace = stdLib.getStatsdEnv().toLowerCase() + "." + stdLib.getAppName().toLowerCase() + ".";
+        keyNamespace = stdLib.getAppName().toLowerCase() + ".";
     }
 
     public boolean gauge( String key, long value ) {

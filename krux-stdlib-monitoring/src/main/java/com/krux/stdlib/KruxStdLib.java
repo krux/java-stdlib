@@ -383,6 +383,7 @@ public class KruxStdLib {
             final String defaultLogLevel = System.getProperty(KRUX_LOGGER_LEVEL_PROPERTY, "WARN");
             final String defaultAppName = System.getProperty(KRUX_APP_NAME_PROPERTY, getMainClassName());
             final String baseAppDirDefault = System.getProperty(KRUX_APP_DIR_PROPERTY, "/tmp");
+            // TODO - remove statsEnvironment and related
             final String statsEnvironmentDefault = System.getProperty(KRUX_STATS_ENVIRONMENT_PROPERTY, "dev");
             final int slaInSecondsDefault = 300;
             final Integer httpListenerPort = 0;
@@ -426,7 +427,8 @@ public class KruxStdLib {
                     .withOptionalArg()
                     .ofType( String.class )
                     .defaultsTo( baseAppDirDefault );
-            OptionSpec<String> statsEnvironmentOption = parser.accepts( "stats-environment", "Stats environment (dictates statsd prefix)" )
+            // TODO - remove statsEnvironment and related
+            OptionSpec<String> statsEnvironmentOption = parser.accepts( "stats-environment", "IGNORED for backwards compatibility." )
                     .withOptionalArg()
                     .ofType( String.class )
                     .defaultsTo( statsEnvironmentDefault );
@@ -477,6 +479,7 @@ public class KruxStdLib {
             configFileLocation = optionSet.valueOf(configFileLocationOption);
 
             enableStatsd = optionSet.has(enableStatsdOption);
+            // TODO - remove statsEnvironment and related
             statsdEnv = optionSet.valueOf( statsEnvironmentOption );
             statsdHost = optionSet.valueOf(statsdHostOption);
             statsdPort = optionSet.valueOf(statsdPortOption);
@@ -506,6 +509,7 @@ public class KruxStdLib {
             System.setProperty(KRUX_STATS_ENABLED_PROPERTY, enableStatsd ? "true" : "false");
             System.setProperty(KRUX_STATS_HOST_PROPERTY, statsdHost);
             System.setProperty(KRUX_STATS_PORT_PROPERTY, statsdPort.toString());
+            // TODO - remove statsEnvironment and related
             System.setProperty(KRUX_STATS_ENVIRONMENT_PROPERTY, statsdEnv);
         }
 

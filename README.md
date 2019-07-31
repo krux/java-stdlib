@@ -89,9 +89,9 @@ Option                                       Description
 --heap-stats-interval-ms [Integer]           Interval (ms) for used heap statsd gauge (default: 1000) 
 --http-port [Integer]                        Accept http connections on this port (0 = web server     
                                                will not start) (default: 0)                           
---log-level                                  Default log4j log level (default: DEBUG)                               
+--log-level                                  Default log4j log level (default: DEBUG)                 
 --stats                                      Enable/disable statsd broadcast                          
---stats-environment                          Stats environment (dictates statsd prefix) (default: dev)
+--stats-environment                          IGNORED for backward compatibility                       
 --stats-host                                 Listening statsd host (default: localhost)               
 --stats-port [Integer]                       Listening statsd port (default: 8125)
 --property-file [String]                     Path to an external property file, containing names of external resources
