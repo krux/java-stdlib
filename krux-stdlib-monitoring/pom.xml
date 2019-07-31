@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.krux</groupId>
-        <artifactId>krux-stdlib</artifactId>
-        <version>5.1.0</version>
+      <groupId>com.krux</groupId>
+      <artifactId>krux-stdlib</artifactId>
+      <version>5.0.3</version>
     </parent>
 
     <name>krux-stdlib-monitoring</name>
