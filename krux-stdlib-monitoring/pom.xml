@@ -5,7 +5,7 @@
     <parent>
       <groupId>com.krux</groupId>
       <artifactId>krux-stdlib</artifactId>
-      <version>5.0.3</version>
+      <version>6.0.0</version>
     </parent>
 
     <name>krux-stdlib-monitoring</name>
