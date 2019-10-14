@@ -25,6 +25,7 @@
       <mysql.version>8.0.12</mysql.version>
       <netty.version>4.0.36.Final</netty.version>
       <slf4j.version>1.7.25</slf4j.version>
+      <junit.jupiter.version>5.5.2</junit.jupiter.version>
     </properties>
 
     <distributionManagement>
@@ -37,6 +38,30 @@
 
     <dependencyManagement>
         <dependencies>
+	    <dependency>
+	      <groupId>org.junit.jupiter</groupId>
+              <artifactId>junit-jupiter-api</artifactId>
+	      <version>${junit.jupiter.version}</version>
+              <scope>compile</scope>
+	    </dependency>
+            <dependency>
+              <groupId>org.junit.jupiter</groupId>
+              <artifactId>junit-jupiter-engine</artifactId>
+              <version>5.5.2</version>
+              <scope>compile</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.junit.vintage</groupId>
+              <artifactId>junit-vintage-engine</artifactId>
+              <version>5.5.2</version>
+              <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>com.krux</groupId>
                 <artifactId>krux-stdlib-monitoring</artifactId>
@@ -97,17 +122,19 @@
                 <artifactId>metrics-core</artifactId>
                 <version>${metrics.version}</version>
             </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
       <plugins>
+	<plugin>
+	  <artifactId>maven-surefire-plugin</artifactId>
+	  <version>2.22.2</version>
+	</plugin>
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.22.2</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -115,10 +142,12 @@
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
+            <compilerArgs>
+              <arg>-verbose</arg>
+              <arg>-Xlint:all</arg>
+            </compilerArgs>
           </configuration>
         </plugin>
       </plugins>
     </build>
-
-
 </project>
