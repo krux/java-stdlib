@@ -21,6 +21,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ import com.krux.stdlib.utils.SlaClientImpl;
  */
 public class KruxStdLib {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(KruxStdLib.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KruxStdLib.class);
 
     private static final String KRUX_APP_NAME_PROPERTY = "krux.app.name";
     private static final String KRUX_APP_DIR_PROPERTY = "krux.app.dir";
