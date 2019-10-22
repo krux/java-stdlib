@@ -1,145 +1,194 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.krux</groupId>
-    <artifactId>krux-stdlib</artifactId>
-    <version>6.0.0</version>
-    <packaging>pom</packaging>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.krux</groupId>
+  <artifactId>krux-stdlib</artifactId>
+  <version>6.0.0</version>
+  <packaging>pom</packaging>
 
-    <name>Std Lib Parent</name>
-    <url>https://github.com/krux/java-krux-stdlib</url>
+  <name>Std Lib Parent</name>
+  <url>https://github.com/krux/java-krux-stdlib</url>
 
-    <modules>
-        <module>krux-stdlib-monitoring</module>
-        <!-- <module>krux-stdlib-logging</module> -->
-    </modules>
+  <modules>
+    <module>krux-stdlib-monitoring</module>
+    <module>krux-stdlib-examples</module>
+  </modules>
 
-    <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <commons-lang.version>3.3.2</commons-lang.version>
-      <config.version>4.8</config.version>
-      <jackson.version>[2.8,2.9)</jackson.version>
-      <junit.version>4.12</junit.version>
-      <metrics.version>3.0.2</metrics.version>
-      <mysql.version>8.0.12</mysql.version>
-      <netty.version>4.0.36.Final</netty.version>
-      <junit.jupiter.version>5.5.2</junit.jupiter.version>
-      <slf4j.version>1.7.28</slf4j.version>
-      <log4j2.version>2.12.1</log4j2.version>
-    </properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <commons-lang.version>3.3.2</commons-lang.version>
+    <config.version>4.8</config.version>
+    <jackson.version>[2.8,2.9)</jackson.version>
+    <junit.version>4.12</junit.version>
+    <metrics.version>3.0.2</metrics.version>
+    <mysql.version>8.0.12</mysql.version>
+    <netty.version>4.0.36.Final</netty.version>
+    <junit.jupiter.version>5.5.2</junit.jupiter.version>
+    <slf4j.version>1.7.28</slf4j.version>
+    <log4j2.version>2.12.1</log4j2.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
 
-    <distributionManagement>
-      <repository>
-        <id>kruxmvn</id>
-        <name>kruxmvn-releases</name>
-        <url>https://kruxmvn.jfrog.io/kruxmvn/libs-releases-local</url>
-      </repository>
-    </distributionManagement>
+  <distributionManagement>
+    <repository>
+      <id>kruxmvn</id>
+      <name>kruxmvn-releases</name>
+      <url>https://kruxmvn.jfrog.io/kruxmvn/libs-releases-local</url>
+    </repository>
+  </distributionManagement>
 
-    <dependencyManagement>
-        <dependencies>
-	    <dependency>
-	      <groupId>org.junit.jupiter</groupId>
-              <artifactId>junit-jupiter-api</artifactId>
-	      <version>${junit.jupiter.version}</version>
-              <scope>compile</scope>
-	    </dependency>
-            <dependency>
-              <groupId>org.junit.jupiter</groupId>
-              <artifactId>junit-jupiter-engine</artifactId>
-              <version>${junit.jupiter.version}</version>
-              <scope>compile</scope>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.vintage</groupId>
-              <artifactId>junit-vintage-engine</artifactId>
-              <version>${junit.jupiter.version}</version>
-              <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.krux</groupId>
-                <artifactId>krux-stdlib-monitoring</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.krux</groupId>
-                <artifactId>krux-stdlib-logging</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.jopt-simple</groupId>
-                <artifactId>jopt-simple</artifactId>
-                <version>${config.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.logging.log4j</groupId>
-              <artifactId>log4j-bom</artifactId>
-              <version>${log4j2.version}</version>
-              <scope>import</scope>
-              <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.jr</groupId>
-                <artifactId>jackson-jr-objects</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.codahale.metrics</groupId>
-                <artifactId>metrics-core</artifactId>
-                <version>${metrics.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+  <dependencyManagement>
+    <dependencies>
+      <!-- testing -->
+      <dependency>
+	<groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+	<version>${junit.jupiter.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit.jupiter.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${junit.jupiter.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
 
-    <build>
-      <plugins>
-	<plugin>
-	  <artifactId>maven-surefire-plugin</artifactId>
-	  <version>2.22.2</version>
-	</plugin>
-        <plugin>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-          <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-            <compilerArgs>
-              <arg>-verbose</arg>
-              <arg>-Xlint:all</arg>
-            </compilerArgs>
-          </configuration>
-        </plugin>
-      </plugins>
-    </build>
+      <!-- logging -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-bom</artifactId>
+        <version>${log4j2.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sf.jopt-simple</groupId>
+        <artifactId>jopt-simple</artifactId>
+        <version>${config.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-all</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jr</groupId>
+        <artifactId>jackson-jr-objects</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>${mysql.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.codahale.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>${metrics.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.krux</groupId>
+        <artifactId>krux-stdlib-monitoring</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.krux</groupId>
+        <artifactId>krux-stdlib-logging</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <compilerArgs>
+            <arg>-verbose</arg>
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+
+      <!-- fat jar -->
+      <!-- <plugin> -->
+      <!--   <groupId>org.apache.maven.plugins</groupId> -->
+      <!--   <artifactId>maven-assembly-plugin</artifactId> -->
+      <!--   <version>3.1.0</version> -->
+
+      <!--   <configuration> -->
+      <!--     <finalName>${project.artifactId}-${project.version}-all</finalName> -->
+      <!--     <appendAssemblyId>true</appendAssemblyId> -->
+      <!--     <descriptorRefs> -->
+      <!--       <descriptorRef>jar-with-dependencies</descriptorRef> -->
+      <!--     </descriptorRefs> -->
+      <!--   </configuration> -->
+
+      <!--   <executions> -->
+      <!--     <execution> -->
+      <!--       <id>assemble-jar-with-dependencies</id> -->
+      <!--       <phase>package</phase> -->
+      <!--       <goals> -->
+      <!--         <goal>single</goal> -->
+      <!--       </goals> -->
+      <!--     </execution> -->
+      <!--   </executions> -->
+      <!-- </plugin> -->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- testing -->
+      <plugin>
+	      <artifactId>maven-surefire-plugin</artifactId>
+	      <version>2.22.2</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.22.2</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>

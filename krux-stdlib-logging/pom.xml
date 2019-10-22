@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.krux</groupId>
-        <artifactId>krux-stdlib</artifactId>
-        <version>6.0.0</version>
+      <groupId>com.krux</groupId>
+      <artifactId>krux-stdlib</artifactId>
+      <version>6.0.0</version>
     </parent>
 
     <name>krux-stdlib-logging</name>
@@ -41,18 +41,6 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j18-impl</artifactId>
       </dependency>
 
       <!-- testing -->

@@ -485,7 +485,6 @@ public class KruxStdLib {
             statsdHost = optionSet.valueOf(statsdHostOption);
             statsdPort = optionSet.valueOf(statsdPortOption);
 
-
             LOGGER.info("Using baseAppDir: {}", baseAppDir);
             LOGGER.info("Using httpPort: {}", httpPort);
             LOGGER.info("Using propertyFile: {}", propertyFile);
