@@ -16,7 +16,7 @@
   <dependencies>
     <dependency>
       <groupId>com.krux</groupId>
-      <artifactId>krux-stdlib-monitoring</artifactId>
+      <artifactId>krux-stdlib-main</artifactId>
     </dependency>
 
     <!-- <dependency> -->
