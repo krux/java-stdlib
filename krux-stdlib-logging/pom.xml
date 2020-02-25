@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-      <groupId>com.krux</groupId>
-      <artifactId>krux-stdlib</artifactId>
-      <version>6.0.0</version>
+        <groupId>com.krux</groupId>
+        <artifactId>krux-stdlib</artifactId>
+        <version>6.0.1</version>
     </parent>
 
     <name>krux-stdlib-logging</name>
@@ -16,13 +16,28 @@
     <dependencies>
       <dependency>
         <groupId>com.krux</groupId>
-        <artifactId>krux-stdlib-main</artifactId>
+        <artifactId>krux-stdlib-monitoring</artifactId>
       </dependency>
       <dependency>
         <groupId>net.sf.jopt-simple</groupId>
         <artifactId>jopt-simple</artifactId>
       </dependency>
-
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+      </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.jr</groupId>
         <artifactId>jackson-jr-objects</artifactId>
@@ -30,17 +45,6 @@
       <dependency>
         <groupId>com.codahale.metrics</groupId>
         <artifactId>metrics-core</artifactId>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-      </dependency>
-
-      <!-- logging -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
       </dependency>
 
       <!-- testing -->
