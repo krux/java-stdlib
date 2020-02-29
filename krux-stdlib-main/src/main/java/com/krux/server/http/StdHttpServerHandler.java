@@ -1,7 +1,7 @@
 package com.krux.server.http;
 
-import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
-import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
+import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
+import static io.netty.handler.codec.http.HttpUtil.isKeepAlive;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
@@ -16,7 +16,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeadersValues;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.ReferenceCountUtil;
@@ -126,7 +126,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
             long start = System.currentTimeMillis();
 
             HttpRequest req = (HttpRequest) msg;
-            String uri = req.getUri();
+            String uri = req.uri();
 
             String[] parts = uri.split( "\\?" );
             String path = parts[0];
@@ -200,7 +200,7 @@ public class StdHttpServerHandler extends ChannelInboundHandlerAdapter {
         if ( !keepAlive ) {
             context.writeAndFlush( res ).addListener( ChannelFutureListener.CLOSE );
         } else {
-            res.headers().set( CONNECTION, Values.KEEP_ALIVE );
+            res.headers().set( CONNECTION, HttpHeaderValues.KEEP_ALIVE );
             context.writeAndFlush( res );
         }
     }

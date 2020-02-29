@@ -1,6 +1,6 @@
 package com.krux.stdlib.status;
 
-import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
+import static io.netty.handler.codec.http.HttpUtil.isKeepAlive;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
@@ -53,7 +53,7 @@ public class StatusHandlerWrapper extends ChannelInboundHandlerAdapter {
             if ( !keepAlive ) {
                 ctx.write( res ).addListener( ChannelFutureListener.CLOSE );
             } else {
-                res.headers().set( CONNECTION, Values.KEEP_ALIVE );
+                res.headers().set( CONNECTION, HttpHeaderValues.KEEP_ALIVE );
                 ctx.write( res );
             }
         }

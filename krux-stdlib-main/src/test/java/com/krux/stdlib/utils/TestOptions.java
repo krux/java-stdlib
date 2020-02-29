@@ -64,21 +64,24 @@ public class TestOptions {
     }
 
     @Test
-    @DisplayName("does NOT set the log level in the logger")
+    @DisplayName("does NOT set the log level in the logger to DEBUG")
     void doesNotSetLoggerLogLevel() {
-      assertThat(logger.getLevel()).isEqualTo(Level.DEBUG);
+      assertThat(logger.getLevel()).isLessThan(Level.DEBUG);
     }
 
     @Test
-    @DisplayName("sets the log level in KruxStdLib to DEBUG")
+    @DisplayName("does NOT set the log level in KruxStdLib to DEBUG")
     void doesNotSetStdlibLogLevel() {
-      assertThat(stdlib.getLogLevel()).isEqualTo("DEBUG");
+      assertThat(stdlib.getLogLevel()).isEqualTo("WARN");
     }
 
-    @Test
-    @DisplayName("sets log level in Options")
-    void doesNotSetOptionsLogLevel() {
-      assertThat(options.has("log-level")).isFalse();
-    }
+    // Would like to have this but jopt-simple does not support
+    // removing options from the OptionSet.
+    //
+    // @Test
+    // @DisplayName("sets log level in Options")
+    // void doesNotSetOptionsLogLevel() {
+    //   assertThat(options.has("log-level")).isFalse();
+    // }
   }
 }

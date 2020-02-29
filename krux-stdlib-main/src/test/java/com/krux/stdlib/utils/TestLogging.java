@@ -44,17 +44,4 @@ class TestLogging {
     capturedLogs.assertContains(test_error_log);
     capturedLogs.assertDoesNotContain(test_debug_log);
   }
-
-  @Nested
-  @DisplayName("option processing")
-  class OptionProcessing {
-    @Test
-    @DisplayName("rejects --log-level")
-    void optionProcessingRejectsLogLevel() {
-      OptionSet options;
-      String[] args = {"--log-level", "DEBUG"};
-      options = stdlib.parseAndInitialize(args);
-      assertThat(options.has("--log-level")).isFalse();
-    }
-  }
 }
