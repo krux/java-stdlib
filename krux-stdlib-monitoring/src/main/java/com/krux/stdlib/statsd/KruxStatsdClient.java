@@ -4,6 +4,7 @@
 package com.krux.stdlib.statsd;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +34,16 @@ public class KruxStatsdClient extends StatsdClient {
         return stat( StatsdStatType.GAUGE, key, value, 1.0 );
     }
 
+    public boolean gauge( String key, long value, Map<String, String> tags ) {
+        return stat( StatsdStatType.GAUGE, key, value, 1.0, tags);
+    }
+
     public boolean stat( StatsdStatType type, String key, long value, double sampleRate ) {
-        return super.stat( type, fullKey( key ), value, sampleRate );
+        return stat( type, key, value, sampleRate, null);
+    }
+
+    public boolean stat( StatsdStatType type, String key, long value, double sampleRate, Map<String, String> tags ) {
+        return super.stat( type, fullKey( key ), value, sampleRate, tags );
     }
 
     private String fullKey( String appKey ) {

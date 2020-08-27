@@ -7,13 +7,17 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * A Java statsd client. See <a
@@ -60,9 +64,11 @@ public class StatsdClient {
 
     public static final int DEFAULT_PORT = 8125;
 
-    private static final String COUNTER_FORMAT = "%s:%d|c";
-    private static final String TIMER_FORMAT = "%s:%d|ms";
-    private static final String GAUGE_FORMAT = "%s:%d|g";
+    private static final String BASE_FORMAT = "%s:%d|%s";
+    private static final String TAGS_FORMAT = "%s,%s:%d|%s";
+    private static final String COUNTER_FORMAT = "c";
+    private static final String TIMER_FORMAT = "ms";
+    private static final String GAUGE_FORMAT = "g";
 
     private static final String SAMPLE_RATE_FORMAT = "%s|@%f";
 
@@ -215,32 +221,63 @@ public class StatsdClient {
         return count( key, 1 );
     }
 
+    public boolean count( String key, Map<String, String> tags) { return count( key, 1, tags); }
+
     public boolean count( String key, int count ) {
         return count( key, count, 1.0D );
+    }
+
+    public boolean count( String key, int count, Map<String, String> tags ) {
+        return count( key, count, 1.0D, tags);
     }
 
     public boolean count( String key, double sampleRate ) {
         return count( key, 1, sampleRate );
     }
 
+    public boolean count( String key, double sampleRate, Map<String, String> tags ) {
+        return count( key, 1, sampleRate, tags );
+    }
+
     public boolean count( String key, int count, double sampleRate ) {
         return stat( StatsdStatType.COUNTER, key, count, sampleRate );
+    }
+
+    public boolean count( String key, int count, double sampleRate, Map<String, String> tags ) {
+        return stat( StatsdStatType.COUNTER, key, count, sampleRate, tags );
     }
 
     public boolean time( String key, long millis ) {
         return time( key, millis, 1.0 );
     }
 
+    public boolean time( String key, long millis, Map<String, String> tags ) {
+        return time( key, millis, 1.0, tags );
+    }
+
     public boolean time( String key, long millis, double sampleRate ) {
         return stat( StatsdStatType.TIMER, key, millis, sampleRate );
+    }
+
+    public boolean time( String key, long millis, double sampleRate, Map<String, String> tags ) {
+        return stat( StatsdStatType.TIMER, key, millis, sampleRate, tags );
     }
 
     public boolean gauge( String key, long value ) {
         return stat( StatsdStatType.GAUGE, key, value, 1.0 );
     }
 
+    public boolean gauge( String key, long value, Map<String, String> tags ) {
+        return stat( StatsdStatType.GAUGE, key, value, 1.0, tags );
+    }
+
     public boolean stat( StatsdStatType type, String key, long value, double sampleRate ) {
+        return stat( type, key, value, sampleRate, null);
+    }
+
+    public boolean stat( StatsdStatType type, String key, long value, double sampleRate, Map<String, String> tags ) {
         String format;
+        String stat;
         switch ( type ) {
             case COUNTER:
                 format = COUNTER_FORMAT;
@@ -254,7 +291,13 @@ public class StatsdClient {
             default:
                 throw new IllegalStateException();
         }
-        String stat = String.format( format, key, value );
+        if (tags != null) {
+            String tagStr = formatTags(tags);
+            stat = String.format(TAGS_FORMAT, key, tagStr, value, format);
+        } else {
+            stat = String.format(BASE_FORMAT, key, value, format);
+        }
+        System.out.println(stat);
         return send( stat, sampleRate );
     }
 
@@ -301,6 +344,14 @@ public class StatsdClient {
             errorSendFailed( stat, e );
             return false;
         }
+    }
+
+    private String formatTags ( Map<String, String> tags ) {
+        String mapAsString = tags.keySet().stream()
+                .map(key -> key + "=" + tags.get(key))
+                .collect(joining(","));
+        System.out.println("tags: "+ mapAsString);
+        return mapAsString;
     }
 
     protected Charset getCharset() {
