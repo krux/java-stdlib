@@ -297,7 +297,6 @@ public class StatsdClient {
         } else {
             stat = String.format(BASE_FORMAT, key, value, format);
         }
-        System.out.println(stat);
         return send( stat, sampleRate );
     }
 
