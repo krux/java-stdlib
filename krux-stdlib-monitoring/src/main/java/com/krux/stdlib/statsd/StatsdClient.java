@@ -349,7 +349,6 @@ public class StatsdClient {
         String mapAsString = tags.keySet().stream()
                 .map(key -> key + "=" + tags.get(key))
                 .collect(joining(","));
-        System.out.println("tags: "+ mapAsString);
         return mapAsString;
     }
 
