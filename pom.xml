@@ -22,7 +22,7 @@
       <junit.version>4.12</junit.version>
       <logback.version>1.1.2</logback.version>
       <metrics.version>3.0.2</metrics.version>
-      <mysql.version>8.0.16</mysql.version>
+      <mysql.version>8.0.21</mysql.version>
       <netty.version>4.1.42.Final</netty.version>
       <slf4j.version>1.7.25</slf4j.version>
     </properties>
