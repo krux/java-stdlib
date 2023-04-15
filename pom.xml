@@ -20,7 +20,7 @@
       <config.version>4.8</config.version>
       <jackson.version>[2.8,2.9)</jackson.version>
       <junit.version>4.13.1</junit.version>
-      <logback.version>1.1.2</logback.version>
+      <logback.version>1.2.9</logback.version>
       <metrics.version>3.0.2</metrics.version>
       <mysql.version>8.0.21</mysql.version>
       <netty.version>4.1.42.Final</netty.version>
