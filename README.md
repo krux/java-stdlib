@@ -1,3 +1,5 @@
+# THIS REPOSITORY IS NO LONGER MAINTAINED AND ARCHIVED.
+
 Krux Standard Java Library
 ==========================
 
